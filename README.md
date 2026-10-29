@@ -19,9 +19,10 @@ source text can never contain private information. Application tests were not ru
 deliberately incomplete copy. Do not use it as a deployment source.
 
 This review copy has a fresh Git history. No original commit authors or original historical
-objects are included. Existing remote branches and history have not been removed or rewritten.
-They require a separate review before an existing repository is made public.
+objects are included. Replacing remote branches does not itself guarantee removal of GitHub
+cached commits or internal pull-request references. Those require separate verification before
+a repository containing earlier private material is made public.
 
 Retained third-party notices do not choose a license for the owner's application source.
 No executable, model, engine, encoder, third-party creative asset or optional dependency cache
-is included. No publication or production deployment was performed during preparation.
+is included. No production deployment is part of publishing this source snapshot.
