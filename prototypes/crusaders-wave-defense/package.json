@@ -1,0 +1,9 @@
+{
+  "name": "crusaders-wave-defense",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node server.cjs",
+    "test": "node test.mjs && node mode-test.mjs && node import-test.mjs && node armory-compatibility-test.mjs"
+  }
+}

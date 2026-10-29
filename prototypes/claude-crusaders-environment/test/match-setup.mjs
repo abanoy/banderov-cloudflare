@@ -1,0 +1,11 @@
+import * as T from '../vendor/three.module.js';
+import {makeWorld} from '../floating-castle/world.js';import {flightWorld} from '../floating-castle/flight.js';import {createBattleNavigation} from '../floating-castle/battle-navigation.js';import {createBattleFleet} from '../floating-castle/battle-fleet.js';
+import assert from 'node:assert/strict';import fs from 'node:fs';
+globalThis.document={createElement(){return {width:0,height:0,getContext(){return new Proxy({},{get:(o,k)=>o[k]??(()=>{}),set:(o,k,v)=>(o[k]=v,true)});}};}};
+const {battleCastlePlan}=await import('../floating-castle/castle-architect.js');const {createConstruction}=await import('../floating-castle/castle-construction.js');
+const scene=new T.Scene(),world=makeWorld(scene),construction=createConstruction(world),checks=[];
+for(const level of [10,50,100]){let previous=null;for(let seed=20;seed<23;seed++){const plan=battleCastlePlan({level,seed,home:1});construction.apply(1,plan.layout,plan.options);assert(construction.counts[1].custom);assert.equal(construction.counts[1].config.level,level);assert.notEqual(plan.family,previous);previous=plan.family;checks.push({level,seed,family:plan.family,parts:plan.layout.length});}}
+construction.restore(1);assert(!construction.counts[1].custom);
+const saved=battleCastlePlan({level:40,seed:11,home:0});construction.apply(0,saved.layout,saved.options);const before=construction.counts[0];const temp=battleCastlePlan({level:100,seed:12,home:0});construction.apply(0,temp.layout,temp.options);construction.apply(0,saved.layout,saved.options);assert.deepEqual(construction.counts[0],before);
+const nav=createBattleNavigation(world);createBattleFleet({world,scene,actors:[],navigation:nav});await nav.rebuild();const goal={x:world.routes[1].at(-1)[0],y:90.2,z:world.routes[1].at(-1)[2],radius:3};const bounded=await nav.path(world.pads[1],goal,{maxMs:0});assert(!bounded.reachable);assert.equal(bounded.reason,'Route search time budget reached');const route=await nav.path(world.pads[1],goal);assert(route.reachable,'An expired warm-up must not poison the route cache');
+fs.writeFileSync('review/match-setup-unit.json',JSON.stringify({passed:true,checks,savedLayoutRestored:true,budgetFailureNotCached:true},null,2));console.log('PASS 9 level/family plans, saved-layout restoration, bounded search and later reachable path');

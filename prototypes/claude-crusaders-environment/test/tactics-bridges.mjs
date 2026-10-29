@@ -1,0 +1,11 @@
+import * as T from '../vendor/three.module.js';
+import {makeWorld} from '../floating-castle/world.js';import {flightWorld} from '../floating-castle/flight.js';import {createBattleNavigation} from '../floating-castle/battle-navigation.js';import {createBattleFleet} from '../floating-castle/battle-fleet.js';
+import assert from 'node:assert/strict';import fs from 'node:fs';
+globalThis.document={createElement(){return {width:0,height:0,getContext(){return new Proxy({},{get:(o,k)=>o[k]??(()=>{}),set:(o,k,v)=>(o[k]=v,true)});}};}};
+const scene=new T.Scene(),world=makeWorld(scene),nav=createBattleNavigation(world);createBattleFleet({world,scene,actors:[],navigation:nav});world.pads=world.pads.slice(0,2);await nav.rebuild();
+ async function follow(route,start){const nearby=[],sim=flightWorld(nearby,[{...start,r:6},...world.pads.slice(1)]);let steps=0,pods=0,airborneOnFoot=0;for(const target of route.points){let budget=2400;while(Math.hypot(target.x-sim.state.x,target.z-sim.state.z)>.08&&budget-->0){const s=sim.state,dx=target.x-s.x,dz=target.z-s.z,d=Math.hypot(dx,dz),strength=Math.min(1,d/(10/120));nearby.splice(0,nearby.length,...nav.nearby(s,3));sim.step(1/120,{x:dx/d*strength,z:dz/d*strength});steps++;airborneOnFoot+=!s.grounded;assert.equal(s.falls,0);}assert(budget>0,'Route waypoint stalled');if(target.launchTo!==undefined){assert(sim.launch(target.launchTo));pods++;let air=1800;while(sim.state.flight&&air-->0){nearby.splice(0,nearby.length,...nav.nearby(sim.state,3));sim.step(1/120,{x:0,z:0});steps++;}assert(air>0&&sim.state.grounded&&sim.state.falls===0);}}
+  assert.equal(airborneOnFoot,0);return {steps,pods,airborneOnFoot,final:{x:sim.state.x,y:sim.state.y,z:sim.state.z},falls:sim.state.falls};}
+
+
+const routes=[];for(const [id,bridge] of world.bridges.entries()){const route=await nav.path(bridge.a,{...bridge.b,radius:3});assert(route.reachable,route.reason);assert(!route.points.some(p=>p.launchTo!==undefined));const result=await follow(route,bridge.a);routes.push({id,...result});}
+fs.writeFileSync('review/tactics-bridges.json',JSON.stringify({scope:'Independent fixed-step walking on each real causeway; outer/arena pod links removed in fixture.',routes,passed:true},null,2));console.log(routes);

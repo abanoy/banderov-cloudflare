@@ -1,0 +1,15 @@
+const assert=require('node:assert/strict'), X=new Function('module',require('node:fs').readFileSync(require('node:path').join(__dirname,'src/expanded.js'),'utf8')+';return SevenExpanded;')({exports:{}});
+const keys=['The Waitress','The Scientist'];
+assert.deepEqual(X.won({endings:{'win:The Waitress':0,'win:The Scientist':1}},keys),['The Scientist']);
+let s=X.clean(null,keys);s.latest={key:keys[0],hearts:123};
+for(let i=0;i<5;i++)assert.equal(X.add(s,keys[i%2],keys).day,8);
+assert.equal(s.slots[0].hearts,123);assert.equal(s.slots[1].hearts,100);
+assert.equal(X.add(s,keys[0],keys),null);assert.equal(X.add(X.clean(null,keys),'Injected',keys),null);
+assert.equal(X.advance(s,1,9,100),false);assert.equal(X.advance(s,1,8,NaN),false);
+for(let day=8;day<=28;day++)assert.equal(X.advance(s,1,day,day%2?200:10),true);
+assert.equal(s.slots[0].day,29);assert.equal(s.slots[0].exchanges,63);assert.equal(X.advance(s,1,29,100),false);
+assert.deepEqual(X.clean(JSON.parse(JSON.stringify(s)),keys),s);
+const bad={v:1,slots:[{id:1,key:keys[0],day:8,hearts:100,exchanges:0},{id:1,key:keys[0],day:8,hearts:100,exchanges:0},{id:2,key:'<script>',day:8,hearts:100,exchanges:0},{id:3,key:keys[0],day:28,hearts:100,exchanges:0},{id:4,key:keys[0],day:8,hearts:Infinity,exchanges:0}],latest:{key:'bad',hearts:100}};
+assert.equal(X.clean(bad,keys).slots.length,1);assert.equal(X.clean(bad,[]).slots.length,0);
+assert.equal(X.clean({v:4,slots:s.slots},keys).slots.length,0);
+console.log('PASS unlock, five-slot limit, carried/legacy hearts, all 21 atomic days, reload and malformed state');

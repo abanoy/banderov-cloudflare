@@ -1,0 +1,21 @@
+const {chromium}=require(process.env.SEVEN_PLAYWRIGHT||'playwright');
+const path=require('node:path'),assert=require('node:assert/strict');
+(async()=>{const browser=await chromium.launch({headless:true,executablePath:process.env.SEVEN_BROWSER});try{
+ const c=await browser.newContext({viewport:{width:320,height:568}}),p=await c.newPage(),errors=[];p.on('pageerror',e=>errors.push(e.message));
+ await p.addInitScript(()=>{window.__noBoot=true;window.storageBlocked=true;const set=Storage.prototype.setItem;Storage.prototype.setItem=function(k,v){if(window.storageBlocked&&k==='sevensips_recovered_v1')throw new DOMException('Full','QuotaExceededError');return set.call(this,k,v);};});
+ await p.goto('file:///'+path.resolve(__dirname,'index.html').replaceAll('\\','/'));await p.waitForFunction(()=>UI.snd);
+ await p.evaluate(()=>{Sound.setMusic(false);Sound.setSfx(false);newRun();G.day=2;snapshot();openSettings();});
+ assert.equal(await p.evaluate(()=>CG.saveStatus),'unavailable');assert.match(await p.locator('.save-status').innerText(),/closing it may lose/);
+ const sn=await p.evaluate(()=>JSON.stringify(SAVE.run));
+ await p.getByRole('button',{name:'Try saving again',exact:true}).focus();await p.keyboard.press('Space');
+ assert.equal(await p.evaluate(()=>CG.saveStatus),'unavailable');assert.equal(await p.evaluate(()=>Engine.paused),true);
+ await p.screenshot({path:path.join(__dirname,'save-unavailable-320.png')});
+ const b=await p.getByRole('button',{name:'Resume',exact:true}).boundingBox();assert.ok(b.y>=0&&b.y+b.height<=568);
+ await p.evaluate(()=>window.storageBlocked=false);await p.keyboard.press('Enter');
+ assert.equal(await p.evaluate(()=>CG.saveStatus),'saved');assert.match(await p.locator('.save-status').innerText(),/Progress saved/);
+ assert.equal(await p.getByRole('button',{name:'Try saving again',exact:true}).count(),0);
+ assert.equal(await p.evaluate(()=>document.activeElement.dataset.k),'resume');assert.equal(await p.evaluate(()=>JSON.stringify(CG.load().run)),sn);
+ await p.keyboard.press('Space');assert.equal(await p.evaluate(()=>Engine.paused),false);
+ await p.reload();await p.waitForFunction(()=>UI.snd);assert.equal(await p.evaluate(()=>SAVE.run.day),2);assert.deepEqual(errors,[]);
+ await c.close();console.log('Storage failure notice/native retry/focus/timer/day-start preservation/reload passed.');
+ }finally{await browser.close();}})().catch(e=>{console.error(e);process.exitCode=1;});

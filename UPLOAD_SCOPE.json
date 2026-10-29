@@ -1,0 +1,39 @@
+{
+  "includedFiles": 3999,
+  "includedBytes": 104530289,
+  "omittedFromInitialCopy": 19675,
+  "omissionReasons": {
+    "infrastructure-or-internal-root-file": 217,
+    "data-or-diagnostic-json": 3323,
+    "server-or-deployment-file": 169,
+    "backend-or-internal-evidence-directory": 4916,
+    "backend-content": 148,
+    "embedded-media-unreviewed": 57,
+    "media-or-binary-unreviewed": 999,
+    "email-address-review": 27,
+    "private-identity-or-machine-path": 1055,
+    "private-machine-path": 810,
+    "internal-agent-instructions": 4,
+    "source-changed-during-preparation": 5,
+    "private-experiment-record": 1369,
+    "data-export-unreviewed": 35,
+    "network-server-project": 11,
+    "backend-worktree": 930,
+    "conservative-backend-or-internal-name-review": 696,
+    "server-config-or-script-review": 10,
+    "internal-agent-helper": 179,
+    "local-research-or-nightly-material": 4715
+  },
+  "copyErrors": 0,
+  "sourcePolicy": "Public frontend/local-app source only; omit flagged files, all media/binaries, backend and infrastructure; no inherited Git history.",
+  "originalsModified": false,
+  "remoteModified": false,
+  "applicationTestsRun": false,
+  "verification": {
+    "allRetainedFilesRechecked": true,
+    "backendOrPrivacyPatternFailures": 0,
+    "noBinaryMedia": true,
+    "applicationTestsRun": false,
+    "extraOmissions": 5600
+  }
+}

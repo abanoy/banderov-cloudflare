@@ -1,0 +1,7 @@
+import fs from 'node:fs';import assert from 'node:assert/strict';import {tierFortifications} from '../floating-castle/castle-fortifications.js';
+import * as T from '../vendor/three.module.js';
+import {chargeOrb} from '../floating-castle/charge-orb.js';
+import {createConstruction} from '../floating-castle/castle-construction.js';
+import {verifiedBattleCastlePlan,battleCastlePlan} from '../floating-castle/castle-architect.js';
+const mats=Object.fromEntries(['stone','edge','dark','soil','paving','roof','roofB','leaves','grass','bark','sail'].map(k=>[k,new T.MeshStandardMaterial()])),castles=[new T.Group(),new T.Group()],hearts=castles.map(c=>{c.add(new T.Group(),new T.Group());return chargeOrb(c,mats,{radius:8.4,crown:true});}),construction=createConstruction({mats,castles,castleHearts:hearts,solids:[],occluders:[]});
+const counts={};for(let i=0;i<48;i++){let v;try{const plan=battleCastlePlan({level:100,seed:61111+i*104729,home:0,construction});v=construction.preview(0,plan.layout,plan.options);for(const l of v.links.filter(l=>!l.linked)){const ray=new T.Raycaster(l.from,l.to.clone().sub(l.from).normalize(),.05,l.from.distanceTo(l.to)-8.5),hit=ray.intersectObjects(v.colliders,false).find(h=>h.distance>.5),key=l.blocker+':'+JSON.stringify(hit?.object.userData);counts[key]=(counts[key]||0)+1;}}catch{}finally{v?.dispose();}}console.log(counts);

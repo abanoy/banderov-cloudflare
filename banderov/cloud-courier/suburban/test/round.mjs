@@ -1,0 +1,10 @@
+import assert from 'node:assert/strict';
+import {route,begin,step,outcome,cleanSave,dodge,hazards,overlap} from '../src/logic.mjs';
+const old=route('maple-1'),r=route('maple-1',true);assert.equal(old.deadline,28);assert.equal(old.gold,16);assert.equal(old.stops.length,1);assert.equal(r.deadline,45);assert.equal(r.stops.length,3);assert.equal(new Set(r.stops.map(s=>s.address)).size,3);
+const s=begin(r);for(const i of [2,0,1]){const p=r.stops[i];s.x=p.x;s.y=p.y;step(s,{},1/120);assert.equal(s.delivered.length,[2,0,1].indexOf(i)+1);if(i!==1){assert.equal(s.status,'playing');step(s,{},1/120);assert.equal(s.delivered.length,[2,0,1].indexOf(i)+1,'Standing at a served house cannot count twice');}}assert.equal(s.status,'won');assert.deepEqual(s.delivered,[2,0,1]);assert.equal(outcome(s).seal,3);assert.equal(outcome({...s,status:'lost'}).score,0);
+const paused={...s,status:'lost'};assert.equal(dodge(paused),false);const d=begin(old);d.x=208;assert.equal(dodge(d),true);assert.equal(dodge(d),false);for(let i=0;i<30;i++)step(d,{},1/120);assert.ok(Math.abs(d.x-125)<.1);assert.equal(d.condition,100);assert.ok(d.dodgeCooldown>0);
+const saved=cleanSave(JSON.stringify({version:1,bests:{'maple-1':{time:15,seal:3,condition:100},'round-maple-1':{time:40,seal:2,condition:80},invalid:{time:90,seal:3,condition:100}}}));assert.equal(saved.bests['maple-1'].time,15);assert.equal(saved.bests['round-maple-1'].time,40);assert.equal(saved.bests.invalid,undefined);
+for(let i=0;i<100;i++){const a=route('maple-'+i,true);for(const p of a.stops)assert.ok(!hazards(a,0).some(h=>overlap(p.x,p.y,h)),'Each initial postbox is clear of physical obstacles');}
+console.log('PASS unordered three-stop progress/dedup/completion, separate old/new records, unchanged single deadline, initial destinations clear across100 seeds, actual dash steps/protection/cooldown and no points on loss. Stop setup is positioned pure fixtures, not normal traversal.');
+
+const late=begin(r);late.time=44.99;step(late,{},.025);assert.equal(late.status,"lost");assert.equal(late.delivered.length,0);assert.equal(outcome(late).score,0);assert.deepEqual(begin(r).delivered,[]);

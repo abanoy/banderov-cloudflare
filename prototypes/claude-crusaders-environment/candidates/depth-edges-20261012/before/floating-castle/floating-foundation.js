@@ -1,0 +1,6 @@
+import * as T from '../vendor/three.module.js';
+export function createFloatingFoundations(world){
+ const roots=world.castles.map(c=>{const g=new T.Group();g.name='Detached floating foundation rocks';c.add(g);return g;});
+ function sync(){for(const [team,g] of roots.entries()){for(const m of g.children.slice()){g.remove(m);m.geometry.dispose();}const c=world.castles[team],box=new T.Box3();c.updateWorldMatrix(true,true);for(const m of world.solids){let owned=false,excluded=false;for(let p=m;p;p=p.parent){if(!p.visible||p===world.harbors?.[team]?.root)excluded=true;if(p===c)owned=true;}if(owned&&!excluded&&m.geometry){m.geometry.computeBoundingBox();box.union(m.geometry.boundingBox.clone().applyMatrix4(m.matrixWorld).applyMatrix4(c.matrixWorld.clone().invert()));}}if(box.isEmpty())continue;const centre=box.getCenter(new T.Vector3()),size=box.getSize(new T.Vector3());for(let i=0;i<15;i++){const angle=i*2.399,r=.25+(i%5)*.07,mesh=new T.Mesh(new T.IcosahedronGeometry(3+i%4,0),world.mats.soil);mesh.position.set(centre.x+Math.cos(angle)*size.x*r,box.min.y-8-(i%4)*5,centre.z+Math.sin(angle)*size.z*r);mesh.scale.set(1.2,1.3+i%3*.35,1);g.add(mesh);}g.userData.rocks=15;}}
+ sync();return {sync,roots};
+}

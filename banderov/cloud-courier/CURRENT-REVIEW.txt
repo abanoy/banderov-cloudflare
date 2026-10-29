@@ -1,0 +1,96 @@
+Cloud Courier - current local replay review
+
+Play: http://127.0.0.1:8792/review.html
+The existing loopback preview's app, logic and guide were checked byte-for-byte
+against the current files. Nothing is deployed or published.
+
+What to try
+- Choose Hold or Tap to toggle STEADY. Both remain available and saved.
+- Complete a delivery, choose a seal/time/pristine retry target, and retry.
+- Next seal advances beyond this route's saved best; Gold has no further seal.
+- An unfinished target keeps its original benchmark until reached or replaced.
+- At dispatch, Saved routes restores a completed seed, parcel and district.
+- Best seal shows the remaining medal opportunity. Beat saved time starts a
+  target directly; Pick up parcel starts freely. Older seal-only saves can replay.
+- Delivery time shows hundredths. Small damage remains visible below100%.
+  Saved whole-number condition records are labelled parcel points.
+- Next contract cycles Tea, Kite, Express, then Tea.
+
+Evidence and limits
+- Exact current source/both staged builds/ZIP/report equality was verified:
+  six runtime files,42,477 uncompressed bytes; portal ZIP16834 bytes.
+- Current formatting unit and replay-goal browser checks passed, including
+  actual step-driven99.82% damage and strict pristine-target feedback.
+- Saved-route/record checks cover native selection, district matching, legacy
+  record evolution/reload,120 long-seed records, locked/incompatible filtering.
+- Separate recent normal touch pairs completed first-flight safe routes:
+  Tea45.62/47.04s; Kite51.87/52.00s; Express41.25/41.18s.
+  All finished100%/zerorescues. They predate the latest picker/display changes.
+- Broader browser, accessibility-tree and mocked SDK checks are recorded in
+  README with their scope/date; they are not all fresh on this exact build.
+- Full route controllers use exact read-only geometry and emulated touch.
+  Debug outcome fixtures and mocked SDK checks are identified separately.
+  None proves human replay appeal, physical-phone comfort, Safari, screen-reader
+  speech, live portal acceptance or cloud synchronization. The game is silent.
+
+Preserved
+Safe alternatives, physics, medal thresholds, save schema, original assets,
+no GenAI media, strict runtime under20,000,000 bytes; isolated Courier work only.
+
+Open owner review
+Which moment makes you want another delivery, or makes you stop?
+Live ahead/behind feedback versus finish-only comparisons remains unanswered.
+No deployment, account changes or integration is authorized by this note.
+
+Latest QA update: expanded broad browser suite passed before the gold-hint-only change,
+including native saved-route/time-target launch from mocked Data with localStorage
+forbidden, gameplay lifecycle and cleanup. This is mock evidence, not live portal
+or cloud synchronization. Accessibility-tree checks remain separately scoped.
+
+Latest hint check: a narrow gold miss now requests a nonzero hundredth-second
+improvement. Focused replay/contract/layout and exact package checks passed;
+medal thresholds and physics are unchanged.
+
+Physical-phone entry: double-click phone-play.cmd on the Windows PC, join the
+same trusted Wi-Fi on the phone and open the printed active network URL.
+Default preview remains loopback-only; no lasting LAN listener or firewall
+change was started here. Phone and PC browser records use separate origins.
+Latest guide320/native navigation and ephemeral binding checks passed; actual
+phone connectivity and comfort remain owner verification.
+
+Latest control check: held Enter/Space on focused Toggle STEADY activates once,
+then a fresh press works. Normal no-debug regression and separate touch/replay
+checks passed with cleanup. Current build and exact package hashes passed.
+Earlier broader browser checks predate this keyboard-only guard.
+
+Latest pause check: holding Enter to Resume no longer reactivates the newly
+focused Pause button. Focused button repeat guard preserves fresh presses.
+Expanded normal keyboard plus touch/replay and result-focus checks passed.
+Current exact runtime/package checks passed; broader earlier suites historical.
+
+Fresh broad acceptance,2026-10-08 1634 EDT: browser.cjs passed normal exit0 on
+the current42,333-byte build after the generalized button-repeat guard. All
+four viewport/control/coaching/save/target/text/motion/iframe/mockedSDK cases
+passed without page errors; browser and own temporary server closed normally.
+Fresh source/both staged builds/ZIP/report equality also passed exit0.
+Debug outcomes and mocked platform remain bounded evidence; full normal route
+pairs are earlier checks, and human replay appeal/physical phone/live portal
+acceptance remain open. No runtime edit, rebuild or deployment this milestone.
+
+Latest dispatch fix: changing an unlocked coat preserves a newly typed route
+seed, parcel/district and settings. Baseline native regression exit1, corrected
+dispatch-controls exit0 with cleanup and intended normal route launch. Build
+syntax and exact source/both builds/ZIP/report checks exit0. Earlier broad
+browser suite predates this isolated coat-handler change. No deployment.
+
+Latest keyboard dispatch check: Coat retains focus after keyboard changes,
+held Enter changes once and a fresh press works. Native baseline exit1; fixed
+dispatch-controls normal exit0/cleanup, intended route/settings retained.
+Build/syntax and exact package checks exit0. Earlier broader suite historical.
+
+
+### Next seal follows the saved route record
+
+New seal targets now advance beyond the highest seal earned on the exact seed/parcel/district, rather than a weaker latest delivery. Saved Silver offers Gold after Bronze or loss; saved Gold has no further seal option. Existing unfinished targets remain selected until reached or replaced, and time/pristine/free replay remain available. No scoring, physics, record schema or route changes.
+
+Baseline pure/browser regressions exited1 (Silver offered again after saved Silver); corrected replay-goal, record-feedback and replay-aim checks exited0 with normal browser/server cleanup. The expanded record check verifies saved Silver-to-Gold native choice and in-play cue, another weaker retry retaining Gold, saved Gold suppression, existing legacy reload/capacity/route matching, and free replay. The320px result capture was inspected. Seeded saves/debug outcomes are bounded browser evidence, not full traversal, physical-phone or human replay appeal proof. Build/module syntax and exact source/both builds/ZIP/report hashes exited0:6runtimefiles42,477uncompressedbytes, ZIP16,834bytes. Original physics/scoring/save prefix is byte-equivalent after newline normalization. No deployment.

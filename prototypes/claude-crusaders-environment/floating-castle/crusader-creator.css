@@ -1,0 +1,256 @@
+/* Crusader creator (crusader-creator.js): the modal <dialog id="crusader-sheet"> in the game's pixel frame, the class portraits it adds
+   to the battle setup's class cards (the title's Crusader entry is styled in game-shell.css). theme.css tokens and bundled fonts only: blackletter for
+   the Title Case heading (>= 28px), Silkscreen at 16px for the eyebrow, Pixelify Sans >= 12px everywhere else; every target >= 44px.
+   Wide screens: the sheet sits on the left like the title sheet and the camera frames your crusader in the world beside it.
+   Phones (<= 599px wide): an edge-to-edge sheet with the preview on top. Short landscape (<= 520px tall and 600px+ wide or wider
+   than 4:3, so a 568x320 phone held sideways too): preview left, options right, the actions along the bottom. */
+#crusader-sheet{box-sizing:border-box;position:fixed;inset:0;z-index:98;width:100%;height:100%;max-width:none;max-height:none;margin:0;
+ padding:max(16px,env(safe-area-inset-top)) max(16px,env(safe-area-inset-right)) max(16px,env(safe-area-inset-bottom)) max(clamp(16px,4vw,56px),env(safe-area-inset-left));
+ border:0;overflow:hidden;color:var(--ui-parchment);font-family:var(--ui-body);font-variant-ligatures:none;background:linear-gradient(90deg,#120d1cd1 0,#1b2442a6 34%,#1b244233 62%,#1b244200 80%)}
+#crusader-sheet:not([open]){display:none}
+#crusader-sheet[open]{display:flex;align-items:stretch;justify-content:flex-start}
+#crusader-sheet::backdrop{background:transparent}
+#crusader-sheet *,#crusader-sheet *::before,#crusader-sheet *::after{box-sizing:border-box}
+#crusader-sheet [hidden]{display:none!important}
+/* The battle setup stays put underneath (its state is untouched) but out of sight while the creator is open over it. */
+html.crusader-open #battle-panel{visibility:hidden}
+
+.cc-frame{display:grid;grid-template-columns:minmax(200px,290px) minmax(0,1fr);grid-template-rows:auto minmax(0,1fr) auto auto auto;grid-template-areas:"head head" "stage main" "code code" "ask ask" "foot foot";column-gap:14px;
+ width:min(780px,100%);height:100%;min-height:0;padding:8px 14px 0;border:12px solid transparent;border-image:var(--ui-frame) 6 fill/12px/0 stretch;box-shadow:var(--ui-drop)}
+@keyframes cc-in{from{opacity:0;translate:-48px 0}}
+@keyframes cc-fade{from{opacity:0}}
+@media (prefers-reduced-motion:no-preference){#crusader-sheet[open]{animation:cc-fade .3s ease-out both}#crusader-sheet[open] .cc-frame{animation:cc-in .45s cubic-bezier(.2,.8,.2,1) both}}
+
+/* Header */
+.cc-head{grid-area:head;display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:0 0 8px;margin:0 0 10px;border-bottom:2px solid #f4c67b40}
+.cc-heading{min-width:0}
+.cc-eyebrow{display:block;font:16px/1 var(--ui-label);letter-spacing:.14em;text-transform:uppercase;color:var(--ui-gold);text-shadow:1px 1px 0 var(--ui-ink)}
+#cc-title{margin:2px 0 0;font:400 46px/1 var(--ui-display);letter-spacing:.02em;text-transform:none;color:var(--ui-gold-hi);text-shadow:3px 3px 0 var(--ui-ink)}
+.cc-sub{margin:4px 0 0;font-size:13px;line-height:1.4;color:var(--ui-parchment-dim);max-width:60ch}
+
+/* Buttons: the shell's raised pixel buttons, gold for the primary action. */
+#crusader-sheet .cc-btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:44px;min-width:44px;padding:8px 14px;font:400 15px/1.15 var(--ui-body);color:var(--ui-parchment);text-align:center;text-shadow:1px 1px 0 var(--ui-ink);
+ border:2px solid var(--ui-ink);border-radius:0;background:linear-gradient(var(--ui-raise) 0 50%,var(--ui-raise-lo) 50%);box-shadow:inset 0 2px 0 #ffffff1f,inset 0 -2px 0 #0000002e,2px 2px 0 var(--ui-ink);cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+#crusader-sheet .cc-btn:hover:not(:disabled){border-color:var(--ui-gold);color:var(--ui-gold-hi);background:linear-gradient(#34497a 0 50%,#2a3b63 50%)}
+#crusader-sheet .cc-btn:active:not(:disabled){transform:translate(1px,1px);box-shadow:inset 0 2px 0 #0000002e,1px 1px 0 var(--ui-ink)}
+#crusader-sheet .cc-btn:disabled{opacity:.5;cursor:default}
+#crusader-sheet .cc-primary{font-weight:700;color:var(--ui-ink);text-shadow:1px 1px 0 #fff3cd80;background:linear-gradient(var(--ui-gold-hi) 0 3px,var(--ui-gold) 3px 60%,#e3b066 60% calc(100% - 3px),var(--ui-gold-lo) calc(100% - 3px))}
+#crusader-sheet .cc-primary:hover:not(:disabled){color:var(--ui-ink);border-color:var(--ui-parchment);background:linear-gradient(#fff3cd 0 3px,var(--ui-gold-hi) 3px 60%,var(--ui-gold) 60% calc(100% - 3px),var(--ui-gold-lo) calc(100% - 3px))}
+#crusader-sheet .cc-x{flex:none;padding:4px 10px;font-size:24px;line-height:1}
+#crusader-sheet :focus-visible{outline:3px solid var(--ui-gold-hi);outline-offset:2px;box-shadow:0 0 0 5px var(--ui-ink)}
+
+/* Stage: the turntable on a gilt plinth under the night sky. */
+.cc-stage{grid-area:stage;position:relative;display:grid;grid-template-rows:minmax(0,1fr) auto auto;min-height:0;margin:0 0 10px;overflow:hidden;
+ background:linear-gradient(transparent 76%,#f4c67b59 76% calc(76% + 2px),#231a2e8c calc(76% + 2px)),radial-gradient(ellipse 46% 9% at 50% 77%,#f4c67b40,transparent 70%),radial-gradient(1px 1px at 22% 18%,#fff3cd 50%,transparent),radial-gradient(1px 1px at 74% 12%,#fff3cdcc 50%,transparent),radial-gradient(1px 1px at 61% 31%,#80eee2aa 50%,transparent),radial-gradient(1px 1px at 12% 44%,#f49bc7aa 50%,transparent),radial-gradient(ellipse at 50% 34%,#3a5288,#1b2442 72%);
+ border:2px solid var(--ui-ink);box-shadow:inset 0 0 0 2px var(--ui-gold-lo),inset 0 0 0 4px var(--ui-ink),3px 3px 0 var(--ui-ink)}
+.cc-fig{position:relative;min-height:0;display:grid;place-items:center;padding:34px 8px 0;cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none}
+.cc-fig:active{cursor:grabbing}
+.cc-fig svg{display:block;width:100%;height:100%;max-height:100%;pointer-events:none}
+#crusader-sheet .cc-fig:focus-visible{outline-offset:-4px;box-shadow:none}
+.cc-plate{position:absolute;top:8px;left:8px;right:8px;display:flex;justify-content:space-between;gap:6px;pointer-events:none}
+.cc-tag{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:4px 8px;font:700 12px/1.2 var(--ui-body);letter-spacing:.06em;text-transform:uppercase;color:var(--ui-parchment);background:#231a2ee0;box-shadow:inset 0 0 0 1px var(--ui-shade),2px 2px 0 var(--ui-ink)}
+.cc-tag.cc-cls{flex:none;color:var(--ui-gold-hi)}
+#crusader-sheet .cc-rot{position:absolute;bottom:40px;z-index:1;width:44px;height:44px;padding:0;font-size:22px}
+#cc-rot-left{left:8px}#cc-rot-right{right:8px}
+.cc-view{display:flex;flex-direction:column;align-items:center;gap:4px;margin:0;padding:2px 52px 8px;font-size:14px;font-weight:700;color:var(--ui-gold-hi);text-shadow:1px 1px 0 var(--ui-ink);text-align:center}
+.cc-dots{display:flex;gap:4px}
+.cc-dots i{width:8px;height:8px;background:var(--ui-ink);box-shadow:inset 0 0 0 1px var(--ui-shade)}
+.cc-dots i.on{background:var(--ui-gold);box-shadow:1px 1px 0 var(--ui-ink)}
+.cc-hint{margin:0;padding:0 8px 8px;font-size:12px;line-height:1.3;color:var(--ui-parchment-dim);text-align:center}
+
+/* Options column: classes, category tabs, the scrolling panel. */
+.cc-main{grid-area:main;display:flex;flex-direction:column;min-height:0;min-width:0}
+.cc-classes{flex:none;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin:0 0 8px}
+#crusader-sheet .cc-class{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;min-width:0;min-height:58px;padding:3px 2px 4px;font:700 14px/1.1 var(--ui-body);color:var(--ui-parchment);text-align:center;text-shadow:1px 1px 0 var(--ui-ink);
+ border:2px solid var(--ui-ink);border-radius:0;background:var(--ui-raise-lo);box-shadow:inset 0 0 0 1px var(--ui-shade),2px 2px 0 var(--ui-ink);cursor:pointer;touch-action:manipulation}
+#crusader-sheet .cc-class b{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:700}
+#crusader-sheet .cc-class:hover{background:var(--ui-raise);color:var(--ui-parchment)}
+#crusader-sheet .cc-class[aria-pressed=true]{color:var(--ui-gold-hi);background:linear-gradient(var(--ui-raise),var(--ui-raise-lo));box-shadow:inset 0 0 0 2px var(--ui-gold),2px 2px 0 var(--ui-ink)}
+.cc-class-face{flex:none;width:36px;height:36px;background:radial-gradient(circle at 50% 42%,#3a5288,#1b2442 75%);box-shadow:inset 0 0 0 1px var(--ui-ink)}
+.cc-class-face img,.cc-card-face img,.cc-thumb img{display:block;width:100%;height:100%;object-fit:contain;-webkit-user-drag:none}
+.cc-dirty{position:absolute;top:3px;right:3px;width:10px;height:10px;background:var(--ui-gold);box-shadow:1px 1px 0 var(--ui-ink)}
+.cc-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.cc-tabs{flex:none;display:flex;gap:4px;margin:0;padding:0 0 0 2px;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;border-bottom:2px solid var(--ui-gold-lo)}
+.cc-tabs::-webkit-scrollbar{display:none}
+#crusader-sheet .cc-tab{flex:1 0 auto;min-height:44px;padding:8px 8px;font:400 15px/1 var(--ui-body);color:var(--ui-parchment-dim);text-shadow:1px 1px 0 var(--ui-ink);border:2px solid transparent;border-bottom:0;border-radius:0;background:none;box-shadow:none;cursor:pointer;touch-action:manipulation}
+#crusader-sheet .cc-tab:hover{color:var(--ui-parchment);background:#2a3b6380}
+#crusader-sheet .cc-tab[aria-selected=true]{color:var(--ui-gold-hi);font-weight:700;border-color:var(--ui-ink);background:linear-gradient(var(--ui-raise),var(--ui-raise-lo));box-shadow:inset 0 2px 0 var(--ui-gold)}
+#crusader-sheet .cc-tab:focus-visible{outline-offset:-3px;box-shadow:none}
+.cc-scroll{flex:1 1 auto;min-height:0;overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain;padding:12px 4px 10px 2px;scrollbar-width:thin;scrollbar-color:var(--ui-gold-lo) transparent}
+.cc-panel{display:grid;gap:14px}
+.cc-group{min-width:0}
+.cc-group h3{margin:0 0 8px;font:700 13px/1.2 var(--ui-body);letter-spacing:.08em;text-transform:uppercase;color:var(--ui-gold);text-shadow:1px 1px 0 var(--ui-ink)}
+.cc-note{margin:8px 0 0;font-size:12px;line-height:1.45;color:var(--ui-parchment-dim);max-width:62ch}
+
+/* Thumbnail cards */
+.cc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:8px}
+#crusader-sheet .cc-opt{display:grid;grid-template-rows:auto auto;align-content:start;justify-items:center;gap:4px;min-width:0;min-height:44px;padding:4px 4px 6px;font:400 12px/1.2 var(--ui-body);color:var(--ui-parchment);text-align:center;text-shadow:1px 1px 0 var(--ui-ink);
+ border:2px solid var(--ui-ink);border-radius:0;background:var(--ui-raise-lo);box-shadow:inset 0 0 0 1px var(--ui-shade),2px 2px 0 var(--ui-ink);cursor:pointer;touch-action:manipulation}
+#crusader-sheet .cc-opt:hover{background:var(--ui-raise);color:var(--ui-parchment)}
+#crusader-sheet .cc-opt[aria-pressed=true]{color:var(--ui-gold-hi);background:linear-gradient(var(--ui-raise),var(--ui-raise-lo));box-shadow:inset 0 0 0 2px var(--ui-gold),2px 2px 0 var(--ui-ink)}
+.cc-thumb{display:block;width:100%;aspect-ratio:1/1;overflow:hidden;background:radial-gradient(circle at 50% 42%,#3a5288,#1b2442 78%);box-shadow:inset 0 0 0 1px var(--ui-ink)}
+.cc-opt-name{display:block;max-width:100%;overflow-wrap:anywhere}
+.cc-opt-sub{display:block;font-size:12px;color:var(--ui-dawn)}
+.cc-opt[aria-pressed=true] .cc-opt-name::before{content:'\25B8 ';color:var(--ui-gold)}
+
+/* Swatches and chips */
+.cc-swatches{display:flex;flex-wrap:wrap;gap:6px}
+#crusader-sheet .cc-swatch{position:relative;width:44px;height:44px;padding:0;border:2px solid var(--ui-ink);border-radius:0;background:var(--sw);box-shadow:inset 0 3px 0 #ffffff40,inset 0 -5px 0 #00000033,2px 2px 0 var(--ui-ink);cursor:pointer;touch-action:manipulation}
+#crusader-sheet .cc-swatch:hover{border-color:var(--ui-parchment);background:var(--sw)}
+#crusader-sheet .cc-swatch[aria-pressed=true]{border-color:var(--ui-ink);background:var(--sw);box-shadow:inset 0 3px 0 #ffffff40,inset 0 -5px 0 #00000033,0 0 0 3px var(--ui-gold-hi),2px 2px 0 5px var(--ui-ink)}
+#crusader-sheet .cc-swatch[aria-pressed=true]::after{content:'';position:absolute;left:50%;top:50%;width:12px;height:12px;margin:-6px 0 0 -6px;background:var(--ui-parchment);box-shadow:0 0 0 2px var(--ui-ink);transform:rotate(45deg)}
+.cc-chips{display:flex;flex-wrap:wrap;gap:6px}
+#crusader-sheet .cc-chip{min-height:44px;padding:8px 12px;font:400 14px/1.1 var(--ui-body);color:var(--ui-parchment);text-shadow:1px 1px 0 var(--ui-ink);border:2px solid var(--ui-ink);border-left:6px solid var(--tc,var(--ui-shade));border-radius:0;background:var(--ui-raise-lo);box-shadow:2px 2px 0 var(--ui-ink);cursor:pointer;touch-action:manipulation}
+#crusader-sheet .cc-chip:hover{background:var(--ui-raise);color:var(--ui-parchment)}
+#crusader-sheet .cc-chip[aria-pressed=true]{color:var(--ui-gold-hi);font-weight:700;border-color:var(--ui-gold);border-left-color:var(--tc,var(--ui-gold));background:linear-gradient(var(--ui-raise),var(--ui-raise-lo))}
+.cc-namefield label{display:block;margin:0 0 6px;font:700 13px/1.2 var(--ui-body);letter-spacing:.08em;text-transform:uppercase;color:var(--ui-gold);text-shadow:1px 1px 0 var(--ui-ink)}
+.cc-namefield input{display:block;width:min(320px,100%);min-height:44px;padding:8px 10px;font:400 16px/1.2 var(--ui-body);color:var(--ui-parchment);background:var(--ui-ink);border:2px solid var(--ui-shade);border-radius:0;box-shadow:inset 0 2px 0 #0006}
+.cc-namefield input:focus{border-color:var(--ui-gold)}
+
+/* Proposed bonuses (collapsed by default) */
+.cc-proposed{margin:16px 0 0;border:2px dashed var(--ui-shade);background:#231a2e66}
+.cc-proposed summary{display:flex;align-items:center;gap:8px;min-height:44px;padding:8px 10px;font:700 14px/1.25 var(--ui-body);color:var(--ui-stone);cursor:pointer;list-style:none;text-shadow:1px 1px 0 var(--ui-ink)}
+.cc-proposed summary::-webkit-details-marker{display:none}
+.cc-proposed summary::before{content:'\25B8';flex:none;color:var(--ui-gold)}
+.cc-proposed[open] summary::before{content:'\25BE'}
+.cc-proposed summary:hover{color:var(--ui-parchment)}
+#crusader-sheet .cc-proposed summary:focus-visible{outline-offset:-3px;box-shadow:none}
+.cc-proposed-body{display:grid;gap:12px;padding:0 10px 12px}
+.cc-proposed-body>.cc-note{margin:0}
+#cc-stats h3,#cc-enchant h3{margin:0 0 8px;font:700 13px/1.2 var(--ui-body);letter-spacing:.08em;text-transform:uppercase;color:var(--ui-stone)}
+#cc-enchant{display:grid;gap:12px}
+.cc-stat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(108px,1fr));gap:6px}
+.cc-stat{display:grid;gap:2px;min-width:0;padding:6px 8px;background:var(--ui-ink);border:1px solid var(--ui-shade)}
+.cc-stat small{font-size:12px;color:var(--ui-parchment-dim);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cc-stat b{font:700 18px/1.1 var(--ui-body);color:var(--ui-parchment)}
+.cc-stat i{font-style:normal;font-size:12px;color:var(--ui-parchment-dim)}
+.cc-stat i.up{color:var(--ui-good)}.cc-stat i.down{color:var(--ui-bad)}
+.cc-fx{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 0;padding:0;list-style:none}
+.cc-fx li{padding:4px 8px;font-size:12px;color:var(--ui-parchment);background:var(--ui-ink);border:1px solid var(--ui-shade)}
+
+/* Build code box, unsaved prompt, footer */
+.cc-code{grid-area:code;display:grid;gap:6px;margin:0 -14px;padding:10px 14px;border-top:2px solid #f4c67b40;background:#231a2e}
+/* The bottom bars paint over the options column if a very short screen ever squeezes it below its class and tab rows. */
+.cc-code,.cc-ask,.cc-foot{position:relative;z-index:1}
+.cc-code label{font:700 13px/1.2 var(--ui-body);letter-spacing:.06em;text-transform:uppercase;color:var(--ui-gold)}
+.cc-code textarea{width:100%;min-height:64px;max-height:30vh;resize:vertical;padding:6px 8px;font:12px/1.4 ui-monospace,Menlo,Consolas,monospace;color:var(--ui-parchment);background:var(--ui-ink);border:2px solid var(--ui-shade);border-radius:0}
+.cc-code textarea:focus{border-color:var(--ui-gold)}
+.cc-code-error{margin:0;font-size:13px;color:var(--ui-bad)}
+.cc-code-error:empty{display:none}
+.cc-code-actions,.cc-ask-actions{display:flex;flex-wrap:wrap;gap:8px}
+.cc-ask{grid-area:ask;display:grid;gap:8px;margin:0 -14px;padding:10px 14px 12px;border-top:2px solid var(--ui-gold);background:linear-gradient(#f4c67b24,#f4c67b0a)}
+.cc-ask p{margin:0;font:700 16px/1.3 var(--ui-body);color:var(--ui-gold-hi);text-shadow:1px 1px 0 var(--ui-ink)}
+.cc-foot{grid-area:foot;margin:0 -14px;padding:10px 14px 12px;border-top:2px solid #f4c67b40;background:linear-gradient(#1d2a4b00,var(--ui-panel-solid) 35%)}
+.cc-actions{display:flex;flex-wrap:wrap;gap:8px}
+.cc-actions #cc-save{margin-left:auto;min-width:120px}
+.cc-status{min-height:0;margin:0;font-size:13px;line-height:1.4;color:var(--ui-dawn)}
+.cc-status:not(:empty){margin-top:8px}
+.cc-status[data-tone=warn]{color:var(--ui-gold-hi)}
+.cc-status[data-tone=good]{color:var(--ui-good)}
+/* While the build code box is open (.cc-coding, crusader-creator.js showCode) it takes the options column's place in every layout:
+   nothing draws over it, the textarea gets the freed height (capped on tall screens) and the options come back with Done / Cancel. */
+#crusader-sheet.cc-coding .cc-main{display:none}
+#crusader-sheet.cc-coding .cc-code{grid-area:main;display:flex;flex-direction:column;gap:6px;align-self:start;min-height:0;max-height:100%;margin:0 0 10px;padding:10px;border:2px solid var(--ui-ink);background:#231a2e;box-shadow:inset 0 0 0 2px var(--ui-gold-lo),inset 0 0 0 4px var(--ui-ink),3px 3px 0 var(--ui-ink)}
+#crusader-sheet.cc-coding .cc-code>:not(textarea){flex:none}
+#crusader-sheet.cc-coding .cc-code textarea{flex:0 1 240px;min-height:64px;max-height:none;resize:none}
+
+/* Medium widths: a narrower preview column. */
+@media (max-width:899px){
+ .cc-frame{grid-template-columns:minmax(180px,230px) minmax(0,1fr);width:100%}
+ #cc-title{font-size:40px}
+ .cc-actions #cc-save{margin-left:0}
+}
+/* Phones: edge to edge, preview on top, the options scroll, two rows of actions. A short wide screen under 600 px (a phone held
+   sideways) takes the short landscape layout below instead, never a mix of both. */
+@media (max-width:599px){@media not all and (max-height:520px) and (min-aspect-ratio:4/3){
+ #crusader-sheet{padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);background:#120d1c99}
+ .cc-frame{grid-template-columns:minmax(0,1fr);grid-template-rows:auto clamp(150px,30dvh,280px) minmax(0,1fr) auto auto auto;grid-template-areas:"head" "stage" "main" "code" "ask" "foot";width:100%;padding:6px 8px 0;border-width:10px;border-image-width:10px}
+ .cc-head{align-items:center;margin:0 0 6px;padding:0 0 6px}
+ .cc-eyebrow,.cc-sub,.cc-hint{display:none}
+ #cc-title{font-size:32px}
+ .cc-stage{margin:0 0 8px}
+ .cc-fig{padding:30px 52px 0}
+ #crusader-sheet .cc-rot{bottom:auto;top:calc(50% - 22px)}
+ .cc-view{padding:0 52px 6px;font-size:13px;flex-direction:row;justify-content:center;gap:8px}
+ .cc-dots{gap:3px}.cc-dots i{width:7px;height:7px}
+ .cc-classes{gap:4px;margin-bottom:6px}
+ #crusader-sheet .cc-class{min-height:54px;padding:2px;font-size:13px}
+ .cc-class-face{width:32px;height:32px}
+ #crusader-sheet .cc-tab{padding:8px 6px;font-size:14px}
+ .cc-scroll{padding:10px 2px 8px 0}
+ .cc-grid{grid-template-columns:repeat(auto-fill,minmax(84px,1fr));gap:6px}
+ .cc-code,.cc-ask,.cc-foot{margin:0 -8px;padding:8px}
+ .cc-actions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+ #crusader-sheet .cc-actions .cc-btn{padding:6px 4px;font-size:13px}
+ .cc-actions #cc-save{min-width:0}
+}}
+/* Narrow phones (360 px class): tighter tabs so all six fit, four option cards per row so a whole row shows. */
+@media (max-width:380px){
+ .cc-tabs{gap:2px}
+ #crusader-sheet .cc-tab{min-width:44px;padding:8px 4px}
+ .cc-grid{grid-template-columns:repeat(auto-fill,minmax(70px,1fr))}
+}
+/* Short phones (360x640 class): a lower preview and a tighter header and class row, so the options show more than one row of cards. */
+@media (max-width:599px) and (max-height:700px){@media not all and (max-height:520px) and (min-aspect-ratio:4/3){
+ .cc-frame{grid-template-rows:auto clamp(120px,24dvh,280px) minmax(0,1fr) auto auto auto}
+ .cc-head{margin:0 0 4px;padding:0 0 4px}
+ #cc-title{font-size:28px}
+ .cc-stage{margin:0 0 6px}
+ .cc-fig{padding-top:28px}
+ .cc-view{padding-bottom:4px}
+ #crusader-sheet .cc-class{min-height:48px;padding:1px 2px}
+ .cc-class-face{width:30px;height:30px}
+ .cc-scroll{padding-top:8px}
+}}
+/* Short landscape screens: preview on the left under a compact header, the options on the right with the unsaved prompt and the
+   actions under them, so the preview keeps the full height (under 720 px wide they run along the bottom instead, below). The crusader
+   stays centred in the stage (no track wider than it), the turn buttons keep to its lower corners beside the feet and the view name
+   runs on one line below them, never under a button. */
+@media (max-height:520px) and (min-width:600px),(max-height:520px) and (min-aspect-ratio:4/3){
+ #crusader-sheet{padding:max(4px,env(safe-area-inset-top)) max(8px,env(safe-area-inset-right)) max(4px,env(safe-area-inset-bottom)) max(8px,env(safe-area-inset-left))}
+ .cc-frame{grid-template-columns:minmax(150px,30%) minmax(0,1fr);grid-template-rows:auto minmax(0,1fr) auto auto auto;grid-template-areas:"head main" "stage main" "stage code" "stage ask" "stage foot";width:100%;padding:4px 10px 0;column-gap:10px;border-width:10px;border-image-width:10px}
+ .cc-head{align-items:center;gap:8px;margin:0 0 6px;padding:0 0 4px}
+ .cc-eyebrow,.cc-sub,.cc-hint{display:none}
+ #cc-title{font-size:28px}
+ .cc-stage{grid-template-columns:minmax(0,1fr);margin:0 0 8px}
+ .cc-fig{padding:30px 4px 0}
+ #crusader-sheet .cc-rot{bottom:34px}
+ #cc-rot-left{left:4px}#cc-rot-right{right:4px}
+ .cc-view{padding:0 4px 6px;font-size:13px;white-space:nowrap}
+ .cc-classes{margin-bottom:4px}
+ #crusader-sheet .cc-class{flex-direction:row;gap:4px;min-height:44px;padding:2px 4px 2px 2px;font-size:13px}
+ .cc-class-face{width:36px;height:36px}
+ #crusader-sheet .cc-tab{padding:8px 6px;font-size:14px}
+ .cc-scroll{padding-top:8px}
+ .cc-grid{grid-template-columns:repeat(auto-fill,minmax(80px,1fr))}
+ .cc-code,.cc-ask,.cc-foot{margin:0 -10px 0 0;padding:6px 10px 8px 0}
+ .cc-actions{gap:4px}
+ #crusader-sheet .cc-actions .cc-btn{padding:6px 5px;font-size:12px}
+ .cc-actions #cc-save{margin-left:auto;min-width:64px}
+}
+/* Narrow short landscape (a 480-667 px phone held sideways): the unsaved prompt and the actions run along the bottom (one row of
+   actions however narrow the options column is); class buttons stack the face over the name so every name fits, tighter tabs, and
+   the stage shows only the name tag (the pressed class button beside it names the class). */
+@media (max-height:520px) and (min-width:600px) and (max-width:719px),(max-height:520px) and (max-width:719px) and (min-aspect-ratio:4/3){
+ .cc-frame{grid-template-areas:"head main" "stage main" "code code" "ask ask" "foot foot"}
+ .cc-code,.cc-ask,.cc-foot{margin:0 -10px;padding:6px 10px 8px}
+ .cc-ask{display:flex;flex-wrap:wrap;align-items:center;gap:4px 12px}
+ #crusader-sheet .cc-class{flex-direction:column;gap:0;min-height:44px;padding:1px 2px;font-size:12px}
+ .cc-class-face{width:24px;height:24px}
+ .cc-tabs{gap:2px}
+ #crusader-sheet .cc-tab{min-width:44px;padding:8px 4px}
+ .cc-tag.cc-cls{display:none}
+}
+
+/* Battle setup: each class card shows its crusader; Customize opens the creator for the chosen class. */
+.battle-class-cards button.cc-has-face{grid-template-columns:40px minmax(0,1fr);column-gap:8px;align-items:center;padding-left:5px}
+.battle-class-cards button.cc-has-face>b,.battle-class-cards button.cc-has-face>small{grid-column:2;min-width:0}
+.cc-card-face{grid-row:1/span 2;width:40px;height:40px;background:radial-gradient(circle at 50% 42%,#3a5288,#1b2442 75%);box-shadow:inset 0 0 0 1px var(--ui-ink)}
+.battle-class-cards button[aria-pressed=true] .cc-card-face{box-shadow:inset 0 0 0 2px var(--ui-gold)}
+#battle-panel .cc-setup-edit{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 10px;width:100%;min-height:44px;margin:-4px 0 10px;padding:7px 10px;text-align:left;color:var(--ui-gold-hi);text-shadow:1px 1px 0 var(--ui-ink);border:2px dashed var(--ui-gold-lo);border-radius:0;background:#231a2e80;box-shadow:none}
+#battle-panel .cc-setup-edit span{font-size:15px;font-weight:700}
+#battle-panel .cc-setup-edit span::before{content:'\270E  ';color:var(--ui-gold)}
+#battle-panel .cc-setup-edit small{font:400 12px/1.3 var(--ui-body);letter-spacing:normal;text-transform:none;color:var(--ui-parchment-dim)}
+#battle-panel .cc-setup-edit:hover:not(:disabled){border-style:solid;border-color:var(--ui-gold);background:var(--ui-raise-lo);color:var(--ui-gold-hi)}
+#battle-panel .cc-setup-edit:disabled{opacity:.5}
+@media (max-width:559px){.battle-class-cards button.cc-has-face{grid-template-columns:34px minmax(0,1fr);column-gap:6px}.cc-card-face{width:34px;height:34px}}

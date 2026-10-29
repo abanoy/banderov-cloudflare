@@ -1,0 +1,13 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import {exportDesign} from '../design-export.js';
+import {checkWaveCompatibility} from '../wave-compatibility.js';
+const layout=[];for(let x=1;x<11;x++)for(let z=2;z<12;z++){let type='floor',rotation=0;if(x===2&&z>=3&&z<=10||x===9&&z>=3&&z<=10||z===3&&x>=2&&x<=9||z===10&&x>=2&&x<=9){type='wall';rotation=x===2||x===9?1:0;if(x===5&&(z===3||z===10)||z===6&&(x===2||x===9))type='gate';}if(x===6&&z===6)type='core';layout.push({x,z,layer:0,type,rotation});}
+const before=JSON.stringify(layout),good=await checkWaveCompatibility(exportDesign(layout).design);assert(good.ok,JSON.stringify(good));assert.equal(good.routes.length,4);assert.equal(JSON.stringify(layout),before);
+const compact=[{x:4,z:6,type:'spawn',layer:0,rotation:0},{x:5,z:6,type:'floor',layer:0,rotation:0},{x:6,z:6,type:'core',layer:0,rotation:0},{x:7,z:6,type:'floor',layer:0,rotation:0}];const warning=await checkWaveCompatibility(exportDesign(compact).design);assert(!warning.ok);assert(warning.issues.some(m=>m.includes('perimeter')));assert.equal(exportDesign(compact).design.layout.length,4);
+const noNorth=layout.map(p=>p.type==='gate'&&p.z===3?{...p,type:'wall'}:{...p});const wrong=await checkWaveCompatibility(exportDesign(noNorth).design);assert(!wrong.ok);assert(wrong.issues.some(m=>m.includes('NORTH')));
+const noApron=layout.filter(p=>!(p.x===5&&p.z===2));const apron=await checkWaveCompatibility(exportDesign(noApron).design);assert(!apron.ok);assert(apron.issues.some(m=>m.includes('exterior')));
+const upper=[...layout,{x:0,z:0,layer:2,type:'floor',rotation:0}];assert(!(await checkWaveCompatibility(exportDesign(upper).design)).ok);
+const irregular=layout.filter(p=>!(p.x===1&&p.z===2));const corner=await checkWaveCompatibility(exportDesign(irregular).design);assert(corner.ok,JSON.stringify(corner));assert.equal(corner.routes.length,4);
+const again=await checkWaveCompatibility(exportDesign(layout).design);assert.deepEqual(again.routes,good.routes);assert.equal(JSON.stringify(layout),before);
+const report={passed:true,valid:good,compact:warning,missingGate:wrong,missingApron:apron,irregular:corner,scope:'Real copied Wave construction/default objectives and cardinal siege routes; inputs unchanged; no browser siege claim'};fs.mkdirSync(new URL('../review/',import.meta.url),{recursive:true});fs.writeFileSync(new URL('../review/wave-compatibility-tests.json',import.meta.url),JSON.stringify(report,null,2));console.log('PASS valid four physical Wave approaches; compact Trials-only warning; missing gate/apron; disconnected upper floor; irregular perimeter; immutable inputs and repeated successful routes');

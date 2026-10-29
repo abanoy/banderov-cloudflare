@@ -1,0 +1,8 @@
+const {chromium}=require(process.env.SEVEN_PLAYWRIGHT),assert=require('node:assert/strict'),fs=require('node:fs');
+(async()=>{const b=await chromium.launch({headless:true,executablePath:process.env.SEVEN_BROWSER});try{const c=await b.newContext();const a=await c.newPage(),d=await c.newPage();for(const p of [a,d]){await p.addInitScript(()=>window.__noBoot=true);await p.goto('http://127.0.0.1:8819/restored/index.html');await p.waitForFunction(()=>UI.snd);}
+await a.evaluate(()=>{SAVE.endings={'win:The Waitress':1};SAVE.expanded=SevenExpanded.clean(null,['The Waitress']);SevenExpanded.add(SAVE.expanded,'The Waitress',['The Waitress']);CG.save(SAVE);});
+await d.evaluate(()=>{SAVE=cleanSave(CG.load());});
+const newer=await a.evaluate(()=>{SevenExpanded.work(SAVE.expanded,1,8,9,60);CG.save(SAVE);return JSON.parse(localStorage.getItem('sevensips_recovered_v1')).expanded.slots[0];});
+const stale=await d.evaluate(()=>{SAVE.fast=!SAVE.fast;CG.save(SAVE);return JSON.parse(localStorage.getItem('sevensips_recovered_v1')).expanded.slots[0];});
+assert.equal(newer.coins,60);assert.equal(newer.hour,12);assert.equal(stale.coins,40);assert.equal(stale.hour,9);
+const result={scope:'Actual shared HTTP-origin storage in two browser tabs; fixture winner, actual work/save adaptor, second tab setting write; no native full work shift.',newer,stale,confirmedStaleOverwrite:true};fs.writeFileSync(__dirname+'/cross-tab-baseline-results.json',JSON.stringify(result,null,2));console.log('CONFIRMED stale setting save overwrites earned coins/time:60/12 ->40/9');await c.close();}finally{await b.close();}})().catch(e=>{console.error(e);process.exitCode=1;});

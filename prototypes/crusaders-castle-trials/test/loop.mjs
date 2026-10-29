@@ -1,0 +1,23 @@
+import assert from 'node:assert/strict';
+import {Round,COSTS} from '../loop.js';
+import * as T from '../vendor/three.module.js';
+import {createConstruction} from '../game/castle-construction.js';
+import {inspectCastle} from '../game/castle-navigation.js';
+import {cellPosition} from '../game/castle-rules.js';
+const round=new Round();assert.equal(round.layout.length,0);assert.equal(round.duration,1200);round.stock[0]+=24;round.stock[1]+=18;
+round.place({x:4,z:6,layer:0,type:'floor',rotation:0});const balance=[...round.stock];round.place({x:4,z:6,layer:0,type:'house',rotation:0});round.undo();assert.deepEqual(round.stock,balance);round.erase({x:4,z:6,layer:0});round.undo();assert.deepEqual(round.stock,balance);for(let i=0;i<20;i++){round.erase({x:4,z:6,layer:0});round.undo();}assert.deepEqual(round.stock,balance);assert.throws(()=>round.place({x:13,z:0,layer:0,type:'core'}));round.finish(false);assert.equal(round.phase,'failed');const layout=JSON.stringify(round.layout);round.retry();assert.equal(JSON.stringify(round.layout),layout);assert.deepEqual(round.stock,balance);
+console.log('PASS camp-funded cost/replacement/erase/undo conservation, bounds, failure/retry preservation');
+const colors=['stone','edge','dark','soil','paving','roof','roofB','leaves','grass','bark','sail'];const mats=Object.fromEntries(colors.map(k=>[k,new T.MeshStandardMaterial()]));const castle=new T.Group(),heart=new T.Group();const service=createConstruction({mats,castles:[castle],solids:[],occluders:[],castleHearts:[{root:heart,radius:2}]});const config={level:20,material:'fortress'};
+const empty=service.preview(0,[],config);assert.equal(empty.colliders.length,0);empty.dispose();
+const p=(x,z,type)=>({x,z,layer:0,type,rotation:0}),pieces=[p(4,6,'spawn'),p(5,6,'floor'),p(6,6,'core'),p(7,6,'floor')],start=cellPosition(pieces[0]),c=cellPosition(pieces[2]);let built=service.preview(0,pieces,config);let result=await inspectCastle(built,pieces,config,{entrance:start,objectives:[{id:'core',label:'Core',x:c.x+3.3,y:c.y,z:c.z,cell:pieces[2]}]});built.dispose();assert(result.ok,JSON.stringify(result.issues));console.log('PASS actual collision route walked both directions',result.stats.steps);
+const blocked=pieces.map(p=>({...p}));blocked[1].type='wall';blocked[1].rotation=1;built=service.preview(0,blocked,config);result=await inspectCastle(built,blocked,config,{entrance:start,objectives:[{id:'core',label:'Core',x:c.x+3.3,y:c.y,z:c.z,cell:pieces[2]}]});built.dispose();assert(!result.ok);console.log('PASS real wall blocks deadline-valid route');
+
+const {validateCastle}=await import('../validation.js');
+const good=await validateCastle(service,pieces,config);assert(good.ok);assert.equal((await validateCastle(service,[],config)).ok,false);
+const detached=[...pieces,p(0,0,'wall')];const det=await validateCastle(service,detached,config);assert(!det.ok);assert(det.issues.some(p=>p.code==='detached-wall'));
+const upper=[...pieces,{x:0,z:0,layer:1,type:'floor',rotation:0}];assert(!(await validateCastle(service,upper,config)).ok);
+const gate=[...pieces,p(0,0,'gate')];assert(!(await validateCastle(service,gate,config)).ok);
+console.log('PASS strict missing core/spawn, detached wall, disconnected upper floor and required gate rejection');
+const deadline=new Round({seconds:120});deadline.tick(120);assert.equal(deadline.remaining,0);deadline.finish(false);assert.equal(deadline.phase,'failed');assert.equal(deadline.layout.length,0);
+const r=new Round();r.place(p(4,6,'core'));r.place(p(4,6,'floor'));r.stock=[0,0];const original=JSON.stringify(r.layout);assert(!r.undo());assert.equal(JSON.stringify(r.layout),original);assert.deepEqual(r.stock,[0,0]);
+console.log('PASS exact timer expiration and unaffordable undo leaves state intact');

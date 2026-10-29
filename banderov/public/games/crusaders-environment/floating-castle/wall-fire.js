@@ -1,0 +1,7 @@
+import * as T from '../vendor/three.module.js';
+const ray=new T.Raycaster(),v=new T.Vector3(),direction=new T.Vector3();
+export function firingOrigin(actor,target,solids=[]){
+ const s=actor.state,origin={x:s.x,y:s.y+1.05,z:s.z};if(!s.grounded||!target)return origin;
+ ray.set(v.set(s.x,s.y+.22,s.z),direction.set(0,-1,0));ray.far=.5;const floor=ray.intersectObjects(solids.filter(o=>o.userData.wallWalk),false)[0];if(!floor)return origin;
+ const distance=Math.hypot(target.x-origin.x,target.y-origin.y,target.z-origin.z);if(distance<.1)return origin;const horizontal=new T.Vector3(target.x-s.x,0,target.z-s.z).normalize();ray.set(v.set(origin.x,s.y+.5,origin.z),horizontal);ray.far=Math.min(3.4,distance);const hit=ray.intersectObjects(solids.filter(o=>o.userData.parapet),false)[0];if(hit){const box=new T.Box3().setFromObject(hit.object);origin.y=Math.max(origin.y,Math.min(s.y+2.1,box.max.y+.55));const start=new T.Vector3(origin.x,origin.y,origin.z),reverse=new T.Ray(start.clone().addScaledVector(horizontal,3.4),horizontal.clone().negate()),edge=reverse.intersectBox(new T.Box3(new T.Vector3(box.min.x,start.y-.1,box.min.z),new T.Vector3(box.max.x,start.y+.1,box.max.z)),new T.Vector3());if(edge&&start.distanceTo(edge)<=2.2){edge.addScaledVector(horizontal,.35);ray.set(start,horizontal);ray.far=start.distanceTo(edge);if(!ray.intersectObjects(solids,false).length){origin.x=edge.x;origin.z=edge.z;}}}return origin;
+}

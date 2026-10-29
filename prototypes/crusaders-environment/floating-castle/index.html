@@ -1,0 +1,32 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="icon" href="data:,"><title>Crusaders · The Floating Aerie</title><link rel="stylesheet" href="style.css?v=silo-labels-1"><link rel="stylesheet" href="builder.css?v=readiness-1"><link rel="stylesheet" href="battle.css?v=compact-portrait-1"></head><body>
+<canvas id="world" aria-label="Floating castle, steerable pod and outlying islands"></canvas>
+<header><div class="brand"><small>CRUSADERS / WORLD STUDY 02</small><h1>THE FLOATING AERIE</h1><span class="tag">RING BATTLEGROUND · ORTHO 45°</span></div><nav><button id="overview" aria-pressed="true">View: Overview</button><button id="look" aria-expanded="false" aria-controls="look-panel">Settings</button><button id="build" aria-haspopup="dialog">Build castle</button><button id="pause">Pause</button></nav></header>
+<aside class="telemetry"><span id="phase">ON THE CASTLE</span><div><strong id="altitude">000</strong><small>ALT / M</small></div><div class="flight-track"><i id="arc-marker"></i></div><p id="location">Aerie castle</p></aside>
+<div class="compass"><button id="orbit-left" aria-label="Rotate camera left">Q ↶</button><span id="bearing">N 000°</span><button id="orbit-right" aria-label="Rotate camera right">↷ E</button></div>
+<aside id="look-panel" hidden><div class="panel-title"><span>LIGHT / POD CONTROL</span><button id="close-look" aria-label="Close lighting controls">×</button></div><p>Warm stone, cool shade, grounded terraces.</p><div class="presets"><button data-preset="day">Aerie daylight</button><button data-preset="sunset">Amber evening</button><button data-preset="moon">Blue hour</button></div>
+<label>Light strength <output></output><input id="brightness" type="range" min="30" max="180" value="110"></label>
+<label>Sun direction <output></output><input id="azimuth" type="range" min="-180" max="180" value="-37"></label>
+<label>Sun height <output></output><input id="sun-height" type="range" min="5" max="90" value="47"></label>
+<label>Warm highlights <output></output><input id="warmth" type="range" min="0" max="100" value="80"></label>
+<label>Cool shadows <output></output><input id="shade" type="range" min="0" max="100" value="85"></label>
+<label>Surface contrast <output></output><input id="surface-contrast" type="range" min="0" max="100" value="70"></label>
+<label>Surface relief <output></output><input id="surface-relief" type="range" min="0" max="100" value="70"></label>
+<label>Contact depth <output></output><input id="contact-depth" type="range" min="0" max="100" value="20"></label>
+<label>Distance haze <output></output><input id="distance-haze" type="range" min="0" max="100" value="45"></label>
+<label>Dither <output></output><input id="dither" type="range" min="0" max="100" value="55"></label>
+<label>Pixelation <output></output><input id="pixels" type="range" min="0" max="85" value="50"></label>
+<label>Ortho view size <output></output><input id="zoom" type="range" min="22" max="550" value="430"></label>
+<button id="player-cue" aria-pressed="true">Player silhouette: On</button>
+<p class="fine">POD HANDLING · release steering to brake</p>
+<label>Steering speed <output></output><input id="air-speed" type="range" min="16" max="43" value="28"></label>
+<label>Steering response <output></output><input id="air-response" type="range" min="3" max="14" value="8"></label>
+<label>Release braking <output></output><input id="air-brake" type="range" min="0" max="100" value="75"></label>
+<p class="fine">64 × 64 nearest-filtered textures. Authored console-inspired lighting.</p></aside>
+<div id="message" role="status">Choose the arena or a castle. Steer freely; release steering to brake.</div>
+<div id="target-cue" hidden><span>◇</span><b></b><small></small></div>
+<footer><div class="move-zone"><div id="pad" aria-label="Movement pad"><i></i><span>MOVE</span></div><div class="keys"><b>W A S D</b><span>MOVE / AIR STEER</span><span>RELEASE TO BRAKE</span><span>Q / E · CAMERA</span></div></div><div class="travel"><p id="travel-message" role="status">Choose the arena or a castle. Steer freely; release steering to brake.</p><label for="destination">POD DESTINATION</label><select id="destination"><option value="2" selected>Arena west</option><option value="3">Arena east</option><option value="4">Arena south</option><option value="5">Arena north</option><option value="0">Dawn castle</option><option value="1">Dusk castle</option></select><button id="launch">LAUNCH POD <span>SPACE ↗</span></button><details id="defense-panel"><summary>CASTLE DEFENSES <span id="defense-state">STANDBY</span></summary><p>Send practice drones past your built castles. Guns need a clear shot and time to recharge.</p><button id="defense-toggle" aria-pressed="false">Start defense drill</button><p id="defense-status" role="status">Apply a castle with cannons or signal beacons.</p><p class="defense-note">Local practice · no player damage or rank changes.</p></details><div class="secondary"><button id="return">Return to castle</button><a href="../sketch-interpretation/index.html?palette=pair">Original sketch ↗</a></div></div></footer>
+<div id="pause-panel" hidden><section><small>CRUSADERS / AERIE</small><h2>PAUSED</h2><p>Your flight is held here.</p><button id="resume">Resume flight</button><button id="inspect-bots" hidden>Inspect bot decisions</button></section></div>
+<script type="module" src="main.js?v=professions-1"></script></body></html>
+
+
+

@@ -1,0 +1,11 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import * as T from '../vendor/three.module.js';
+import {createBattleNavigation} from '../floating-castle/battle-navigation.js';
+const solids=[0,40].map(x=>{const m=new T.Mesh(new T.BoxGeometry(12,1,12),new T.MeshBasicMaterial());m.position.set(x,-.5,0);m.updateMatrixWorld(true);return m;});
+const world={solids,pads:[{x:0,y:0,z:0,r:5},{x:40,y:0,z:0,r:5}]},nav=createBattleNavigation(world);
+const prepared=await nav.rebuild(),goal={...world.pads[1],radius:3};
+const general=await nav.path(world.pads[0],goal),walking=await nav.path(world.pads[0],goal,{walkingOnly:true}),generalAgain=await nav.path(world.pads[0],goal),walkingAgain=await nav.path(world.pads[0],goal,{walkingOnly:true});
+assert(general.reachable&&general.points.some(p=>p.launchTo!==undefined));assert(!walking.reachable);assert.equal(walking.reason,'No walkable or validated pod route reaches this objective');assert.strictEqual(generalAgain,general);assert.strictEqual(walkingAgain,walking);
+const report={passed:true,prepared,general:{reachable:general.reachable,podWaypoints:general.points.filter(p=>p.launchTo!==undefined).length},walking:{reachable:walking.reachable,reason:walking.reason},scope:'Real two-island mesh/standing graph and physically validated pod arc; same endpoints queried in general and walking-only modes, both caches isolated. Not full native gameplay.'};
+nav.dispose();fs.writeFileSync('review/navigation-walking-mode.json',JSON.stringify(report,null,2));console.log(JSON.stringify(report));

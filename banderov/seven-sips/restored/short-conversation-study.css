@@ -1,0 +1,18 @@
+@media (orientation:landscape) and (max-height:299px) and (min-width:560px){
+ .panel.conversation-landscape{left:172px;right:0;top:0;bottom:0;width:calc(100% - 172px);height:100dvh;padding:8px;display:flex;flex-direction:column;box-sizing:border-box}
+ .panel.conversation-landscape .say{position:fixed;left:8px;bottom:8px;width:156px;height:80px;margin:0;box-sizing:border-box;overflow-y:auto}
+ .panel.conversation-landscape .guy{position:fixed;left:132px;top:8px;width:28px;height:28px}
+ .panel.conversation-landscape .timer{flex:none;margin:4px 0 6px}
+ .panel.conversation-landscape .blocks{flex:1;min-height:0;grid-template-rows:repeat(2,minmax(0,1fr));gap:8px}
+ .panel.conversation-landscape .blk{min-height:44px;padding:4px 8px 18px;border-top-width:4px;font-size:14px}
+ .panel.conversation-landscape .blk .tag{font-size:11px;bottom:3px}
+ .bubble.her.conversation-landscape,.phone-title-menu .bubble.her.conversation-landscape{left:8px;right:auto;top:56px;width:156px;max-height:calc(100dvh - 152px)}
+ .bubble.her.conversation-landscape .lk{display:flex;flex-wrap:wrap;gap:2px}
+ .snd.conversation-landscape,.snd.viewport-control{left:76px;right:auto}
+}
+@media (orientation:landscape) and (max-height:299px) and (min-width:560px){
+ .bubble.her.conversation-landscape{display:flex;flex-direction:column}
+ .bubble.her.conversation-landscape::before{content:attr(data-speaker);order:0;position:sticky;top:0;display:block;flex:none;font:600 11px var(--display);color:var(--rose2);background:var(--paper);padding-bottom:2px}
+ .bubble.her.conversation-landscape>span{order:1;flex:none}
+ .bubble.her.conversation-landscape>b{order:2;font-size:0;flex:none;margin-top:6px}
+}

@@ -1,0 +1,27 @@
+import * as T from '../vendor/three.module.js';
+import {makeWorld} from '../floating-castle/world.js';
+import {createConstruction} from '../floating-castle/castle-construction.js';
+import {buildTemplate} from '../floating-castle/castle-templates.js';
+import {flightWorld} from '../floating-castle/flight.js';
+import {createBattleNavigation} from '../floating-castle/battle-navigation.js';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import crypto from 'node:crypto';
+
+globalThis.document={createElement(){return {width:0,height:0,getContext(){return new Proxy({},{get:(o,k)=>o[k]??(()=>{}),set:(o,k,v)=>(o[k]=v,true)});}};}};
+const files=['battle-navigation.js','castle-construction.js','castle-curves.js','castle-affordances.js','castle-rules.js','castle-templates.js','flight.js','world.js'],hash=f=>crypto.createHash('sha256').update(fs.readFileSync(new URL('../floating-castle/'+f,import.meta.url))).digest('hex');
+const report={scope:'Walking-only upper-gallery study, general pod capture journeys; actual makeWorld with Dawn Sanctuary100 and Dusk Skyharbor100 applied through createConstruction, then battle graph rebuilt from updated original triangle colliders. A separate flightWorld instance follows found paths at120Hz, including pod inputs. Only initial spawn uses the requested home pad; no intermediate state injection. No-op procedural texture canvas, not native browser, renderer or every generated castle.',startedAt:new Date().toISOString(),sourceHashes:Object.fromEntries(files.map(f=>[f,hash(f)])),checks:[],failures:[]};
+let nav;
+function save(){fs.writeFileSync(new URL('../review/battle-custom-castles-walking-study.json',import.meta.url),JSON.stringify(report,null,2)+'\n');}
+try{
+ const world=makeWorld(new T.Scene()),construction=createConstruction(world),templates=['sanctuary','skyharbor'].map(id=>buildTemplate(id,{level:100}));
+ for(let home=0;home<2;home++)construction.apply(home,templates[home].layout,{level:100});
+ nav=createBattleNavigation(world);await nav.rebuild();report.checks.push({name:'Apply two maximum-size custom castles and rebuild battle navigation',counts:construction.counts,colliders:world.solids.length,graph:nav.stats});save();console.log('Custom graph',JSON.stringify(nav.stats));
+ function simAt(home){const near=[],sim=flightWorld(near,world.pads);sim.state.home=home;sim.recover();return {near,sim};}
+ async function follow(route,fixture){let steps=0,pods=0,airborneOnFoot=0;const {near,sim}=fixture;for(const target of route.points){let budget=3000;while(Math.hypot(target.x-sim.state.x,target.z-sim.state.z)>.025&&budget-->0){const s=sim.state,dx=target.x-s.x,dz=target.z-s.z,d=Math.hypot(dx,dz),strength=Math.min(1,d/(10/120));near.splice(0,near.length,...nav.nearby(s,3));sim.step(1/120,{x:dx/d*strength,z:dz/d*strength});steps++;airborneOnFoot+=!s.grounded;assert.equal(s.falls,0,'Physical route must not recover to home');}assert(budget>0,'Physical route waypoint stalled');assert(Math.abs(sim.state.y-target.y)<.2,'Waypoint support height must match checked graph');if(target.launchTo!==undefined){assert(sim.launch(target.launchTo));pods++;let budget=2400;while(sim.state.flight&&budget-->0){near.splice(0,near.length,...nav.nearby(sim.state,3));sim.step(1/120,{x:0,z:0});steps++;}assert(budget>0&&sim.state.grounded&&sim.state.falls===0);}}assert.equal(airborneOnFoot,0);return {steps,pods,airborneOnFoot,falls:sim.state.falls,final:{x:sim.state.x,y:sim.state.y,z:sim.state.z}};}
+ for(let home=0;home<2;home++){
+  const local=templates[home].objectives.find(o=>o.id==='highest-gallery')||[...templates[home].objectives].sort((a,b)=>b.y-a.y)[0],p=new T.Vector3(local.x,local.y,local.z).applyMatrix4(world.castles[home].matrixWorld),goal={id:local.id,x:p.x,y:p.y,z:p.z,radius:3},fixture=simAt(home),out=await nav.path(fixture.sim.state,goal,{walkingOnly:true});assert(out.reachable,templates[home].id+' keep: '+out.reason);const outbound=await follow(out,fixture);assert(Math.hypot(outbound.final.x-goal.x,outbound.final.z-goal.z)<3&&Math.abs(outbound.final.y-goal.y)<.2);const back=await nav.path(fixture.sim.state,{...world.pads[home],radius:2},{walkingOnly:true});assert(back.reachable);const returned=await follow(back,fixture);assert(Math.hypot(returned.final.x-world.pads[home].x,returned.final.z-world.pads[home].z)<2);report.checks.push({name:templates[home].id+'100 home pad to highest keep and back',home,goal,outbound,returned,points:[out.points.length,back.points.length]});save();console.log(templates[home].id,'keep passed');
+ }
+ for(const tower of world.orbTowers){const goal={x:tower.x,y:tower.y??0,z:tower.z,radius:tower.index===5?15:14},fixture=simAt(0),path=await nav.path(fixture.sim.state,goal);assert(path.reachable,path.reason);const walked=await follow(path,fixture);assert(Math.hypot(walked.final.x-goal.x,walked.final.z-goal.z)<goal.radius);report.checks.push({name:'Custom Dawn pad to capture zone '+tower.index,goal,points:path.points.length,...walked});save();console.log('Capture zone',tower.index,'passed');}
+ report.passed=true;
+}catch(e){report.passed=false;report.failures.push({message:e.message,stack:e.stack});console.error(e);process.exitCode=1;}finally{nav?.dispose();report.finalSourceHashes=Object.fromEntries(files.map(f=>[f,hash(f)]));report.sourceStable=files.every(f=>report.sourceHashes[f]===report.finalSourceHashes[f]);if(!report.sourceStable){report.passed=false;report.failures.push({message:'Source changed while testing.'});process.exitCode=1;}report.finishedAt=new Date().toISOString();save();}

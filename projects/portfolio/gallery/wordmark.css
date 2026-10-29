@@ -1,0 +1,4 @@
+/* Match the established homepage wordmark colours; preserve native high contrast. */
+.bar .brand{color:#f2f5ff}
+.bar .brand .brand-dot{color:#ff9ddd}
+@media(forced-colors:active){.bar .brand,.bar .brand .brand-dot{color:LinkText}}

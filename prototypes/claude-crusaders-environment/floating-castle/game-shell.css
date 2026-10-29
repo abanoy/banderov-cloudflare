@@ -1,0 +1,284 @@
+/* Game shell ("Illuminated Aerie"): title screen, loading overlay, controls, confirm, pause and settings dialogs.
+   Uses the theme.css --ui-* tokens and bundled fonts. Battle layout (.in-battle) belongs to battle.css. */
+.no-title #game-title{display:none}
+html:not(.no-title) body.booting>header,html:not(.no-title) body.booting .compass,html:not(.no-title) body.booting .telemetry,html:not(.no-title) body.booting>footer,html:not(.no-title) body.booting #message,
+body.shell-title>header,body.shell-title .compass,body.shell-title .telemetry,body.shell-title>footer,body.shell-title #message,body.shell-title #target-cue,body.shell-title #silo-markers,
+body.shell-loading>header,body.shell-loading .compass,body.shell-loading .telemetry,body.shell-loading>footer,body.shell-loading #message,body.shell-loading #target-cue{visibility:hidden}
+/* Menu states over the world (main.js: body.shell-menu while the camera is on a menu vantage: setup, Workshop, loading, title
+   screens) keep the explore HUD away too, and it fades out and back in rather than cutting. */
+body.shell-menu>header,body.shell-menu .compass,body.shell-menu .telemetry,body.shell-menu>footer,body.shell-menu #message,body.shell-menu #target-cue,body.shell-menu #silo-markers{visibility:hidden}
+@media (prefers-reduced-motion:no-preference){
+ body>header,.compass,.telemetry,body>footer,#message,#silo-markers{transition:opacity .35s ease,visibility 0s}
+ body:is(.shell-title,.shell-loading,.shell-menu)>:is(header,footer),body:is(.shell-title,.shell-loading,.shell-menu) :is(.compass,.telemetry,#message,#silo-markers){opacity:0;transition:opacity .3s ease,visibility 0s .3s}
+}
+
+/* Shared shell controls */
+.shell-btn,#game-title button,#controls-panel button,#shell-confirm button,#game-loading button,#pause-panel .pause-actions button{font-family:var(--ui-body);font-size:16px;line-height:1.15;color:var(--ui-parchment);min-height:44px;padding:9px 16px;border:2px solid var(--ui-ink);border-radius:0;background:linear-gradient(var(--ui-raise) 0 50%,var(--ui-raise-lo) 50%);box-shadow:inset 0 2px 0 #ffffff1f,inset 0 -2px 0 #0000002e,2px 2px 0 var(--ui-ink);text-shadow:1px 1px 0 var(--ui-ink);cursor:pointer;touch-action:manipulation}
+#game-title button:hover:not(:disabled),#controls-panel button:hover,#shell-confirm button:hover,#game-loading button:hover,#pause-panel .pause-actions button:hover{border-color:var(--ui-gold);color:var(--ui-gold-hi);background:linear-gradient(#34497a 0 50%,#2a3b63 50%)}
+#game-title button:focus-visible,#controls-panel button:focus-visible,#shell-confirm button:focus-visible,#game-loading button:focus-visible,#pause-panel button:focus-visible,#look-panel :focus-visible{outline:3px solid var(--ui-gold-hi);outline-offset:2px;box-shadow:0 0 0 5px var(--ui-ink)}
+#game-title button:active:not(:disabled),#pause-panel .pause-actions button:active{transform:translate(1px,1px);box-shadow:inset 0 2px 0 #0000002e,1px 1px 0 var(--ui-ink)}
+#game-title button:disabled{opacity:.5;cursor:progress}
+.shell-primary,#game-title .title-primary,#pause-panel #resume,#shell-confirm #shell-confirm-ok{color:var(--ui-ink);text-shadow:1px 1px 0 #fff3cd80;background:linear-gradient(var(--ui-gold-hi) 0 3px,var(--ui-gold) 3px 60%,#e3b066 60% calc(100% - 3px),var(--ui-gold-lo) calc(100% - 3px));font-weight:700}
+#game-title .title-primary:hover:not(:disabled),#pause-panel #resume:hover,#shell-confirm #shell-confirm-ok:hover{color:var(--ui-ink);border-color:var(--ui-parchment);background:linear-gradient(#fff3cd 0 3px,var(--ui-gold-hi) 3px 60%,var(--ui-gold) 60% calc(100% - 3px),var(--ui-gold-lo) calc(100% - 3px))}
+.shell-frame{border:12px solid transparent;border-image:var(--ui-frame) 6/12px/0 stretch;background:#1d2a4bf0;background-clip:padding-box;box-shadow:var(--ui-drop);color:var(--ui-parchment);font-family:var(--ui-body)}
+
+/* Title screen: translucent framed panel at the left, the drifting aerie visible behind it. The h1 carries the whole game name,
+   "Don Bass Crusaders: Build Castles & Battle!": the blackletter name (Title Case, >= 28px) and the subtitle in bold body type. */
+#game-title{position:fixed;inset:0;z-index:44;display:flex;align-items:center;justify-content:flex-start;padding:max(20px,env(safe-area-inset-top)) max(20px,env(safe-area-inset-right)) max(20px,env(safe-area-inset-bottom)) max(clamp(20px,5vw,72px),env(safe-area-inset-left));background:linear-gradient(90deg,#1b2442b8 0,#1b244266 32%,#1b244200 58%);pointer-events:none;font-family:var(--ui-body);color:var(--ui-parchment)}
+#game-title[hidden]:not(.shell-out){display:none!important}
+.title-sheet.ui-frame{pointer-events:auto;width:min(410px,100%);max-height:100%;overflow:auto;overscroll-behavior:contain;padding:18px 22px 14px;border-image:var(--ui-frame) 6/12px/0 stretch;background:#1d2a4bd9;background-clip:padding-box;scrollbar-width:thin}
+.title-eyebrow{display:block;font-family:var(--ui-label);font-size:16px;letter-spacing:.18em;color:var(--ui-gold);text-shadow:1px 1px 0 var(--ui-ink)}
+#game-title h1{font-family:var(--ui-display);font-weight:400;font-size:clamp(48px,5.4vw,68px);line-height:.92;letter-spacing:.01em;margin:6px 0 0;color:var(--ui-parchment);text-shadow:3px 3px 0 var(--ui-ink)}
+#game-title .title-name{display:block}
+#game-title .title-colon{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+#game-title .title-name:after{content:'';display:block;width:78%;height:6px;margin:12px 0 0;background:linear-gradient(var(--ui-gold-hi) 0 2px,var(--ui-gold) 2px 4px,var(--ui-gold-lo) 4px);box-shadow:2px 2px 0 var(--ui-ink)}
+#game-title .title-sub{display:block;margin:12px 0 0;font-family:var(--ui-body);font-weight:700;font-size:20px;line-height:1.15;letter-spacing:.02em;color:var(--ui-gold-hi);text-shadow:2px 2px 0 var(--ui-ink)}
+.title-tagline{margin:8px 0 16px;font-size:16px;line-height:1.35;color:var(--ui-parchment-dim)}
+.title-actions{display:flex;flex-direction:column;gap:8px}
+#game-title .title-actions button{width:100%;text-align:left;position:relative;padding-left:30px}
+#game-title .title-actions button:before{content:'';position:absolute;left:11px;top:50%;width:8px;height:8px;margin-top:-4px;background:currentColor;clip-path:polygon(0 0,100% 50%,0 100%);opacity:0}
+#game-title .title-actions button:hover:not(:disabled):before,#game-title .title-actions button:focus-visible:before{opacity:1}
+#game-title .title-primary{min-height:64px;padding-top:10px;padding-bottom:10px}
+#game-title .title-primary span{display:block;font-size:24px;line-height:1}
+#game-title .title-primary small{display:block;margin-top:5px;font-size:12px;font-weight:400;letter-spacing:.04em;color:#3a2b3f}
+.title-row{display:grid;grid-template-columns:auto auto auto;gap:8px}
+#game-title .title-row button{text-align:center;padding-left:12px;padding-right:12px}
+#game-title .title-row button:before{display:none}
+/* Crusader (game-shell.js useCreator): the creator entry carries a small portrait of your last saved crusader. */
+#game-title #title-crusader{padding-right:52px}
+#title-crusader img{position:absolute;right:8px;top:50%;width:36px;height:36px;margin-top:-18px;pointer-events:none;background:radial-gradient(circle at 50% 42%,#3a5288,#1b2442 75%);box-shadow:inset 0 0 0 1px var(--ui-ink),1px 1px 0 var(--ui-ink)}
+#title-crusader img[hidden]{display:none}
+/* Wide screens: Castle Workshop and Crusader (the two "make your own" entries) share a row, so the menu keeps its height. */
+@media (min-width:560px) and (min-height:521px){
+ .title-actions.has-crusader{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px}
+ .title-actions.has-crusader>*{grid-column:1/-1}
+ #game-title .title-actions.has-crusader>#title-workshop,#game-title .title-actions.has-crusader>#title-crusader{grid-column:auto;padding-left:26px}
+ #game-title .title-actions.has-crusader>#title-workshop:before,#game-title .title-actions.has-crusader>#title-crusader:before{left:9px}
+}
+#title-status{min-height:16px;margin:12px 0 0;font-size:12px;color:var(--ui-parchment-dim)}
+.title-foot{margin:6px 0 0;padding-top:8px;border-top:2px solid #f4c67b40;font-size:12px;color:#c9c3e6b0}
+@media (max-width:559px){
+ #game-title{align-items:flex-end;padding:0;background:linear-gradient(0deg,#1b2442cc 0,#1b244266 45%,#1b244200 70%)}
+ .title-sheet.ui-frame{width:100%;max-height:min(72dvh,100%);padding:12px 14px calc(10px + env(safe-area-inset-bottom));border-bottom-width:0;border-image:var(--ui-frame) 6/12px 12px 0 12px/0 stretch}
+ .title-eyebrow{font-size:8px}
+ #game-title h1{font-size:clamp(34px,10.8vw,44px);margin-top:4px}
+ #game-title .title-name:after{margin-top:8px;height:5px}
+ #game-title .title-sub{margin-top:8px;font-size:18px}
+ .title-tagline{font-size:12px;margin:6px 0 12px}
+ .title-actions{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+ .title-row{grid-column:1/-1;gap:6px}
+ #game-title .title-primary,#title-explore{grid-column:1/-1}
+ #game-title #title-crusader+#title-explore{grid-column:auto}
+ #game-title .title-actions button{text-align:center;padding:8px 10px}
+ #game-title .title-actions button:before{display:none}
+ #game-title #title-crusader{padding-right:44px}
+ #title-crusader img{width:32px;height:32px;margin-top:-16px;right:6px}
+ #game-title .title-primary{min-height:58px}
+ #title-status{margin-top:8px}
+}
+@media (max-height:520px) and (min-width:560px){
+ #game-title{align-items:center;padding-top:max(10px,env(safe-area-inset-top));padding-bottom:max(10px,env(safe-area-inset-bottom))}
+ .title-sheet.ui-frame{padding:10px 16px}
+ #game-title h1{font-size:36px;margin-top:0}
+ .title-eyebrow{display:none}
+ .title-tagline{display:none}
+ #game-title .title-sub{margin:4px 0 8px;font-size:16px}
+ #game-title .title-primary{min-height:52px}
+ #game-title .title-primary span{font-size:16px}
+ #title-status{display:none}
+ #game-title .title-name:after{margin-top:5px;height:4px}
+ .title-actions{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+ .title-row{grid-column:1/-1;gap:6px}
+ #game-title .title-primary,#title-explore{grid-column:1/-1}
+ #game-title #title-crusader+#title-explore{grid-column:auto}
+ #game-title .title-actions button{text-align:center;padding:8px 10px}
+ #game-title .title-actions button:before{display:none}
+}
+
+/* Seamless menus (Battlefield 1 style): the live aerie is always the backdrop (main.js glides the camera between vantages) and
+   no panel hard-cuts. Panels slide and fade in with staggered children; a closing panel stays as an inert ghost (.shell-out, its
+   `hidden` state already true) while it slides away. Keyframes animate opacity and the individual translate/scale properties,
+   so they compose with each panel's own transform. Reduced motion: no animation at all (instant). */
+.shell-out,.shell-out *{pointer-events:none!important}
+@keyframes shell-fade-in{from{opacity:0}}
+@keyframes shell-fade-out{to{opacity:0}}
+@keyframes shell-sheet-in{from{opacity:0;translate:-56px 0}}
+@keyframes shell-sheet-out{to{opacity:0;translate:-64px 0}}
+@keyframes shell-sheet-up{from{opacity:0;translate:0 48px}}
+@keyframes shell-sheet-down{to{opacity:0;translate:0 56px}}
+@keyframes shell-item-in{from{opacity:0;translate:-20px 0}}
+@keyframes shell-rise-in{from{opacity:0;translate:0 14px}}
+@keyframes shell-pop-in{from{opacity:0;translate:0 14px;scale:.97}}
+@keyframes shell-pop-out{to{opacity:0;translate:0 10px;scale:.98}}
+@keyframes shell-slide-in-right{from{opacity:0;translate:48px 0}}
+@keyframes shell-slide-out-right{to{opacity:0;translate:56px 0}}
+@keyframes intro-hold-out{0%,62%{opacity:1;translate:0 0}100%{opacity:0;translate:-80px 0}}
+@keyframes intro-in-hold-out{0%{opacity:0;translate:0 0}14%,62%{opacity:1;translate:0 0}100%{opacity:0;translate:-80px 0}}
+@keyframes intro-veil{0%{opacity:0}14%,45%{opacity:1}100%{opacity:0}}
+@keyframes shell-hud-in{from{opacity:.08}}
+@media (prefers-reduced-motion:no-preference){
+ #game-title:not([hidden]){animation:shell-fade-in .5s ease-out both}
+ #game-title:not([hidden]) .title-sheet{animation:shell-sheet-in .6s cubic-bezier(.2,.8,.2,1) both}
+ #game-title:not([hidden]) .title-sheet>*,#game-title:not([hidden]) .title-actions>*,#game-title:not([hidden]) .title-row>*{animation:shell-item-in .5s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--i,0)*45ms + 90ms)}
+ #game-title:not([hidden]) .title-actions>*,#game-title:not([hidden]) .title-row>*{animation-delay:calc(var(--i,0)*45ms + 230ms)}
+ #game-title .title-sheet>:nth-child(2),#game-title .title-actions>:nth-child(2),#game-title .title-row>:nth-child(2){--i:1}
+ #game-title .title-sheet>:nth-child(3),#game-title .title-actions>:nth-child(3),#game-title .title-row>:nth-child(3){--i:2}
+ #game-title .title-sheet>:nth-child(4),#game-title .title-actions>:nth-child(4){--i:3}
+ #game-title .title-sheet>:nth-child(n+5),#game-title .title-actions>:nth-child(5){--i:4}
+ #game-title .title-actions>:nth-child(6){--i:5}
+ #game-title .title-row>*{--i:5}#game-title .title-row>:nth-child(2){--i:6}#game-title .title-row>:nth-child(3){--i:7}
+ #game-title .title-sheet>:nth-child(n+5){animation-delay:.5s}
+ #game-title.shell-out{animation:shell-fade-out .38s ease-in both}
+ #game-title.shell-out .title-sheet{animation:shell-sheet-out .38s cubic-bezier(.55,0,.75,.3) both}
+ @media (max-width:559px){#game-title:not([hidden]) .title-sheet{animation-name:shell-sheet-up}#game-title.shell-out .title-sheet{animation-name:shell-sheet-down}#game-title:not([hidden]) .title-sheet>*,#game-title:not([hidden]) .title-actions>*,#game-title:not([hidden]) .title-row>*{animation-name:shell-rise-in}}
+}
+
+/* Match intro card (Battlefield 1 style) = the loading overlay: a cinematic title over the live aerie (mode, the map "The Floating
+   Aerie", Dawn vs Dusk in their colours with yours marked, one line of flavour, the preparation progress), bottom-left on wide
+   screens and full width on phones. It collapses to a bottom banner while castles are raised so the assembly stays visible. On
+   match start (.intro-out ghost) the progress fades, the title holds over the camera fly-in, then slides away as the HUD fades in. */
+#game-loading{position:fixed;inset:0;z-index:45;display:grid;place-items:end start;padding:max(20px,env(safe-area-inset-top)) max(20px,env(safe-area-inset-right)) max(24px,env(safe-area-inset-bottom)) max(clamp(20px,5vw,72px),env(safe-area-inset-left));font-family:var(--ui-body);color:var(--ui-parchment);overflow:hidden}
+#game-loading:before{content:'';position:absolute;inset:0;z-index:-1;pointer-events:none;background:linear-gradient(90deg,#120d1ceb 0,#1b2442c4 36%,#1b244240 64%,#1b244200 82%),linear-gradient(0deg,#120d1ce0 0,#120d1c66 32%,#120d1c00 60%)}
+#game-loading[hidden]:not(.shell-out){display:none!important}
+#game-loading:not(.banner) .loading-card{position:relative;width:min(600px,100%);max-height:100%;overflow:auto;padding:0;border:0;border-image:none;background:none;box-shadow:none;text-align:left;scrollbar-width:none}
+.loading-eyebrow{display:block;font-family:var(--ui-label);font-size:8px;letter-spacing:.24em;color:var(--ui-gold);text-shadow:1px 1px 0 var(--ui-ink)}
+.intro-mode{margin:6px 0 0;font-family:var(--ui-display);font-weight:400;font-size:clamp(48px,5.6vw,76px);line-height:.95;letter-spacing:.01em;color:var(--ui-parchment);text-shadow:3px 3px 0 var(--ui-ink)}
+.intro-map{display:flex;align-items:center;gap:12px;margin:8px 0 0;font-size:20px;font-weight:700;letter-spacing:.04em;color:var(--ui-gold-hi);text-shadow:2px 2px 0 var(--ui-ink)}
+.intro-map:after{content:'';flex:1;max-width:200px;height:4px;background:linear-gradient(var(--ui-gold-hi) 0 1px,var(--ui-gold) 1px 3px,var(--ui-gold-lo) 3px);box-shadow:2px 2px 0 var(--ui-ink)}
+.intro-factions{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin:16px 0 0}
+.intro-faction{--tint:var(--ui-dawn);display:inline-flex;align-items:center;gap:8px;min-height:36px;padding:4px 14px 4px 8px;background:linear-gradient(90deg,#231a2eeb,#231a2e99);border-left:4px solid var(--tint);box-shadow:2px 2px 0 var(--ui-ink)}
+.intro-faction[data-team="1"]{--tint:var(--ui-dusk)}
+.intro-faction i{width:14px;height:14px;background:var(--tint);box-shadow:inset -3px -3px 0 #0000004d,1px 1px 0 var(--ui-ink)}
+.intro-faction b{font-size:20px;font-weight:700;color:var(--tint);text-shadow:1px 1px 0 var(--ui-ink)}
+.intro-faction small,.intro-vs{font-family:var(--ui-label);font-size:8px;letter-spacing:.18em;text-transform:uppercase;color:var(--ui-parchment-dim)}
+.intro-faction.you small{color:var(--ui-you)}
+.intro-vs{color:var(--ui-gold);text-shadow:1px 1px 0 var(--ui-ink)}
+.intro-flavour{margin:14px 0 0;max-width:46ch;font-size:16px;line-height:1.35;color:var(--ui-parchment);text-shadow:1px 1px 0 var(--ui-ink)}
+#loading-matchup{margin:16px 0 0;font-size:13px;font-weight:700;letter-spacing:.04em;color:var(--ui-parchment-dim);text-shadow:1px 1px 0 var(--ui-ink)}
+#loading-stage{margin:6px 0 6px;font-size:16px;color:var(--ui-dawn);text-shadow:1px 1px 0 var(--ui-ink)}
+#game-loading:not(.banner) :is(.loading-bar,.loading-meta,#loading-tip){max-width:460px}
+#game-loading:not(.banner) #loading-tip{margin:10px 0;padding:6px 0 0;min-height:0}
+#game-loading.banner:before{display:none}
+.loading-bar{height:16px;border:2px solid var(--ui-ink);background:#14203a;box-shadow:inset 0 2px 0 #0000004d,2px 2px 0 var(--ui-ink)}
+.loading-bar i{display:block;height:100%;width:0;background:linear-gradient(var(--ui-gold-hi) 0 3px,var(--ui-gold) 3px 8px,var(--ui-gold-lo) 8px);transition:width .3s steps(4)}
+.loading-meta{display:flex;justify-content:space-between;gap:12px;margin:8px 0 0;font-size:12px;color:var(--ui-parchment-dim)}
+#loading-attempt:empty{display:none}
+#loading-tip{min-height:34px;margin:12px 0;padding:8px 10px;border-top:2px solid #f4c67b40;font-size:12px;line-height:1.4;color:var(--ui-parchment-dim)}
+#loading-tip b{color:var(--ui-gold);font-weight:700}
+#game-loading.banner{inset:auto 0 0;place-items:end center;padding:0 16px max(16px,env(safe-area-inset-bottom));background:none;pointer-events:none}
+#game-loading.banner .loading-card{pointer-events:auto;width:min(560px,100%);display:grid;grid-template-columns:1fr auto;grid-template-areas:'stage cancel' 'bar cancel' 'meta cancel';column-gap:14px;align-items:center;padding:8px 12px;text-align:left}
+#game-loading.banner .loading-eyebrow,#game-loading.banner #loading-matchup,#game-loading.banner #loading-tip,#game-loading.banner .intro-head,#game-loading.banner .intro-factions,#game-loading.banner .intro-flavour{display:none}
+#game-loading.banner #loading-stage{grid-area:stage;margin:0 0 6px}
+#game-loading.banner .loading-bar{grid-area:bar}
+#game-loading.banner .loading-meta{grid-area:meta;margin-top:4px}
+#game-loading.banner #loading-cancel{grid-area:cancel}
+/* Match started (.intro-out, main.js steps it frame by frame): Cancel, the tip and the timer no longer apply and leave at once; a load
+   that ended on the bottom banner brings back only the title card (mode, map, factions, flavour) for the intro beat (.intro-fresh). */
+#game-loading.intro-out :is(#loading-cancel,#loading-tip,.loading-meta),#game-loading.intro-fresh .loading-card>:not(.intro-head,.intro-factions,.intro-flavour){visibility:hidden}
+@media (max-width:559px){#game-loading{padding:16px 16px max(18px,env(safe-area-inset-bottom))}#game-loading:before{background:linear-gradient(0deg,#120d1cf0 0,#1b2442d9 45%,#1b244266 70%,#1b244200 88%)}.intro-mode{font-size:44px}.intro-map,.intro-faction b{font-size:18px}.intro-flavour{font-size:14px}#game-loading.banner .loading-card{grid-template-columns:1fr auto;grid-template-areas:'stage cancel' 'bar bar' 'meta meta';column-gap:10px}#game-loading.banner #loading-cancel{min-height:44px;padding:6px 12px;font-size:14px}}
+
+/* Controls panel (generated from one key map in game-shell.js). */
+/* Centred in the safe area: notched phones keep the heading and the close button clear of the notch and the home indicator. */
+#controls-panel{position:fixed;left:calc(50% + (env(safe-area-inset-left,0px) - env(safe-area-inset-right,0px)) / 2);top:calc(50% + (env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px)) / 2);transform:translate(-50%,-50%);z-index:96;width:min(780px,calc(100vw - 24px - env(safe-area-inset-left,0px) - env(safe-area-inset-right,0px)));max-height:calc(100dvh - 24px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px));overflow:auto;overscroll-behavior:contain;padding:14px 18px 16px}
+#controls-panel[hidden]:not(.shell-out){display:none!important}
+.controls-head{display:flex;align-items:center;justify-content:space-between;gap:10px}
+/* The title row stays pinned while the list scrolls, so the close button is always on screen (phones scroll the whole panel). */
+#controls-panel .controls-head{position:sticky;top:-14px;z-index:1;margin:-14px -18px 0;padding:14px 18px 6px;background:var(--ui-panel-solid);box-shadow:0 2px 0 #f4c67b40}
+#controls-h{margin:0;font-family:var(--ui-display);font-weight:400;font-size:36px;line-height:1;text-shadow:3px 3px 0 var(--ui-ink)}
+#controls-panel #controls-close{min-width:44px;padding:4px 10px;font-size:24px}
+.controls-tabs{display:flex;gap:6px;margin:10px 0 4px}
+#controls-panel .controls-tabs button{flex:1;font-size:12px;min-height:44px;padding:6px 10px}
+#controls-panel .controls-tabs button[aria-pressed=true]{color:var(--ui-ink);background:var(--ui-gold);text-shadow:none}
+#controls-panel.shell-frame{background:var(--ui-panel-solid);background-clip:padding-box;box-shadow:var(--ui-drop),0 0 0 100vmax #1b2442d9}
+.controls-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(300px,100%),1fr));gap:0 28px}
+.controls-group h3{margin:14px 0 6px;font-family:var(--ui-label);font-size:8px;font-weight:400;letter-spacing:.18em;color:var(--ui-gold)}
+.controls-group dl{display:grid;grid-template-columns:minmax(120px,auto) 1fr;gap:6px 14px;margin:0;align-items:center}
+.controls-group dt{display:flex;flex-wrap:wrap;gap:3px}
+.controls-group dd{margin:0;font-size:13px;line-height:1.35;color:var(--ui-parchment)}
+#controls-panel kbd{display:inline-block;min-width:24px;padding:3px 6px;font-family:var(--ui-body);font-size:12px;line-height:1.2;text-align:center;color:var(--ui-ink);background:var(--ui-parchment);border:2px solid var(--ui-ink);border-bottom-width:3px;box-shadow:1px 1px 0 #0000004d}
+.controls-note{margin:14px 0 0;font-size:12px;color:var(--ui-parchment-dim)}
+@media (max-width:420px){.controls-group dl{grid-template-columns:1fr}.controls-group dd{margin-bottom:6px}}
+
+/* Confirm dialog */
+#shell-confirm{position:fixed;inset:0;z-index:97;display:grid;place-items:center;padding:16px;background:#1b2442a6}
+#shell-confirm[hidden]:not(.shell-out){display:none!important}
+#shell-confirm section{width:min(360px,100%);padding:14px 18px;text-align:center}
+#shell-confirm-text{margin:4px 0 14px;font-size:16px;line-height:1.35}
+.confirm-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+
+/* Pause menu (match-aware). The scrim stays above the spawn map (90). */
+:root #pause-panel{z-index:95;background:#1b2442b3;backdrop-filter:blur(2px)}
+#pause-panel section{border:12px solid transparent;border-image:var(--ui-frame) 6/12px/0 stretch;background:#1d2a4bf2;background-clip:padding-box;box-shadow:var(--ui-drop);width:min(340px,calc(100vw - 32px));padding:14px 18px 16px;text-align:center;font-family:var(--ui-body);color:var(--ui-parchment)}
+#pause-panel section small{font-family:var(--ui-label);font-size:8px;letter-spacing:.2em;color:var(--ui-gold)}
+#pause-panel section h2{margin:6px 0 2px;font-family:var(--ui-display);font-weight:400;font-size:48px;line-height:1;letter-spacing:.02em;text-shadow:3px 3px 0 var(--ui-ink)}
+#pause-panel section p{margin:0 0 14px;font-size:13px;color:var(--ui-dawn)}
+#pause-panel .pause-actions{display:flex;flex-direction:column;gap:8px}
+#pause-panel .pause-actions button{width:100%;margin:0}
+#pause-panel #pause-restart.confirming{color:var(--ui-ink);background:var(--ui-bad);text-shadow:none}
+#pause-panel #inspect-bots{font-size:12px;min-height:44px;opacity:.85}
+/* Short landscape screens: the dialog scrolls and the actions pack two per row so every one is reachable. */
+:root #pause-panel{overflow-y:auto;overscroll-behavior:contain}
+#pause-panel section{max-height:calc(100dvh - 16px);overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin}
+@media (max-height:500px){#pause-panel section{padding:8px 14px 10px;width:min(460px,calc(100vw - 32px))}#pause-panel section h2{font-size:32px}#pause-panel section p{margin-bottom:8px}#pause-panel .pause-actions{display:grid;grid-template-columns:1fr 1fr;gap:6px}#pause-panel #resume,#pause-panel #inspect-bots,#pause-panel #frame-profile{grid-column:1/-1}}
+/* Settings and controls float above the pause scrim, HUD and title. */
+:root #look-panel{z-index:96}
+/* Touch: every shell control is at least 44px. */
+@media (pointer:coarse){#controls-panel #controls-close{min-height:44px}#controls-panel .controls-tabs button,#shell-confirm button,#game-loading button,#pause-panel .pause-actions button{min-height:44px}}
+/* Title notice: a Workshop save made from the title is confirmed under the menu. */
+#title-notice:not([hidden])+#title-status{display:none}
+#title-notice{margin:12px 0 0;padding:6px 8px;font-size:12px;line-height:1.35;color:var(--ui-parchment);background:#231a2e99;border-left:4px solid var(--ui-good);text-shadow:1px 1px 0 var(--ui-ink)}
+/* A Quick Battle waiting for a cancelled setup to stop: gold notice, the button shows it is busy. */
+#title-notice.busy{border-left-color:var(--ui-gold)}
+#game-title button[aria-busy=true]{cursor:progress}
+/* Controls panel: tighter rows on short screens, and a fade plus label at the bottom edge while rows are below. */
+@media (max-height:760px){.controls-group h3{margin:10px 0 4px}.controls-group dl{gap:3px 14px}.controls-note{margin-top:10px}}
+#controls-panel.more-below:after{content:'Scroll for more';position:sticky;bottom:-16px;display:block;height:48px;margin:-48px -18px -16px;padding-top:32px;text-align:center;font:8px/1 var(--ui-label);letter-spacing:.2em;text-transform:uppercase;color:var(--ui-gold);text-shadow:1px 1px 0 var(--ui-ink);background:linear-gradient(#1d2a4b00,#1d2a4bf0 50%,#1d2a4b 62%);pointer-events:none}
+/* Title sheet fit: the notice replaces the footer line while it shows; short desktop screens and short portrait phones
+   tighten the sheet so the footer is never cut at the frame edge. */
+#title-notice:not([hidden])~.title-foot{display:none}
+@media (min-width:560px) and (min-height:521px) and (max-height:760px){.title-sheet.ui-frame{padding:14px 20px 10px}#game-title .title-name:after{margin-top:8px}#game-title .title-sub{margin-top:6px;font-size:18px}.title-tagline{margin:6px 0 12px}.title-actions,.title-row{gap:6px}#game-title .title-primary{min-height:58px}#title-status,#title-notice{margin-top:8px}}
+@media (max-width:559px) and (max-height:700px){.title-sheet.ui-frame{max-height:min(78dvh,100%)}#game-title h1{font-size:38px}#game-title .title-primary{min-height:52px}#title-notice{margin-top:8px}}
+@media (max-height:520px) and (min-width:560px){#title-notice{margin-top:6px;padding:4px 8px}}
+@media (max-height:400px) and (min-width:560px){#game-title .title-primary{min-height:46px;padding-top:6px;padding-bottom:6px}.title-actions,.title-row{gap:5px}.title-foot{display:none}}
+/* Touch: the 8px Silkscreen eyebrows and captions become 12px bold body text (as in Settings and the HUD). */
+@media (pointer:coarse){.loading-eyebrow,.intro-faction small,.intro-vs,.controls-group h3,#pause-panel section small,#controls-panel.more-below:after{font-family:var(--ui-body);font-size:12px;font-weight:700;letter-spacing:.08em}}
+@media (pointer:coarse) and (max-width:559px){.title-eyebrow{font-family:var(--ui-body);font-size:12px;font-weight:700;letter-spacing:.12em}}
+/* Intro card on short screens (landscape phones, small windows): the essentials only. */
+@media (max-height:560px){#game-loading:not(.banner) .loading-card{width:min(560px,100%)}.intro-mode{font-size:36px}.intro-map{font-size:16px;margin-top:4px}.intro-factions{margin-top:8px}.intro-faction{min-height:30px}.intro-faction b{font-size:16px}.intro-flavour,#game-loading:not(.banner) #loading-tip{display:none}#loading-matchup{margin-top:8px}}
+/* Panel motion (see the seamless-menus block above). */
+@media (prefers-reduced-motion:no-preference){
+ #game-loading:not([hidden]):before{animation:shell-fade-in .5s ease-out both}
+ #game-loading:not([hidden]):not(.banner) .loading-card>*{animation:shell-item-in .55s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--i,0)*55ms + 60ms)}
+ #game-loading .loading-card>:nth-child(2){--i:1}#game-loading .loading-card>:nth-child(3){--i:2}#game-loading .loading-card>:nth-child(4){--i:3}#game-loading .loading-card>:nth-child(n+5){--i:4}
+ #game-loading:not([hidden]).banner .loading-card{animation:shell-rise-in .4s cubic-bezier(.2,.8,.2,1) both}
+ #game-loading.shell-out:not(.intro-out){animation:shell-fade-out .26s ease-in both}
+ #game-loading.intro-out:before{animation:shell-fade-out 1.7s cubic-bezier(.55,0,.75,.3) both}
+ #game-loading.intro-out .loading-card>*{animation:shell-fade-out .3s ease-in both}
+ #game-loading.intro-out :is(.intro-head,.intro-factions,.intro-flavour){animation:intro-hold-out 2.1s cubic-bezier(.55,0,.75,.3) both}
+ #game-loading.intro-out .intro-factions{animation-delay:.05s}#game-loading.intro-out .intro-flavour{animation-delay:.1s}
+ #game-loading.intro-fresh:before{animation:intro-veil 2.1s ease-out both}
+ #game-loading.intro-fresh :is(.intro-head,.intro-factions,.intro-flavour){animation-name:intro-in-hold-out}
+ #controls-panel:not([hidden]){animation:shell-pop-in .42s cubic-bezier(.2,.8,.2,1) both}
+ #controls-panel:not([hidden]) :is(.controls-note,.controls-tabs,.controls-group){animation:shell-rise-in .45s cubic-bezier(.2,.8,.2,1) both;animation-delay:.08s}
+ #controls-panel:not([hidden]) .controls-tabs{animation-delay:.13s}#controls-panel:not([hidden]) .controls-group{animation-delay:.18s}#controls-panel:not([hidden]) .controls-group+.controls-group{animation-delay:.23s}#controls-panel:not([hidden]) .controls-group+.controls-group+.controls-group{animation-delay:.28s}#controls-panel:not([hidden]) .controls-group+.controls-group+.controls-group+.controls-group{animation-delay:.33s}
+ #controls-panel.shell-out{animation:shell-pop-out .26s ease-in both}
+ #shell-confirm:not([hidden]){animation:shell-fade-in .2s ease-out both}#shell-confirm:not([hidden]) section{animation:shell-pop-in .28s cubic-bezier(.2,.8,.2,1) both}
+ #shell-confirm.shell-out{animation:shell-fade-out .2s ease-in both}
+ #pause-panel:not([hidden]){animation:shell-fade-in .3s ease-out both}
+ #pause-panel:not([hidden]) section{animation:shell-pop-in .4s cubic-bezier(.2,.8,.2,1) both}
+ #pause-panel:not([hidden]) .pause-actions>*{animation:shell-item-in .4s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--i,0)*40ms + 120ms)}
+ #pause-panel .pause-actions>:nth-child(2){--i:1}#pause-panel .pause-actions>:nth-child(3){--i:2}#pause-panel .pause-actions>:nth-child(4){--i:3}#pause-panel .pause-actions>:nth-child(5){--i:4}#pause-panel .pause-actions>:nth-child(n+6){--i:5}
+ #pause-panel.shell-out{animation:shell-fade-out .26s ease-in both}#pause-panel.shell-out section{animation:shell-pop-out .26s ease-in both}
+ #look-panel:not([hidden]){animation:shell-slide-in-right .42s cubic-bezier(.2,.8,.2,1) both}
+ #look-panel:not([hidden])>*{animation:shell-rise-in .42s cubic-bezier(.2,.8,.2,1) both;animation-delay:.08s}
+ #look-panel:not([hidden])>:nth-child(3){animation-delay:.14s}#look-panel:not([hidden])>:nth-child(n+4){animation-delay:.2s}
+ #look-panel.shell-out{animation:shell-slide-out-right .26s ease-in both}
+}
+/* Match start: the HUD stays clear (not drawn, not hit-tested, reported as not visible) while the intro card holds over the
+   camera fly-in, then fades in where it will stay: opacity only, no movement, so its layout is final from the first frame.
+   The fade starts just above 0, so the HUD never reads as invisible after the hold while a busy compositor delays the
+   animation's start (CSS animations sit on their first keyframe until then). */
+body.shell-intro>:not(#world,#game-loading,#announce-banner,#battle-result,#pause-panel,#look-panel,#controls-panel,#shell-confirm,#battle-panel,#stats-sheet,#spawn-map,script){opacity:0!important;visibility:hidden!important}
+@media (prefers-reduced-motion:no-preference){
+ body.shell-hud-in>:not(#world,#game-loading,#announce-banner,#battle-result,#pause-panel,#look-panel,#controls-panel,#shell-confirm,#battle-panel,#stats-sheet,#spawn-map,script){animation:shell-hud-in .7s cubic-bezier(.2,.8,.2,1) both}
+}

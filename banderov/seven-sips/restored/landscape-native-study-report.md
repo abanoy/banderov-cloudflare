@@ -1,0 +1,9 @@
+# Native landscape candidate review — 2026-10-11 15:53 EDT
+
+Previous goal turn was progress: measured inverse-scale reply layout with all2,016 Expanded choice instances per landscape viewport. This turn created landscape-native-study.cjs using the actual native-touch conversation/reload harness, with prototype CSS injected into the local source page only. Original source/build/packages remain unchanged.
+
+Final bounded Edge run exit0:320×568 portrait Day20 and568×320 landscape Day27, longest positive answer samples from actual cast, nine actual fragment taps each, day completion and exact persisted reload, zero page errors, owned browser closed. Landscape additionally native Escape pause/resume verified underlying panel inert and restored. Rendered choice text/tag bounds clear and no horizontal text overflow; landscape target minimum64px. Prototype keeps the recovered player portrait and shows the assembled-reply strip. Study screenshots/results use landscape-native-study-* filenames.
+
+Two diagnostic native runs exit1 found text/tag overlap not covered by earlier fabricated button markup: real number labels and the tone tag need space. Candidate now absolutely positions number labels, displays reply text as a block with16px number clearance and reserves30px beneath text; final assertions passed. Those changes are study-only.
+
+Visual inspection of landscape-native-study-568-day27-exchange0.png found a separate remaining defect: the enlarged panel covers part of the question bubble. Therefore the candidate is not ready for promotion. Native assembled three-fragment readability/scrolling, complete prompt visibility, all-core geometry with real number markup, rotation, timed Quick Match choices and title restoration remain to verify. Next refine panel/question allocation together, rather than treating target-size success as overall usability. No deployment or runtime change.

@@ -1,0 +1,13 @@
+from pathlib import Path
+p=Path(__file__).parent/'integration/src/main.js';s=p.read_text(encoding='utf-8')
+s=s.replace('drawingDestination=null;', 'const cameraObstacles=meshes.slice();drawingDestination=null;')
+s=s.replace("let characterPose='idle'", "const converted=new Set();character.root.traverse(o=>{if(!o.material)return;for(const m of Object.values(o.material.userData.variants||{flat:o.material})){if(converted.has(m))continue;converted.add(m);if(m.color)m.color.convertSRGBToLinear();if(m.uniforms?.baseColor)m.uniforms.baseColor.value.convertSRGBToLinear();}});let characterPose='idle'")
+s=s.replace('let wideView=false;', 'let wideView=false,cameraObstructed=false;const cameraRay=new THREE.Raycaster(),cameraDirection=new THREE.Vector3(),cameraGoal=new THREE.Vector3(),closeAim=new THREE.Vector3();')
+s=s.replace('camera.updateProjectionMatrix();gridUniform', 'if(innerWidth<600&&!wideView)camera.setViewOffset(innerWidth,innerHeight,0,-innerHeight*.16,innerWidth,innerHeight);else camera.clearViewOffset();camera.updateProjectionMatrix();gridUniform')
+s=s.replace("$('viewToggle').textContent=wideView?'Wide view':'Walk view';", "$('viewToggle').textContent=wideView?'Wide view':'Walk view';resize();")
+s=s.replace('desired.set(state.x,state.y+6,state.z-6);', 'desired.set(state.x,state.y+(wideView?6:2.5),state.z-(wideView?6:0));')
+old='if(!captureCamera){camera.position.set(target.x+Math.sin(yaw)*Math.cos(elevation)*r,target.y+Math.sin(elevation)*r,target.z+Math.cos(yaw)*Math.cos(elevation)*r);camera.lookAt(target);}'
+new='''if(!captureCamera){cameraGoal.set(target.x+Math.sin(yaw)*Math.cos(elevation)*r,target.y+Math.sin(elevation)*r,target.z+Math.cos(yaw)*Math.cos(elevation)*r);cameraDirection.copy(cameraGoal).sub(target).normalize();scene.updateMatrixWorld(true);cameraRay.set(target,cameraDirection);cameraRay.far=r;const hit=!wideView&&!state.travel?cameraRay.intersectObjects(cameraObstacles,false)[0]:null;cameraObstructed=!!hit;if(hit){camera.position.copy(target).addScaledVector(cameraDirection,Math.max(.4,hit.distance-.3));closeAim.set(state.x,state.y+1.05,state.z);camera.lookAt(closeAim);camera.clearViewOffset();camera.near=hit.distance<4?.2:2;}else{camera.position.copy(cameraGoal);camera.lookAt(target);camera.near=2;if(innerWidth<600&&!wideView)camera.setViewOffset(innerWidth,innerHeight,0,-innerHeight*.16,innerWidth,innerHeight);else camera.clearViewOffset();}camera.updateProjectionMatrix();}'''
+assert old in s
+s=s.replace(old,new).replace('camera,renderer,scene,actor,character', 'cameraStatus:()=>({obstructed:cameraObstructed,wideView}),camera,renderer,scene,actor,character')
+p.write_text(s,encoding='utf-8')

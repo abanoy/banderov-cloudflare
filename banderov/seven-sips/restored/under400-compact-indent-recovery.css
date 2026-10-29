@@ -1,0 +1,210 @@
+/* Local reconstruction fixes; historical stylesheet remains separately traceable. */
+[hidden]{display:none!important}
+/* Keep off-stage entrances and flying words from expanding mobile's layout viewport. */
+body{position:fixed;inset:0;width:100%;overflow:hidden}
+.world{position:absolute;inset:0}
+.backdrop{position:fixed;inset:0;background-size:cover;background-position:center;filter:blur(16px);opacity:.65;pointer-events:none}
+.settings{position:absolute;inset:0;z-index:60;background:#241d29b3;display:flex;align-items:center;justify-content:center;padding:24px}
+.settings .tgl{display:flex;justify-content:space-between;width:100%;padding:14px;margin:8px 0;border:0;border-radius:12px;font:600 20px var(--body);background:#eadbe4;color:var(--plum)}
+.rules{font-size:17px;text-align:left;line-height:1.4}.legend{display:flex;gap:8px;flex-wrap:wrap}.legend span{background:var(--tc);border-radius:8px;padding:4px}
+.rail{position:absolute;left:0;top:600px;width:540px;height:230px;z-index:6}.rail svg{width:100%;height:100%}
+.vfx{position:absolute;inset:0;width:540px;height:960px;pointer-events:none}.flash{position:absolute;inset:0;pointer-events:none}
+.card{max-height:870px;overflow-y:auto}.recovery-note{font:12px var(--body);color:var(--muted)}
+.blk .key{display:inline-block;margin-right:7px;opacity:.55;font-size:12px}
+.blk .bt{font-size:inherit}
+/* The 540px stage scales to phones: reserve room for larger reply text and its tag. */
+.blk{height:auto;min-height:100px;font-size:19px;padding-bottom:28px}
+.panel{height:auto;min-height:318px}
+.say .w.empty{color:#765944}
+.quote{padding:10px 12px;border-radius:12px}
+.quote small{display:block;min-height:38px;text-align:left;padding-right:84px}
+.quote p{margin:6px 0;line-height:1.4;overflow-wrap:anywhere}
+
+.copy-fallback p{font-size:16px}.copy-fallback textarea{display:block;box-sizing:border-box;width:100%;font:16px var(--body);padding:8px;border:1px solid #765944;border-radius:8px;background:#fffaf2;color:#332337;user-select:text;-webkit-user-select:text;touch-action:auto}
+
+.endings-card .stickers{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.endings-card .stickers>span{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:10px;border-radius:10px;background:#eadbc9;color:#674b4e;min-height:64px}.endings-card .stickers>span.got{background:#ffe8a8;color:#4a3340}.endings-card .stickers small{font:16px/1.3 var(--body);overflow-wrap:anywhere}.endings-card .stickers i{font:24px var(--display)}.endings-card>.btns{position:sticky;bottom:0;background:#faeedb;padding:10px 0 0;margin-top:12px}
+
+.titlebar .expanded-entry{position:absolute;top:66px;right:14px}.expanded-entry:disabled{opacity:1;cursor:default}.titling .bubble.her{top:110px}.expanded-card .btns{display:flex;flex-direction:column}.expanded-card>.btns{position:sticky;bottom:0;background:#faeedb;padding-top:10px}.expanded-card .btn{white-space:normal}
+
+/* Expanded dialogs remain readable when the portrait game stage is scaled down. */
+.overlay.viewport-card,.settings.viewport-card{position:fixed;inset:0;padding:12px;overflow:auto;box-sizing:border-box}
+.viewport-card>.card{width:min(100%,440px);max-height:calc(100dvh - 24px);overflow-y:auto;box-sizing:border-box;padding:18px;font-size:16px}
+.viewport-card h2{font-size:24px;line-height:1.2}.viewport-card .blurb,.viewport-card .save-status{font-size:16px;line-height:1.4}
+.viewport-card .btn{min-height:44px;font-size:16px;padding:10px 14px;box-sizing:border-box}.viewport-card .btns{position:static}
+.viewport-card .tgl{min-height:44px;font-size:16px;padding:10px}.viewport-card .rules{font-size:15px;line-height:1.4}
+
+html.viewport-play,body.viewport-play,.viewport-card,.viewport-card>.card{touch-action:pan-y}
+.viewport-card>.card{overscroll-behavior:contain}
+
+html.viewport-pause,body.viewport-pause{touch-action:pan-y}
+
+/* Reserve the narrow-screen corner occupied by the always-reachable pause button. */
+@media(max-width:543px){.overlay.viewport-card>.card{padding-top:44px}}
+
+/* Keep the original scene while giving short landscape conversations readable controls. */
+html.conversation-landscape,body.conversation-landscape{touch-action:pan-y}
+.panel.conversation-landscape{position:fixed;left:0;right:0;bottom:0;width:100%;min-height:0;padding:8px 12px;z-index:25}
+.panel.conversation-landscape .guy{width:44px;height:44px;left:12px;top:8px}
+.panel.conversation-landscape .say{margin-left:52px;height:44px;font-size:14px;align-content:flex-start;overflow-y:auto;touch-action:pan-y}
+.panel.conversation-landscape .say:focus-visible{outline:2px solid var(--plum);outline-offset:1px}
+.panel.conversation-landscape .timer{margin:4px 0 6px}
+.panel.conversation-landscape .blocks{gap:8px}
+.panel.conversation-landscape .blk{min-height:64px;font-size:14px;padding:6px 8px 24px}
+.panel.conversation-landscape .blk .key{position:absolute;left:8px;top:6px}
+.panel.conversation-landscape .blk .bt{display:block;margin-left:16px}
+.bubble.her.conversation-landscape{position:fixed;top:4px;left:12px;right:76px;min-height:0;max-height:70px;box-sizing:border-box;padding:6px 8px;font-size:14px;overflow-y:auto;touch-action:pan-y}
+.bubble.her.conversation-landscape b{font-size:11px}
+.bubble.her.conversation-landscape b .lk{gap:3px;margin-left:3px}
+.bubble.her.conversation-landscape b .lk em{font-size:10px;padding:1px 3px}
+.bubble.her.conversation-landscape b .lk small{font-size:9px}
+
+.panel.conversation-landscape,.bubble.her.conversation-landscape{font-family:var(--body);color:var(--ink)}
+.snd.conversation-landscape{position:fixed;top:4px;right:8px;width:44px;height:44px}
+
+/* Phone-sized Quick dialogs share the readable viewport cards used by Expanded Mode. */
+html.viewport-reading,body.viewport-reading{touch-action:pan-y}
+.snd.viewport-control{position:fixed;top:4px;right:8px;width:44px;height:44px}
+.viewport-card .endings-card>.btns{position:sticky;bottom:0;background:#faeedb;padding-top:10px}
+
+.viewport-card .ending>.btns{position:sticky;bottom:0;background:#faeedb;padding-top:8px}
+.viewport-card .ending .end-icon{width:72px;height:64px;font-size:48px;line-height:64px}
+
+/* Contextual guidance is readable above phone controls and never intercepts replies. */
+.tip.viewport-tip{position:fixed;margin:0;box-sizing:border-box;font-size:14px;line-height:1.25;padding:4px 8px;z-index:45;pointer-events:none}
+
+/* Portrait questions keep a readable physical size despite the original scene scaling. */
+@media(max-width:543px) and (orientation:portrait){
+ #game .bubble.her{font-size:var(--phone-question-font,24px)}
+ #game .bubble.her b,#game .bubble.her b .lk em{font-size:var(--phone-question-label,19px)}
+ #game .bubble.her b .lk small{font-size:var(--phone-question-small,17px)}
+}
+/* The fixed landscape bubble already clips its tail; exclude that phantom scroll area. */
+.bubble.her.conversation-landscape::after{display:none}
+
+/* Keep each person's invitation progress together, with readable counts and a visible next action. */
+.summary-card .srow{display:grid;grid-template-columns:120px minmax(0,1fr) auto;gap:4px 8px;padding:8px 0;text-align:left;align-items:center}
+.summary-card .sn{font-size:inherit;line-height:1.25;overflow-wrap:anywhere}
+.summary-card .cups{display:block;font-size:14px;line-height:1.4;white-space:nowrap}
+.summary-card .m-bar{width:100%}
+.summary-card .sh{font-size:inherit;white-space:nowrap}
+.summary-card .invite-status{grid-column:1/-1;font-size:17px;line-height:1.3;color:#674b4e}
+.summary-card .srow.hot .invite-status{font-weight:600}
+.summary-card .srow.out .m-bar{visibility:hidden}
+.viewport-card .summary-card>.btns{position:sticky;bottom:0;background:#faeedb;padding-top:8px}
+
+.viewport-card .summary-card .srow{grid-template-columns:100px minmax(0,1fr) auto}
+.viewport-card .summary-card .cups{font-size:12px}
+.viewport-card .summary-card .invite-status{font-size:13px}
+
+.seats .seat-person{text-align:left;min-width:0}.seats .seat-meetings{display:block;font-size:17px;line-height:1.3;margin-top:3px}.seats .h{white-space:nowrap;margin-left:10px}
+
+.viewport-card .seats .seat-meetings{font-size:14px}
+
+/* Very short landscapes keep question, assembled reply and four choices separate. */
+@media (orientation:landscape) and (max-height:299px) and (min-width:560px){
+ .panel.conversation-landscape{left:172px;right:0;top:0;bottom:0;width:calc(100% - 172px);height:100dvh;padding:8px;display:flex;flex-direction:column;box-sizing:border-box}
+ .panel.conversation-landscape .say{position:fixed;left:8px;bottom:8px;width:156px;height:80px;margin:0;box-sizing:border-box;overflow-y:auto}
+ .panel.conversation-landscape .guy{position:fixed;left:132px;top:8px;width:28px;height:28px}
+ .panel.conversation-landscape .timer{flex:none;margin:4px 0 6px}
+ .panel.conversation-landscape .blocks{flex:1;min-height:0;grid-template-rows:repeat(2,minmax(0,1fr));gap:8px}
+ .panel.conversation-landscape .blk{min-height:44px;padding:4px 8px 18px;border-top-width:4px;font-size:14px}
+ .panel.conversation-landscape .blk .tag{font-size:11px;bottom:3px}
+ .bubble.her.conversation-landscape,.phone-title-controls .bubble.her.conversation-landscape{left:8px;right:auto;top:56px;width:156px;max-height:calc(100dvh - 152px)}
+ .bubble.her.conversation-landscape .lk{display:flex;flex-wrap:wrap;gap:2px}
+ .snd.conversation-landscape,.snd.viewport-control{left:76px;right:auto}
+}
+
+@media (orientation:landscape) and (max-height:299px) and (min-width:560px){
+ .bubble.her.conversation-landscape{display:flex;flex-direction:column}
+ .bubble.her.conversation-landscape>b{display:contents}
+ .bubble.her.conversation-landscape .speaker-name{order:0;position:sticky;top:0;display:block;flex:none;font:600 11px var(--display);color:var(--rose2);background:var(--paper);padding-bottom:2px}
+ .bubble.her.conversation-landscape>span{order:1;flex:none}
+ .bubble.her.conversation-landscape .lk{order:2;flex:none;margin:6px 0 0}
+}
+/* Owner preference: keep title actions directly visible on phones. */
+html.phone-title-controls,body.phone-title-controls{touch-action:pan-y}
+.titlebar.phone-title-bar{position:fixed;left:8px;right:8px;top:4px;height:96px;padding:0;display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-start;gap:4px;pointer-events:none}
+.phone-title-bar .logo-s{font-size:24px}
+.phone-title-bar .special{display:none}
+.phone-title-bar>span{display:flex;flex-wrap:nowrap;gap:4px;width:100%}
+.phone-title-bar .chipbtn{min-height:44px;font-size:12px;padding:6px 6px;pointer-events:auto;box-sizing:border-box;white-space:nowrap}
+.phone-title-bar .expanded-entry{position:static;margin-left:auto}
+.expanded-entry .unlock-note{display:block;font:12px/1.2 var(--body);margin-top:2px;white-space:nowrap}
+.phone-title-bar .expanded-entry .unlock-note{font-size:10px}
+.bubble.her.phone-title-question{top:108px;left:12px;right:12px;width:auto;max-height:100px;overflow-y:auto;font-size:14px;touch-action:pan-y;box-sizing:border-box;padding:6px 8px;position:fixed}
+.bubble.her.phone-title-question b,.bubble.her.phone-title-question .lk em{font-size:11px}
+.bubble.her.phone-title-question .lk small{font-size:10px}
+.bubble.her.phone-title-question::after{display:none}
+@media(orientation:landscape){
+ .titlebar.phone-title-bar{height:44px;right:60px;justify-content:center}
+ .phone-title-bar>div{position:fixed;left:8px;top:52px}
+ .phone-title-bar .logo-s{font-size:20px}
+ .bubble.her.phone-title-question{top:56px;left:140px;right:76px;max-height:40px}
+}
+.phone-title-controls .snd.viewport-control{left:auto;right:8px}
+@media(orientation:landscape) and (max-height:299px) and (min-width:560px){
+ .phone-title-bar .logo-s{font-size:18px}
+ .phone-title-controls .panel.conversation-landscape{top:52px;height:calc(100dvh - 52px)}
+ .phone-title-controls .bubble.her.conversation-landscape{left:8px;right:auto;top:88px;width:156px;max-height:calc(100dvh - 184px)}
+ .phone-title-controls .panel.conversation-landscape .guy{left:132px;top:56px;width:28px;height:28px}
+}
+
+/* Narrow landscape keeps readable replies beside independently scrollable speech. */
+@media(orientation:landscape) and (min-width:480px) and (max-width:559px) and (max-height:480px){
+ .panel.conversation-landscape{left:132px;right:0;top:0;bottom:0;width:calc(100% - 132px);height:100dvh;padding:8px;display:flex;flex-direction:column;box-sizing:border-box}
+ .panel.conversation-landscape .say{position:fixed;left:8px;bottom:8px;width:116px;height:80px;margin:0;box-sizing:border-box;overflow-y:auto}
+ .panel.conversation-landscape .guy{position:fixed;left:96px;top:8px;width:28px;height:28px}
+ .panel.conversation-landscape .timer{flex:none;margin:4px 0 6px}
+ .panel.conversation-landscape .blocks{flex:1;min-height:0;grid-template-rows:repeat(2,minmax(0,1fr));gap:8px}
+ .panel.conversation-landscape .blk{min-height:44px;padding:3px 8px 15px;border-top-width:4px;font-size:14px;line-height:1.15}
+ .panel.conversation-landscape .blk .bt{margin-left:0;text-indent:16px}
+ .panel.conversation-landscape .blk .tag{font-size:10px;bottom:2px;line-height:1.2}
+ .bubble.her.conversation-landscape,.phone-title-controls .bubble.her.conversation-landscape{left:8px;right:auto;top:56px;width:116px;max-height:calc(100dvh - 152px);display:flex;flex-direction:column}
+ .bubble.her.conversation-landscape>b{display:contents}
+ .bubble.her.conversation-landscape .speaker-name{order:0;position:sticky;top:0;display:block;flex:none;font:600 11px var(--display);color:var(--rose2);background:var(--paper);padding-bottom:2px}
+ .bubble.her.conversation-landscape>span{order:1;flex:none}
+ .bubble.her.conversation-landscape .lk{order:2;flex:none;margin:6px 0 0;display:flex;flex-wrap:wrap;gap:2px}
+ .snd.conversation-landscape,.snd.viewport-control{left:8px;right:auto}
+ .phone-title-controls .snd.viewport-control{left:auto;right:8px}
+ .phone-title-controls .panel.conversation-landscape{top:52px;height:calc(100dvh - 52px)}
+ .phone-title-controls .bubble.her.conversation-landscape{top:88px;max-height:calc(100dvh - 184px)}
+ .phone-title-controls .panel.conversation-landscape .guy{left:100px;top:56px}
+ .phone-title-bar .logo-s{font-size:14px}
+}
+
+/* Small landscape windows keep the question outside the reply tray. */
+@media(orientation:landscape) and (min-width:360px) and (max-width:479px) and (max-height:480px){
+ .panel.conversation-landscape{left:96px;right:0;top:0;bottom:0;width:calc(100% - 96px);height:100dvh;padding:8px;display:flex;flex-direction:column;box-sizing:border-box}
+ .panel.conversation-landscape .say{position:fixed;left:8px;bottom:8px;width:80px;height:80px;margin:0;box-sizing:border-box;overflow-y:auto}
+ .panel.conversation-landscape .guy{position:fixed;left:64px;top:8px;width:28px;height:28px}
+ .panel.conversation-landscape .timer{flex:none;margin:4px 0 6px}
+ .panel.conversation-landscape .blocks{flex:1;min-height:0;grid-template-rows:repeat(2,minmax(0,1fr));gap:8px}
+ .panel.conversation-landscape .blk{min-height:44px;padding:2px 8px 13px;border-top-width:4px;font-size:14px;line-height:1.1}
+ .panel.conversation-landscape .blk .bt{margin-left:0;text-indent:16px}
+ .panel.conversation-landscape .blk .tag{font-size:10px;bottom:1px;line-height:1.2}
+ .bubble.her.conversation-landscape,.phone-title-controls .bubble.her.conversation-landscape{left:8px;right:auto;top:56px;width:80px;max-height:calc(100dvh - 152px);display:flex;flex-direction:column}
+ .bubble.her.conversation-landscape>b{display:contents}
+ .bubble.her.conversation-landscape .speaker-name{order:0;position:sticky;top:0;display:block;flex:none;font:600 11px var(--display);color:var(--rose2);background:var(--paper);padding-bottom:1px}
+ .bubble.her.conversation-landscape>span{order:1;flex:none}
+ .bubble.her.conversation-landscape .lk{order:2;flex:none;margin:6px 0 0;display:flex;flex-wrap:wrap;gap:2px}
+ .snd.conversation-landscape,.snd.viewport-control{left:8px;right:auto}
+ .phone-title-controls .snd.viewport-control{left:auto;right:8px}
+ .phone-title-controls .panel.conversation-landscape{top:24px;height:calc(100dvh - 24px)}
+ .phone-title-controls .bubble.her.conversation-landscape{top:88px;max-height:calc(100dvh - 184px)}
+ .phone-title-controls .panel.conversation-landscape .guy{left:68px;top:68px;width:20px;height:20px}
+ .phone-title-bar .logo-s{font-size:12px}
+}
+
+/* Keep applied heart feedback above the empty reply area in split landscape views. */
+.floater.viewport-conversation-feedback,.callout.viewport-conversation-feedback{position:fixed;right:8px;font-size:22px;z-index:46;pointer-events:none}
+
+/* Restore readable positioning for the existing secret/streak/invitation notices. */
+.callout{position:absolute;left:0;right:0;top:330px;text-align:center;font:700 34px/1.2 var(--display);color:var(--plum);text-shadow:0 2px 0 var(--cream),0 0 8px var(--cream);pointer-events:none}
+.callout.viewport-conversation-feedback{position:fixed;right:8px;font-size:20px;z-index:46}
+
+/* Read original introductions before landscape choices; Pause retains the description. */
+.intro.viewport-intro{position:fixed;right:12px;box-sizing:border-box;z-index:46;pointer-events:none}
+.intro.viewport-intro span{font:16px/1.3 var(--body)}
+.current-character{font:16px/1.4 var(--body);color:var(--plum);margin:12px 0}
+
+@media(orientation:landscape) and (min-width:360px) and (max-width:399px) and (max-height:480px){.panel.conversation-landscape{padding:6px}.panel.conversation-landscape .blocks{gap:6px}.panel.conversation-landscape .blk{padding-left:2px;padding-right:2px}.panel.conversation-landscape .blk .bt{text-indent:6px}.panel.conversation-landscape .blk .key{left:2px}}

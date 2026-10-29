@@ -1,0 +1,13 @@
+# Normal late Quick Match content/timing review — 2026-10-12
+
+Read actual exchange/chooseSlot/type/herSay and fullmerged GIRLS+MORE_LINES, DATE_LINES plus additions, originals+MORE_FINALS. Ran unique agent-content-late-measure.cjs exit0, measured JSON normal-late-content-measurements.json. Initial draft measured only base arrays; corrected to include all later merges before this report. No runtime/policy/scoring/art/root edit or new native browser run.
+
+Longest available authored weekprompt51characters (ties; outputselects Maria bento); nominal nonfast typing1.428s plus0.35hold=1.778s. Largest weekcorequartet145characters: Maria notebook43prompt, options33/29/49/34chars, prompttype+hold1.554s. Weeklines shuffle, so these are valid potential Day6lines, not a fixed guaranteedDay6 sequence.
+
+SharedDay7 maximum prompt47chars rememberfirstthing, type+hold1.666s. Largest sharedcorequartet165chars coffeejoke36prompt, options55/51/33/26; type+hold1.358s. Largest possible persona-finalprompt58 Waitresscake, type+hold1.974s; largest persona-finalcorequartet146 Sunhatfirststar34prompt, options43/41/36/26, type+hold1.302s.
+
+Timing interpretation: exchange awaits herSay(prompt,0.35), which awaits every character0.028s thenhold before showPanel/chooseSlot. Therefore prompt typing does NOT consume the3.1s Day6or3.2s date fragmentclock. Each fragment gets its own freshclock. Options entrance0.22s plus indexdelay0/0.04/0.08/0.12, lastbutton settled0.34s nominal; clock starts concurrently with entrance. Thus3.1/3.2includes entrance, leavingnominal2.76/2.86s afterlastbuttonsettles, not a measured humanreading window. Actual Engine.wait/onFrame quantization can differ; parent native timing evidence is authoritative elapsedtime. Prior firstexchange doubletime applies only stats.exchanges0, not ordinaryDay6/date cases.
+
+Choice reading burden includes four corestrings PLUS displayedtag labels/keynumbers; quartetcharacter totals alone cannot predict comprehension. Shared shortopeners/closers also have their own timers. Prompt remains visible while choosing. In shortlandscape question andassembledreply are separately scrollable regions; reading gestures should not choose answers, but they do not pause the existingclock. Existinggesture tests prove inputseparation, not that enough time remains for a novice to inspect longtext. Main normal-late test should distinguish timed native choices/animation geometry from humancomfort and avoid proposing timerchanges without ownerfeedback.
+
+No suggestion to addcontent/changeoriginaltimers/scoring. Current contentcounts and explicit maxlines can inform parent/stateagent nativeEngine1 slowresponse checks. Nominaltypingnumbers are source-derived calculations, not real-device/video/audio measurements.

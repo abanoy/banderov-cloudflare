@@ -1,0 +1,12 @@
+import assert from 'node:assert/strict';
+import {cleanSave} from '../src/logic.mjs';
+assert.equal(cleanSave(null).showCoach,true);
+assert.equal(cleanSave({version:1,coachDone:true}).showCoach,false);
+assert.equal(cleanSave({version:1,coachDone:false}).showCoach,true);
+assert.equal(cleanSave({version:1,showCoach:false}).showCoach,false);
+assert.equal(cleanSave({version:1,coachDone:true,showCoach:true}).showCoach,true);
+for(const invalid of ['false',0,1,null,{}])assert.equal(cleanSave({version:1,coachDone:true,showCoach:invalid}).showCoach,false);
+const saved=cleanSave({version:1,deliveries:7,steadyMode:'toggle',showCoach:false,coachDone:true,medals:{'1:seed:tea:0':3}});
+assert.deepEqual(cleanSave(JSON.stringify(saved)),saved);
+assert.equal(saved.deliveries,7);assert.equal(saved.steadyMode,'toggle');assert.equal(saved.medals['1:seed:tea:0'],3);
+console.log('PASS coaching preference defaults, old-save migration, explicit re-enable, malformed values and unrelated progress roundtrip.');

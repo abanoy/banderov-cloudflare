@@ -1,0 +1,25 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import * as T from '../vendor/three.module.js';
+import {flightWorld} from '../floating-castle/flight.js';
+import {createBattleNavigation} from '../floating-castle/battle-navigation.js';
+const floor=new T.Mesh(new T.BoxGeometry(32,2,32),new T.MeshBasicMaterial());floor.position.y=-1;floor.updateMatrixWorld(true);
+const pads=[{x:-12,y:0,z:-12,r:3,name:'Dawn'},{x:12,y:0,z:12,r:3,name:'Dusk'}];
+const nav=createBattleNavigation({solids:[floor],pads});await nav.rebuild();
+const from={x:-8,y:0,z:-8},to={x:8,y:0,z:8,radius:1};
+const limited=await nav.path(from,to,{maxVisited:1});assert(!limited.reachable);assert.equal(limited.reason,'Route search reached its work limit');
+const recovered=await nav.path(from,to,{maxVisited:1000});assert(recovered.reachable,'A work-limited request must not poison a later route request with enough work');
+const checks=['Actual standing graph low-budget search fails; higher-budget retry reaches destination'];
+const cached=await nav.path(from,to,{maxVisited:1});assert.equal(cached,recovered,'Previously verified route can serve a smaller request');
+const blockedA=recovered.points[1],blockedB=recovered.points[2];assert(blockedA&&blockedB);nav.invalidateSegment(blockedA,blockedB);
+const detour=await nav.path(from,to,{maxVisited:1000});assert(detour.reachable);assert.notDeepEqual(detour.points,recovered.points);
+const same=(a,b)=>a.x===b.x&&a.y===b.y&&a.z===b.z;
+for(let i=1;i<detour.points.length;i++)assert(!(same(detour.points[i-1],blockedA)&&same(detour.points[i],blockedB)||same(detour.points[i-1],blockedB)&&same(detour.points[i],blockedA)),'Detour must avoid invalidated edge in both directions');
+const physics=flightWorld([floor],pads);Object.assign(physics.state,{...from,grounded:true,flight:false,vx:0,vy:0,vz:0});
+let steps=0;for(const target of detour.points){for(let budget=0;Math.hypot(physics.state.x-target.x,physics.state.z-target.z)>.025&&budget<2000;budget++){const dx=target.x-physics.state.x,dz=target.z-physics.state.z,d=Math.hypot(dx,dz),strength=Math.min(1,d/(10/120));physics.step(1/120,{x:dx/d*strength,z:dz/d*strength});steps++;assert(physics.state.grounded&&!physics.state.falls);}assert(Math.hypot(physics.state.x-target.x,physics.state.z-target.z)<.025);}
+checks.push('Cached route invalidation chooses a different graph path avoiding the rejected edge; actual120Hz flight solver walks all detour points without falling');
+const timedFrom={x:-8,y:0,z:8},timedTo={x:8,y:0,z:-8,radius:1};const timed=await nav.path(timedFrom,timedTo,{maxMs:0});assert.equal(timed.reason,'Route search time budget reached');assert((await nav.path(timedFrom,timedTo,{maxVisited:1000})).reachable);checks.push('Time-limited search also permits a later successful retry');
+const controller=new AbortController();controller.abort();await assert.rejects(nav.path(from,to,{signal:controller.signal}),{name:'AbortError'});assert((await nav.path(from,to)).reachable);checks.push('Cancelled request rejects and leaves later queue requests usable');
+for(const target of [{x:-12,y:0,z:-8},{x:-4,y:0,z:-8},{x:-8,y:0,z:-12},{x:-8,y:0,z:-4}])nav.invalidateSegment(from,target);
+const exhausted=await nav.path(from,to,{maxVisited:1000});assert(!exhausted.reachable);assert.equal(exhausted.reason,'No walkable or validated pod route reaches this objective');assert.equal(await nav.path(from,to),exhausted,'Exhaustive failure remains cacheable');await nav.rebuild();assert((await nav.path(from,to)).reachable);checks.push('Exhaustive disconnected result remains cached; rebuild clears rejected edges and restores the supported route');
+const report={passed:true,checks,nodes:nav.stats.nodes,detourSteps:steps,scope:'Actual81-node standing graph, original floor triangles, real physical edge checks and120Hz detour replay. Edge rejection is requested through public invalidation API, not a live changing obstacle or native bot encounter.'};nav.dispose();fs.writeFileSync('review/battle-route-recovery-test.json',JSON.stringify(report,null,2));console.log(JSON.stringify(report));

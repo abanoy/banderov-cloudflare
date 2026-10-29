@@ -1,0 +1,1 @@
+{"name":"crusaders-environment-study","private":true,"type":"module","scripts":{"dev":"node server.cjs","test":"node test/physics.mjs"}}

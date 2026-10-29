@@ -1,0 +1,22 @@
+import * as T from '../vendor/three.module.js';
+import assert from 'node:assert/strict';import fs from 'node:fs';
+import {createBattleAllegiance} from '../floating-castle/battle-allegiance.js';
+import {castleBuildSequence} from '../floating-castle/castle-build-sequence.js';
+globalThis.document={createElement(){return {width:0,height:0,getContext(){return new Proxy({},{get:(o,k)=>o[k]??(()=>{}),set:(o,k,v)=>(o[k]=v,true)});}};}};
+const {makeWorld}=await import('../floating-castle/world.js'),{createConstruction}=await import('../floating-castle/castle-construction.js'),{battleCastlePlan}=await import('../floating-castle/castle-architect.js');
+const world=makeWorld(new T.Scene()),construction=createConstruction(world);
+const fx=createBattleAllegiance({world});assert.equal(fx.snapshot().castles[1].dark,1);assert.equal(fx.snapshot().castles[0].dark,0);
+const shared=world.mats.stone,originalColor=shared.color.clone(),objectives=world.orbTowers.map(()=>({owner:1}));
+for(let i=0;i<180;i++)fx.update(1/60,objectives);
+assert(fx.snapshot().silos.every(s=>s.dark>.99&&s.glow===0));
+objectives.forEach(o=>o.owner=0);fx.update(1/60,objectives);assert(fx.snapshot().silos.every(s=>s.dark>.9&&s.glow<.1));
+for(let i=0;i<180;i++)fx.update(1/60,objectives);assert(fx.snapshot().silos.every(s=>s.dark<.01&&s.glow>.99));assert.deepEqual(shared.color,originalColor);
+const plans=[0,1].map(home=>{const plan=battleCastlePlan({level:30,seed:22,home});construction.apply(home,plan.layout,plan.options);return {...plan,source:'ai'};});fx.sync();
+const roots=world.castles.map(c=>c.children.find(g=>g.userData.profile));const originals=roots.flatMap(root=>root.children.map(mesh=>({mesh,visible:mesh.visible,scale:mesh.scale.clone()})));
+const sequence=castleBuildSequence(world.castles,plans,world.castleHearts);assert(sequence.total>100);assert(roots.every(root=>root.children.filter(g=>g.userData.cell).every(g=>!g.visible)));
+const halfway=sequence.advance(.5);assert(halfway.placed>0&&halfway.placed<sequence.total);const full=sequence.advance(1);assert.equal(full.placed,full.total);sequence.finish();
+for(const e of originals){assert.equal(e.mesh.visible,e.visible);assert.deepEqual(e.mesh.scale,e.scale);}
+const empty=castleBuildSequence(world.castles,[{source:'saved'},{source:'saved'}]);assert.equal(empty.total,0);
+construction.restore(0);construction.restore(1);fx.sync();assert(!construction.counts[0].custom&&!construction.counts[1].custom);
+let shader={uniforms:{},vertexShader:T.ShaderLib.standard.vertexShader,fragmentShader:T.ShaderLib.standard.fragmentShader};world.castles[1].traverse(m=>{if(m.material&&!Array.isArray(m.material)&&!Object.hasOwn(shader.uniforms,'allegianceDark'))m.material.onBeforeCompile(shader);});assert.equal(shader.uniforms.allegianceDark.value,1);assert(shader.fragmentShader.includes('gl_FragColor.rgb=mix'));assert(Object.hasOwn(shader.uniforms,'paletteBrightness'));
+fs.writeFileSync('review/allegiance-build-test.json',JSON.stringify({passed:true,assemblyParts:sequence.total,checks:['Enemy castle always dark','All five enemy-owned structures darken','Ally recapture smoothly reverses','Shared owner materials unchanged','Actual AI pieces hidden, assembled and restored','Saved castles excluded','Restore removes temporary castles','Tint preserves authored lighting hook']},null,2));console.log('PASS eight allegiance/assembly checks; '+sequence.total+' actual castle parts');

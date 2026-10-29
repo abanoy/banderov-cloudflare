@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data:; connect-src 'none'; base-uri 'none'; form-action 'none'">
+<title>Artist Drawing and Animation Assistant — research workbench</title>
+<style>
+:root{font:17px/1.55 system-ui,sans-serif;color:#e9e7df;background:#171e25;color-scheme:dark}body{margin:0}main{max-width:1050px;margin:auto;padding:clamp(20px,4vw,58px)}h1{font-size:clamp(27px,4vw,43px);line-height:1.14;max-width:760px}h2{font-size:24px}h3{font-size:19px}.eyebrow{color:#b6d9c5;font-size:14px;letter-spacing:.08em}.muted{color:#bdc6cd}button,input,select{font:inherit;padding:10px 14px;min-height:44px;border:1px solid #647883;border-radius:6px;background:#243540;color:inherit}button{cursor:pointer}button:hover{background:#335264}:focus-visible{outline:3px solid #ebc36a;outline-offset:3px}header,.toolbar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:space-between}.card{background:#202b34;border:1px solid #43545f;border-radius:10px;padding:22px;margin:20px 0}label{display:inline-grid;gap:4px}input{max-width:100%;box-sizing:border-box}dialog{color:inherit;background:#17212a;border:1px solid #768d99;border-radius:12px;width:min(1000px,calc(100% - 48px));max-height:85vh;padding:20px}dialog::backdrop{background:#000a}.entries{margin-top:22px}.reference{padding:18px 0;border-top:1px solid #4c5e6b;overflow-wrap:anywhere}a{color:#a3d8ef}pre{white-space:pre-wrap;overflow-wrap:anywhere;font-size:13px}textarea{width:100%;min-height:90px;box-sizing:border-box}summary{cursor:pointer;padding:8px 0}.tag{color:#d7cda9}.status{padding:8px 0}footer{margin-top:30px;font-size:14px;color:#bdc6cd}canvas{image-rendering:pixelated;max-width:100%;border:1px solid #647883}
+</style>
+<main><header><span class="eyebrow">LOCAL RESEARCH WORKBENCH · 0.1</span><button id="credits" aria-describedby="credits-help">CREDITS</button></header>
+<h1>Artist Drawing and<br>Animation Assistant</h1>
+<p class="muted">Preserve the drawing. Make proposals editable. Keep the artist in control.</p>
+<p id="credits-help">Offline references, research history and license notices are always available.</p>
+<section class="card"><h2>Foundation milestone</h2><p>Available: searchable offline credits and reproducible project records.</p><p>Research prototype: portable RGBA fixture model, distinct drawings and exposure holds, proposal revisions and approval protection.</p><p class="muted">Planned: Krita document round trip, drawing cleanup, fill boundaries, reference matching, intermediate drawings, sparse timing, stylization and optional learned components. This workbench is not yet an artist editor.</p></section>
+<section class="card"><h2>Inspect a recorded fixture</h2><p>Load an experiment’s <code>outputs/shot.json</code> or <code>outputs/still.json</code> locally. No artwork leaves this page.</p><label>Fixture JSON <input id="fixture" type="file" accept=".json,application/json"></label><p id="fixture-status" role="status"></p><canvas id="preview" width="256" height="256" aria-label="Selected synthetic drawing preview" hidden></canvas><div id="drawings"></div></section>
+<footer>No remote processing, model downloads, accounts or paid APIs. Synthetic checks establish engineering behavior; artist usefulness remains unmeasured.</footer>
+</main>
+<dialog id="dialog" aria-labelledby="credits-title"><header><h2 id="credits-title">CREDITS</h2><button id="close">Close</button></header>
+<p>References describe actual use. Citation verification, permission and successful reproduction are separate facts.</p>
+<div class="toolbar"><label>Search references <input id="search" type="search" placeholder="Author, title, feature or license"></label>
+<label>Show <select id="category"><option value="all">All records</option><option value="runtime">Current runtime</option><option value="research">Research and methods</option><option value="experiments">Experiments</option><option value="assets">Data and assets</option><option value="notices">License notices</option></select></label></div>
+<p id="count" role="status"></p><div class="toolbar"><button id="copy">Copy displayed bibliography</button><button id="export">Export complete Markdown</button><button id="manifest">Export manifest JSON</button></div><p id="copy-status" role="status"></p><textarea id="copy-fallback" readonly hidden aria-label="Select and copy references"></textarea>
+<div id="entries" class="entries"></div><details><summary>Complete license notices (always included)</summary><pre id="notices"></pre></details>
+</dialog>
+<script id="data" type="application/json">__CREDITS_DATA__</script>
+<script>
+'use strict';
+const data=JSON.parse(document.getElementById('data').textContent), $=id=>document.getElementById(id);
+const dialog=$('dialog');let displayed=[];
+function text(tag,value){const e=document.createElement(tag);e.textContent=value;return e;}
+function references(){return displayed.map(s=>s.apa_reference).join('\n\n');}
+async function copy(value){try{await navigator.clipboard.writeText(value);$('copy-status').textContent='Copied.';}catch{const field=$('copy-fallback');field.hidden=false;field.value=value;field.focus();field.select();$('copy-status').textContent='Clipboard unavailable. Copy the selected text.';}}
+function download(name,value,type){const url=URL.createObjectURL(new Blob([value],{type})),a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
+function render(){const q=$('search').value.toLocaleLowerCase(),category=$('category').value;
+ displayed=data.sources.filter(s=>{
+ const components=data.components.filter(c=>c.source_ids.includes(s.source_id));
+ const experiments=data.experiments.filter(e=>e.source_ids.includes(s.source_id));
+ const uses=data.uses.filter(u=>u.source_ids.includes(s.source_id));
+ const matches=category==='all'||(category==='experiments'?experiments.length>0:category==='runtime'?s.category==='runtime'||components.some(c=>['implemented','shipped'].includes(c.use_state)):s.category===category);
+ return matches&&JSON.stringify([s,components,experiments,uses]).toLocaleLowerCase().includes(q);
+ });
+ $('entries').replaceChildren();$('count').textContent=displayed.length+' of '+data.sources.length+' references';
+ for(const s of displayed){const article=document.createElement('article');article.className='reference';article.append(text('h3',s.title),text('p',s.apa_reference),text('p',s.role),text('p',s.use_state+' · '+s.permission_state));if(s.canonical_url){const a=text('a','Open primary source');a.href=s.canonical_url;a.target='_blank';a.rel='noopener noreferrer';article.append(a);}else{article.append(text('p','Private local source; no public link. Artwork is not included.'));}const b=text('button','Copy APA reference');b.style.marginLeft='12px';b.onclick=()=>copy(s.apa_reference);article.append(b);const details=document.createElement('details');details.append(text('summary','Evidence and component details'),text('pre',JSON.stringify({source_id:s.source_id,checked_on:s.metadata_checked_on,inspection:s.inspection_scope,components:data.components.filter(c=>c.source_ids.includes(s.source_id)),uses:data.uses.filter(u=>u.source_ids.includes(s.source_id)),experiments:data.experiments.filter(e=>e.source_ids.includes(s.source_id))},null,2)));article.append(details);$('entries').append(article);}
+}
+$('credits').onclick=()=>{render();dialog.showModal();$('search').focus();};$('close').onclick=()=>dialog.close();
+$('search').oninput=render;$('category').onchange=render;$('copy').onclick=()=>copy(references());
+$('export').onclick=()=>download('CREDITS.md','# CREDITS\n\n'+data.sources.map(s=>s.apa_reference+'\n\n'+s.role+' — '+s.use_state+'; '+s.permission_state+'\n\n'+s.inspection_scope).join('\n\n')+'\n\n# Complete license notices\n\n'+data.notices,'text/markdown');
+$('manifest').onclick=()=>download('credits.json',JSON.stringify(data,null,2),'application/json');$('notices').textContent=data.notices;
+$('fixture').onchange=async()=>{try{const f=$('fixture').files[0];if(!f)return;if(f.size>2000000)throw Error('Fixture exceeds 2 MB workbench limit');const p=JSON.parse(await f.text()),w=p.canvas.width,h=p.canvas.height;if(!Number.isInteger(w)||!Number.isInteger(h)||w<1||h<1||w>256||h>256)throw Error('Workbench supports at most 256×256 fixture grids');const rows=Object.entries(p.drawings);for(const [id,d]of rows){if(!Array.isArray(d.pixels)||d.pixels.length!==w*h||!d.pixels.every(v=>Array.isArray(v)&&v.length===4&&v.every(c=>Number.isInteger(c)&&c>=0&&c<=255)))throw Error('Invalid RGBA fixture');}
+ $('drawings').replaceChildren();for(const [id,d]of rows){const button=text('button',id+(d.locked?' · locked':''));button.onclick=()=>{const canvas=$('preview'),ctx=canvas.getContext('2d');canvas.hidden=false;canvas.width=w;canvas.height=h;canvas.style.width='256px';canvas.style.height=(256*h/w)+'px';ctx.putImageData(new ImageData(new Uint8ClampedArray(d.pixels.flat()),w,h),0,0);};$('drawings').append(button);}if(rows.length)$('drawings').firstChild.click();$('fixture-status').textContent=rows.length+' stored drawings · '+p.shot.duration_frames+' playback slots. Research fixture only.';
+ }catch(e){$('fixture-status').textContent=e.message;$('preview').hidden=true;$('drawings').replaceChildren();}};
+</script></html>

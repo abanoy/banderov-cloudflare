@@ -1,0 +1,13 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+const base=process.env.BEFORE?'../history/flight-ceiling/':'../integration-rounded/src/';
+const p=await import(base+'physics.js'),{makeLayout}=await import(base+'layout.js'),world=makeLayout();
+const s=p.newState(world);assert(p.launch(s,world,'dark'));
+for(let i=0;i<540;i++)p.step(s,world,{climb:1},1/120);
+assert.equal(s.y,180);assert(s.travel&&s.falls===0);const before={y:s.y,vy:s.travel.vy,x:s.x};
+p.step(s,world,{x:1},1/120);const after={y:s.y,vy:s.travel.vy,x:s.x};
+fs.writeFileSync('review/flight-ceiling-'+(process.env.BEFORE?'before':'after')+'.json',JSON.stringify({before,after,scope:'Actual120Hz launch/heldRise to existing180m ceiling then release/sideways steering; no position or velocity injection.'},null,2));
+assert(after.y<before.y,'Release at ceiling should descend immediately');assert(after.x>before.x,'Ceiling permits sideways steering');
+const low=p.newState(world);p.launch(low,world,'dark');for(let i=0;i<120;i++)p.step(low,world,{climb:1},1/120);const y=low.y;p.step(low,world,{},1/120);assert(low.y>y,'Release below ceiling retains upward momentum');
+for(let i=0;i<540;i++)p.step(low,world,{climb:1},1/120);assert.equal(low.y,180);p.step(low,world,{climb:-1},1/120);assert(low.y<180,'Down remains immediately available at ceiling');
+console.log('Ceiling release/sideways/Down and below-ceiling momentum checks pass');

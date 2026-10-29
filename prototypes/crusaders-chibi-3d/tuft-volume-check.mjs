@@ -1,0 +1,15 @@
+import assert from 'node:assert/strict';import fs from 'node:fs';import {pathToFileURL} from 'node:url';import {createChibi} from './src/model.js';
+const text=fs.readFileSync('research/model-before-rounded-tuft.js','utf8').replace('../vendor/three.module.js',pathToFileURL(`${process.cwd()}/vendor/three.module.js`).href).replace('./lighting.js',pathToFileURL(`${process.cwd()}/src/lighting.js`).href);
+const {createChibi:before}=await import(`data:text/javascript;base64,${Buffer.from(text).toString('base64')}`);let steps=0;const variants=[];
+const expandedAttribute=(geometry,name)=>{const a=geometry.attributes[name];if(!geometry.index)return a.array;const values=new Float32Array(geometry.index.count*a.itemSize);for(let i=0;i<geometry.index.count;i++){const n=geometry.index.getX(i);values.set(a.array.subarray(n*a.itemSize,(n+1)*a.itemSize),i*a.itemSize);}return values;};
+for(const options of [{},{geometryDetail:'economical'},{bodyOutline:'defined',gestureReach:'forward'},{hairContour:'angular'}]){
+ const old=before(options),current=createChibi(options),study=createChibi({...options,tuftVolume:'rounded'});
+ try{
+  const names=Object.keys(old.parts),legacyNames=m=>Object.keys(m.parts).filter(name=>name!=='leaf-tuft-root'&&!/^(right|left)-(eye-white|iris)$/.test(name));assert.deepEqual(legacyNames(current),names);assert.deepEqual(legacyNames(study),names);
+  for(const name of names){for(const attr of Object.keys(old.parts[name].geometry.attributes)){assert.deepEqual(expandedAttribute(current.parts[name].geometry,attr),expandedAttribute(old.parts[name].geometry,attr));if(name!=='leaf-tuft'||options.hairContour==='angular')assert.deepEqual(expandedAttribute(study.parts[name].geometry,attr),expandedAttribute(old.parts[name].geometry,attr));}}
+  assert.equal(current.height,study.height);assert.equal(study.stats().geometries,current.stats().geometries);assert.equal(study.stats().materials,current.stats().materials);
+  for(const pose of ['neutral','idle','walk','wave','gasp']){old.setPose(pose);current.setPose(pose);study.setPose(pose);for(let i=0;i<32;i++){old.update(.025);current.update(.025);study.update(.025);old.bounds();current.bounds();study.bounds();for(const name of names){assert.deepEqual(current.parts[name].matrixWorld.elements,old.parts[name].matrixWorld.elements);assert.deepEqual(study.parts[name].matrixWorld.elements,old.parts[name].matrixWorld.elements);}assert.equal(current.bounds().min.y,study.bounds().min.y);steps++;}}
+  variants.push({options,currentTriangles:current.stats().triangles,studyTriangles:study.stats().triangles});
+ }finally{old.dispose();current.dispose();study.dispose();}
+}
+fs.writeFileSync('review/tuft-volume-geometry.json',JSON.stringify({steps,variants,scope:'Preserved/current default attributes and named matrices exact; optional study changes only tuft geometry, same native height/foot minimum/resource count through five poses. Angular option inert. No all-phase collision or performance claim.'},null,2));console.log(JSON.stringify({steps,variants}));

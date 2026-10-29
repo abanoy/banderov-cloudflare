@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0">
+<title>Hop Hop Helper!</title>
+<script src="https://sdk.crazygames.com/crazygames-sdk-v3.js"></script>
+<script>
+  // Tell the portal the game is loading from the first moment (the engine download is the long part),
+  // not only once the engine is already running. portal.gd reuses this init promise.
+  try {
+    window.__cgReady = window.CrazyGames.SDK.init().catch(function () {});
+    window.__cgReady.then(function () { try { window.CrazyGames.SDK.game.loadingStart(); } catch (e) {} });
+  } catch (e) {}
+</script>
+<style>
+  :root {
+    color-scheme: dark;
+    --ground: #1f1733;
+    --panel: #2b2145;
+    --ink: #f6f0ff;
+    --muted: #b9a8ff;
+    --pink: #ff5c8a;
+    --gold: #ffd23f;
+  }
+  html, body { height: 100%; }
+  body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--ink);
+    font-family: "Poppins", system-ui, -apple-system, "Segoe UI", sans-serif;
+    overflow: hidden;
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+  }
+  #canvas { display: block; width: 100%; height: 100%; }
+  #canvas:focus { outline: none; }
+  #status {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+    padding-inline: 16px;
+    background: var(--ground);
+    text-align: center;
+  }
+  #status h1 {
+    margin: 0;
+    font-size: clamp(32px, 7vw, 64px);
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+  }
+  #status h1 span:nth-child(1) { color: var(--pink); }
+  #status h1 span:nth-child(2) { color: var(--gold); }
+  #status h1 span:nth-child(3) { color: var(--muted); }
+  #status p { margin: 0; color: var(--muted); font-size: 15px; max-width: 34ch; }
+  .bar {
+    width: min(360px, 100%);
+    height: 12px;
+    border-radius: 999px;
+    background: var(--panel);
+    overflow: hidden;
+  }
+  .bar i {
+    display: block;
+    height: 100%;
+    width: 0%;
+    border-radius: 999px;
+    background: linear-gradient(90deg, var(--pink), var(--gold));
+    transition: width 0.2s ease-out;
+  }
+  #err { color: var(--pink); }
+  @media (prefers-reduced-motion: reduce) { .bar i { transition: none; } }
+</style>
+
+</head>
+<body>
+<canvas id="canvas" tabindex="0">Your browser does not support the canvas tag.</canvas>
+<div id="status">
+  <h1><span>Hop</span> <span>Hop</span> <span>Helper!</span></h1>
+  <div class="bar" aria-label="Loading progress"><i id="fill"></i></div>
+  <p id="msg">Pip is getting ready for you... don't go anywhere. (about 11&nbsp;MB)</p>
+  <p id="err" hidden></p>
+</div>
+
+<script>
+  // Keep the page itself still: arrow keys, Space and the wheel play the game, never scroll the host page;
+  // no right-click menu over the game.
+  window.addEventListener('keydown', function (e) {
+    if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', ' '].indexOf(e.key) >= 0 || e.code === 'Space') e.preventDefault();
+  }, { passive: false });
+  window.addEventListener('wheel', function (e) { e.preventDefault(); }, { passive: false });
+  document.addEventListener('contextmenu', function (e) { e.preventDefault(); });
+</script>
+<script src="index.js"></script>
+<script>
+  (function () {
+    const status = document.getElementById('status');
+    const fill = document.getElementById('fill');
+    const err = document.getElementById('err');
+    const msg = document.getElementById('msg');
+    const GODOT_CONFIG = {
+      args: [], canvasResizePolicy: 2, executable: 'index', experimentalVK: false,
+      fileSizes: { 'index.pck': 1991628, 'index.wasm': 39514754 },
+      focusCanvas: true, gdextensionLibs: [], ensureCrossOriginIsolationHeaders: false,
+      emscriptenPoolSize: 8, godotPoolSize: 4
+    };
+    const missing = Engine.getMissingFeatures({ threads: false });
+    if (missing.length) {
+      msg.hidden = true;
+      err.hidden = false;
+      err.textContent = 'This browser is missing: ' + missing.join(', ') + '. Try a recent Chrome, Edge, Firefox or Safari.';
+      return;
+    }
+    const engine = new Engine(GODOT_CONFIG);
+    engine.startGame({
+      onProgress: function (cur, total) {
+        if (total > 0) fill.style.width = Math.max(parseFloat(fill.style.width) || 0, Math.round((cur / total) * 100)) + '%';
+      }
+    }).then(function () {
+      status.remove();
+      document.getElementById('canvas').focus();
+    }, function (e) {
+      msg.hidden = true;
+      err.hidden = false;
+      err.textContent = 'The game could not start: ' + (e && e.message ? e.message : e);
+    });
+  })();
+</script>
+</body>
+</html>

@@ -1,0 +1,18 @@
+test_dangling_reference_fails_closed (test_foundation.CreditsTests.test_dangling_reference_fails_closed) ... ok
+test_deterministic_generated_files_current (test_foundation.CreditsTests.test_deterministic_generated_files_current) ... ok
+test_distribution_without_audit_fails_closed (test_foundation.CreditsTests.test_distribution_without_audit_fails_closed) ... ok
+test_static_offline_shell_contract (test_foundation.CreditsTests.test_static_offline_shell_contract) ... ok
+test_bad_exposure_and_mutated_snapshot_rejected (test_foundation.ProjectTests.test_bad_exposure_and_mutated_snapshot_rejected) ... ok
+test_correction_lock_and_neighbor_regeneration (test_foundation.ProjectTests.test_correction_lock_and_neighbor_regeneration) ... ok
+test_edited_input_without_revision_is_detected (test_foundation.ProjectTests.test_edited_input_without_revision_is_detected) ... ok
+test_locked_or_approved_replacement_rejected (test_foundation.ProjectTests.test_locked_or_approved_replacement_rejected) ... ok
+test_originals_and_alpha_survive_proposal (test_foundation.ProjectTests.test_originals_and_alpha_survive_proposal) ... ok
+test_rejection_preserves_duration_and_history (test_foundation.ProjectTests.test_rejection_preserves_duration_and_history) ... ok
+test_stale_result_cannot_commit (test_foundation.ProjectTests.test_stale_result_cannot_commit) ... ok
+test_unique_drawings_are_separate_from_exposure_time (test_foundation.ProjectTests.test_unique_drawings_are_separate_from_exposure_time) ... ok
+test_unknown_schema_and_alpha_conversion_rejected (test_foundation.ProjectTests.test_unknown_schema_and_alpha_conversion_rejected) ... ok
+
+----------------------------------------------------------------------
+Ran 13 tests in 0.072s
+
+OK

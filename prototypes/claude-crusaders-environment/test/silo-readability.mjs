@@ -1,0 +1,11 @@
+import assert from 'node:assert/strict';
+import * as T from '../vendor/three.module.js';
+import {createBattleAllegiance} from '../floating-castle/battle-allegiance.js';
+import {battleCastlePlan} from '../floating-castle/castle-architect.js';
+import {createBattleCombat} from '../floating-castle/battle-combat.js';
+globalThis.document={createElement(){return {getContext(){return new Proxy({},{get:(o,k)=>o[k]??(()=>{})});}};}};
+const {makeWorld}=await import('../floating-castle/world.js');const world=makeWorld(new T.Scene()),fx=createBattleAllegiance({world}),obj=world.orbTowers.map(()=>({owner:1}));
+const ground=world.solids.find(m=>m.userData.place==='Silo 1 island');assert(ground);const shader={uniforms:{},vertexShader:T.ShaderLib.standard.vertexShader,fragmentShader:T.ShaderLib.standard.fragmentShader};ground.material.onBeforeCompile(shader);assert(shader.uniforms.allegianceDark);
+for(let i=0;i<240;i++)fx.update(1/60,obj);assert(shader.uniforms.allegianceDark.value>.99);assert(fx.snapshot().glitchParticles.every(p=>p.visible&&p.count===48));obj.forEach(o=>o.owner=0);for(let i=0;i<240;i++)fx.update(1/60,obj);assert(shader.uniforms.allegianceDark.value<.01);assert(fx.snapshot().glitchParticles.every(p=>!p.visible));
+const plans=Array.from({length:18},(_,seed)=>battleCastlePlan({level:30,seed,home:1}));assert.equal(new Set(plans.map(p=>p.family)).size,3);assert.equal(new Set(plans.map(p=>p.goal)).size,3);assert(new Set(plans.map(p=>JSON.stringify(p.layout))).size>=6);assert.deepEqual(battleCastlePlan({level:30,seed:14}),battleCastlePlan({level:30,seed:14}));
+const c=createBattleCombat({actors:Array.from({length:16},(_,id)=>({id,team:id<8?0:1,state:{x:1000+id*10,y:0,z:1000,grounded:true}})),objectives:[]});c.start();for(let i=0;i<7300;i++)c.step(.05);assert(c.state.time>360);assert.equal(c.state.phase,'running');console.log('PASS island ground/glitch reversal, seeded variations/reproducibility and no six-minute expiry');

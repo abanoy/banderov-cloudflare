@@ -1,0 +1,26 @@
+# Local/private material must never be added to the public copy.
+**/.env
+**/.env.*
+**/.dev.vars*
+**/credentials*
+**/*.key
+**/*.pem
+**/*.p12
+**/*.pfx
+**/*.keystore
+**/node_modules/
+**/.wrangler/
+**/.godot/
+**/.local-dev/
+**/__pycache__/
+**/output/
+**/private-projects/
+**/samples/
+**/datasets/
+**/models/
+**/*.zip
+**/*.7z
+**/*.exe
+**/*.dll
+**/*.db
+**/*.sqlite*

@@ -1,0 +1,200 @@
+/* Battle flow: setup dialog, setup progress and results screen ("Illuminated Aerie").
+   Load after theme.css and battle.css. Uses only theme tokens and the bundled pixel fonts:
+   blackletter (--ui-display) only for Title Case headings at 28px+, Pixelify Sans body text at 12px+,
+   Silkscreen for short uppercase labels at 8px or 16px. */
+#battle-panel [hidden],#battle-result [hidden]{display:none!important}
+#battle-panel,#battle-result{background:radial-gradient(ellipse at 50% 40%,#1b244266,#120d1ccc);backdrop-filter:blur(2px)}
+
+/* Shared frame: the 9-slice gilt pixel frame from theme.css. */
+#battle-panel .battle-dialog,#battle-result .battle-dialog{display:flex;flex-direction:column;max-height:calc(100dvh - 20px);overflow:hidden;padding:12px 16px 0;border:12px solid transparent;border-image:var(--ui-frame) 6 fill/12px/0 stretch;background:none;box-shadow:var(--ui-drop);font-family:var(--ui-body);color:var(--ui-parchment);font-variant-ligatures:none}
+#battle-panel .battle-dialog>*,#battle-result .battle-dialog>*{flex:none}
+#battle-panel .battle-eyebrow,#battle-result .battle-eyebrow{display:block;font:8px/1.4 var(--ui-label);letter-spacing:.14em;text-transform:uppercase;color:var(--ui-gold)}
+#battle-panel .battle-dialog h2,#battle-result .battle-dialog h2{font-family:var(--ui-display);font-weight:400;letter-spacing:.02em;text-transform:none;text-shadow:3px 3px 0 var(--ui-ink);color:var(--ui-gold-hi);margin:2px 0 4px;line-height:1}
+#battle-panel .battle-dialog p,#battle-result .battle-dialog p{font-family:var(--ui-body);font-size:13px;line-height:1.45;color:var(--ui-parchment-dim);margin:0 0 8px}
+#battle-panel button,#battle-panel select,#battle-result button{font-family:var(--ui-body);font-size:14px;border-radius:0}
+#battle-panel button:focus-visible,#battle-panel select:focus-visible,#battle-panel input:focus-visible,#battle-panel summary:focus-visible,#battle-result button:focus-visible{outline:3px solid var(--ui-gold-hi);outline-offset:2px}
+
+/* ---- Setup dialog ---- */
+#battle-panel .battle-setup{width:min(660px,calc(100vw - 16px))}
+#battle-panel .battle-setup h2{font-size:44px}
+#battle-panel .battle-pitch{color:var(--ui-parchment)!important;max-width:52ch}
+#battle-load-status:empty{display:none}
+#battle-panel #battle-load-status{min-height:0;margin:0 0 6px;color:var(--ui-gold-hi);font-size:13px}
+#battle-panel #battle-load-status[data-state=error]{color:var(--ui-bad)}
+#battle-load-progress{height:8px;margin:0 0 8px;background:var(--ui-ink);border:1px solid var(--ui-gold-lo);box-shadow:inset 0 0 0 1px #0006}
+#battle-load-progress i{display:block;height:100%;width:0;background:repeating-linear-gradient(90deg,var(--ui-dawn) 0 6px,var(--ui-dawn-deep) 6px 8px);transition:width .3s steps(6)}
+.battle-tech{margin:0 0 8px;font-size:12px;color:var(--ui-parchment-dim)}
+.battle-tech summary{cursor:pointer;font-size:12px;color:var(--ui-stone);list-style:none}
+.battle-tech summary::-webkit-details-marker{display:none}
+.battle-tech summary::before{content:'\25B8';display:inline-block;width:1.1em;color:var(--ui-gold)}
+.battle-tech[open] summary::before{content:'\25BE'}
+.battle-tech pre{margin:6px 0 0;max-height:110px;overflow:auto;white-space:pre-wrap;word-break:break-word;font:12px/1.4 var(--ui-body);padding:6px 8px;background:var(--ui-ink);border:1px solid var(--ui-shade)}
+.battle-setup-body{flex:1 1 auto!important;min-height:0;overflow:auto;overscroll-behavior:contain;padding:4px 2px 10px;margin:0 -2px;scrollbar-width:thin;scrollbar-color:var(--ui-gold-lo) transparent}
+
+.battle-class-cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin:0 0 10px}
+.battle-class-cards button{display:grid;gap:2px;justify-items:start;text-align:left;padding:7px 9px 8px;background:var(--ui-raise-lo);border:2px solid var(--ui-ink);box-shadow:inset 0 0 0 1px var(--ui-shade),2px 2px 0 var(--ui-ink);color:var(--ui-parchment)}
+.battle-class-cards button b{font-size:15px;font-weight:700;letter-spacing:.02em}
+.battle-class-cards button small{font-size:12px;letter-spacing:0;color:var(--ui-parchment-dim);line-height:1.2}
+.battle-class-cards button:hover{background:var(--ui-raise);color:var(--ui-parchment)}
+.battle-class-cards button[aria-pressed=true]{background:linear-gradient(var(--ui-raise),var(--ui-raise-lo));box-shadow:inset 0 0 0 2px var(--ui-gold),2px 2px 0 var(--ui-ink);color:var(--ui-gold-hi)}
+.battle-class-cards button[aria-pressed=true] small{color:var(--ui-parchment)}
+.battle-class-cards button[aria-pressed=true] b::before{content:'\25B8 ';color:var(--ui-gold)}
+.battle-class-select{position:absolute!important;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+
+.battle-setup-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px 10px;margin:0 0 8px}
+.battle-setup-grid label{display:grid;gap:4px;min-width:0;font:8px/1.3 var(--ui-label);letter-spacing:.12em;text-transform:uppercase;color:var(--ui-gold)}
+.battle-setup-grid select{width:100%;min-width:0;text-overflow:ellipsis;padding:7px 8px;font-size:14px;letter-spacing:0;text-transform:none;color:var(--ui-parchment);background:var(--ui-ink);border:1px solid var(--ui-shade);border-bottom-color:var(--ui-gold-lo);box-shadow:inset 1px 1px 0 #0008}
+.battle-setup-grid select:hover{border-color:var(--ui-gold)}
+/* Play with bots: name and box on one line, level with the selects beside it; the fill status beside it is a quiet note. */
+.battle-setup-grid label:has(>#battle-play-bots){display:flex;align-items:center;gap:10px;align-self:end;min-height:34px;cursor:pointer}
+#battle-play-bots{flex:none;width:20px;height:20px;margin:0;accent-color:var(--ui-gold);cursor:pointer}
+#battle-panel .battle-dialog #battle-bot-fill-status{display:flex;align-items:center;align-self:end;min-height:34px;margin:0;font-size:12px;line-height:1.3;color:var(--ui-parchment-dim)}
+#battle-panel #battle-plan-summary{margin:2px 0 8px;padding:5px 8px;font-size:13px;color:var(--ui-gold-hi);background:#231a2e99;border-left:3px solid var(--ui-gold)}
+#battle-panel .battle-note{margin:-2px 0 8px;padding:5px 8px;font-size:12px;color:var(--ui-ink);background:var(--ui-gold)}
+
+.battle-howto,.battle-advanced{margin:0 0 6px;border:1px solid #5966a199;background:#1b244299}
+.battle-howto summary,.battle-advanced summary{cursor:pointer;padding:6px 9px;font-size:14px;color:var(--ui-stone);list-style:none}
+.battle-howto summary::-webkit-details-marker,.battle-advanced summary::-webkit-details-marker{display:none}
+.battle-howto summary::before,.battle-advanced summary::before{content:'\25B8';display:inline-block;width:1.1em;color:var(--ui-gold)}
+.battle-howto[open] summary::before,.battle-advanced[open] summary::before{content:'\25BE'}
+.battle-howto>:not(summary),.battle-advanced>:not(summary){margin-left:10px!important;margin-right:10px!important}
+#battle-panel .battle-howto p{font-size:12px;line-height:1.55}
+#battle-panel .battle-howto-note{color:var(--ui-gold-hi)!important}
+#battle-panel .battle-controls-help{list-style:none;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:3px 12px;margin:4px 10px 10px;padding:8px 10px;background:var(--ui-ink);border:1px solid var(--ui-shade);font-size:12px;line-height:1.35;color:var(--ui-parchment)}
+.battle-controls-help li{display:flex;gap:8px;align-items:baseline;min-width:0}
+.battle-controls-help kbd{flex:none;min-width:64px;font:12px var(--ui-body);color:var(--ui-gold-hi)}
+.battle-controls-help span{color:var(--ui-parchment-dim)}
+#battle-panel .battle-advanced .battle-drain-label{margin:6px 0;font-size:13px;color:var(--ui-parchment)}
+#battle-panel .battle-advanced .battle-drain-label input{accent-color:var(--ui-gold)}
+#battle-panel .battle-advanced p{font-size:12px}
+#battle-panel .battle-advanced .battle-local-note{font-size:12px;color:var(--ui-shade)}
+
+/* Sticky footer: Start is always reachable without scrolling. */
+#battle-panel .battle-dialog-actions,#battle-result .battle-dialog-actions{display:flex;flex-wrap:wrap;justify-content:flex-end;align-items:center;gap:8px;margin:0 -16px;padding:10px 16px 12px;background:linear-gradient(#1d2a4b00,var(--ui-panel-solid) 35%);border-top:1px solid #f4c67b44}
+#battle-panel .battle-dialog-actions button,#battle-result .battle-dialog-actions button{padding:9px 14px;background:var(--ui-raise-lo);border:2px solid var(--ui-ink);box-shadow:inset 0 0 0 1px var(--ui-shade),2px 2px 0 var(--ui-ink);color:var(--ui-parchment);font-weight:400}
+#battle-panel .battle-dialog-actions button:hover,#battle-result .battle-dialog-actions button:hover{background:var(--ui-raise)}
+#battle-leave{color:var(--ui-bad)!important}
+#battle-panel .battle-dialog-actions .battle-primary,#battle-result .battle-dialog-actions .battle-primary{min-width:180px;padding:11px 20px;font-size:16px;font-weight:700;letter-spacing:.06em;color:var(--ui-ink);background:linear-gradient(var(--ui-gold-hi),var(--ui-gold));border:2px solid var(--ui-ink);box-shadow:inset 0 -3px 0 var(--ui-gold-lo),inset 0 0 0 1px #fff3cd88,3px 3px 0 var(--ui-ink)}
+#battle-panel .battle-dialog-actions .battle-primary:hover,#battle-result .battle-dialog-actions .battle-primary:hover{color:var(--ui-ink);background:var(--ui-gold-hi)}
+#battle-panel .battle-dialog-actions .battle-primary:disabled{opacity:.6}
+
+/* Castle assembly: a compact progress card at the bottom while the castles rise. */
+#battle-panel.building{background:transparent;backdrop-filter:none}
+#battle-panel.building .battle-setup{width:min(520px,calc(100vw - 16px))}
+#battle-panel.building .battle-setup>.battle-eyebrow,#battle-panel.building .battle-setup>.battle-pitch,#battle-panel.building .battle-setup-body,#battle-panel.building #battle-load-details{display:none}
+#battle-panel.building .battle-setup h2{font-size:30px}
+#battle-panel.building #battle-load-progress:not([hidden]){display:block}
+#battle-panel.building .battle-dialog-actions{display:flex}
+
+/* ---- Results ---- */
+#battle-result{z-index:23}
+#battle-result .battle-result-dialog{width:min(760px,calc(100vw - 16px));text-align:center}
+#battle-result .battle-result-dialog h2{font-size:64px;margin:4px 0 2px}
+#battle-result[data-outcome=victory] h2{color:var(--ui-gold-hi);text-shadow:3px 3px 0 var(--ui-ink),0 0 18px #f4c67b66}
+#battle-result[data-outcome=defeat] h2{color:var(--ui-dusk);text-shadow:3px 3px 0 var(--ui-ink)}
+#battle-result[data-outcome=stalemate] h2{color:var(--ui-parchment-dim)}
+#battle-result-banner{font:16px/1.2 var(--ui-label)!important;letter-spacing:.08em;text-transform:uppercase;color:var(--ui-dawn)!important;margin:0 0 6px!important}
+#battle-result[data-outcome=defeat] #battle-result-banner{color:var(--ui-dusk)!important}
+#battle-result[data-outcome=stalemate] #battle-result-banner{color:var(--ui-stone)!important}
+#battle-result #battle-result-text{font-size:12px;color:var(--ui-parchment-dim)}
+#battle-result-stats{flex:1 1 auto!important;min-height:0;overflow:auto;padding:0 2px;text-align:left}
+/* Scroll cue: a sticky fade at the bottom while more rows are below; scrolled to the end it sits in its own 14px gap. */
+#battle-result-stats::after{content:'';display:block;position:sticky;bottom:0;height:14px;background:linear-gradient(#1d2a4b00,var(--ui-panel-solid));pointer-events:none}
+.battle-result-you{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin:4px 0 8px}
+.battle-result-you>div{display:grid;justify-items:center;gap:3px;padding:7px 4px;background:var(--ui-ink);border:1px solid var(--ui-shade);box-shadow:inset 0 2px 0 #f4c67b33}
+.battle-result-you b{font:700 22px/1 var(--ui-body);color:var(--ui-you)}
+.battle-result-you small{font:8px/1.2 var(--ui-label);letter-spacing:.1em;text-transform:uppercase;color:var(--ui-gold)}
+#battle-result .battle-result-meta{text-align:center;font-size:12px;color:var(--ui-stone);margin:0 0 8px}
+.battle-result-teams{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.battle-result-teams table{width:100%;border-collapse:collapse;font-size:12px;background:#1b244299;border:1px solid var(--ui-shade);table-layout:fixed}
+.battle-result-teams caption{caption-side:top;text-align:left;padding:4px 6px;font:8px/1.4 var(--ui-label);letter-spacing:.12em;text-transform:uppercase;color:var(--ui-ink);background:var(--ui-dawn)}
+.battle-result-teams table[data-team="1"] caption{background:var(--ui-dusk)}
+.battle-result-teams th{font:8px/1.4 var(--ui-label);letter-spacing:.06em;text-transform:uppercase;color:var(--ui-gold);text-align:right;padding:4px 5px;width:28px}
+.battle-result-teams th:nth-child(4){width:36px}.battle-result-teams th:nth-child(5){width:46px}
+.battle-result-teams th:first-child{text-align:left;width:auto}
+.battle-result-teams td{padding:3px 5px;text-align:right;color:var(--ui-parchment);border-top:1px solid #5966a155;white-space:nowrap}
+.battle-result-teams td:first-child{text-align:left;overflow:hidden;text-overflow:ellipsis}
+/* Long names wrap (the MVP badge drops to its own line) instead of clipping on narrow phones. */
+.battle-result-teams td.battle-result-name{white-space:normal;overflow-wrap:break-word;line-height:1.3}
+.battle-result-teams th:last-child{width:50px}
+.battle-result-teams tr.is-you td{background:#ffe29c26;color:var(--ui-you)}
+.battle-result-teams tr.battle-result-empty td{text-align:center;white-space:normal;color:var(--ui-parchment-dim)}
+.battle-mvp{display:inline-block;white-space:nowrap;margin-left:5px;padding:1px 3px;font:8px/1.2 var(--ui-label);letter-spacing:.08em;color:var(--ui-ink);background:var(--ui-gold);vertical-align:1px}
+#battle-result .battle-dialog-actions{justify-content:center}
+#battle-result .battle-dialog .battle-result-note{margin:6px 0 0;font-size:12px;line-height:1.35;text-align:center;color:var(--ui-stone)}
+/* Notched phones: the setup and results dialogs keep clear of the notch, the home indicator and landscape side insets (the wide
+   setup's own left padding below still wins). */
+#battle-panel,#battle-result{box-sizing:border-box;padding:env(safe-area-inset-top,0px) env(safe-area-inset-right,0px) env(safe-area-inset-bottom,0px) env(safe-area-inset-left,0px)}
+
+/* HUD clock and escape countdown urgency (text set by battle.js). */
+.battle-clock-wrap[data-urgent=true] strong{color:var(--ui-dusk)}
+#battle-evacuation[data-final=true] b{animation:battle-flow-pulse 1s steps(2) infinite}
+@keyframes battle-flow-pulse{50%{color:var(--ui-bad)}}
+
+@media (max-width:620px){
+ #battle-panel .battle-dialog,#battle-result .battle-dialog{padding:8px 10px 0;max-height:calc(100dvh - 12px)}
+ #battle-panel .battle-dialog-actions,#battle-result .battle-dialog-actions{margin:0 -10px;padding:8px 10px 10px}
+ #battle-panel .battle-setup h2{font-size:36px}
+ .battle-class-cards{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .battle-setup-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .battle-setup-grid label:has(>#battle-castle-source){grid-column:1/-1}
+ #battle-panel .battle-controls-help{grid-template-columns:1fr}
+ #battle-panel .battle-dialog-actions .battle-primary{flex:1 1 auto;min-width:0}
+ #battle-result .battle-result-dialog h2{font-size:48px}
+ .battle-result-you{grid-template-columns:repeat(3,minmax(0,1fr))}
+ .battle-result-teams{grid-template-columns:1fr}
+ #battle-result .battle-dialog-actions button{flex:1 1 40%}
+}
+#battle-panel .battle-dialog,#battle-result .battle-dialog{max-height:calc(100dvh - 20px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px))}
+#battle-result .battle-result-dialog{width:min(760px,calc(100vw - 16px - env(safe-area-inset-left,0px) - env(safe-area-inset-right,0px)))}
+@media (max-width:620px){#battle-panel .battle-dialog,#battle-result .battle-dialog{max-height:calc(100dvh - 12px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px))}}
+@media (max-height:520px){
+ #battle-panel .battle-setup h2{font-size:30px}
+ #battle-panel .battle-pitch{display:none}
+ /* Short landscape: a compact header and one-line stat tiles leave room for the table heads and first rows. */
+ #battle-result .battle-eyebrow{display:none}
+ #battle-result .battle-result-dialog h2{font-size:28px;margin:0 0 2px}
+ #battle-result #battle-result-banner{margin:0 0 2px!important}
+ #battle-result #battle-result-text{margin:0 0 4px;line-height:1.3}
+ .battle-result-you{margin:0 0 4px;gap:4px}
+ .battle-result-you>div{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:center;gap:2px 6px;padding:4px}
+ .battle-result-you b{font-size:16px}
+ #battle-result .battle-dialog .battle-result-meta{margin:0 0 4px;line-height:1.3}
+}
+/* Touch: every setup/results control is at least 44px tall (and wide). */
+@media (pointer:coarse){
+ #battle-panel .battle-dialog-actions button,#battle-result .battle-dialog-actions button{min-height:44px;min-width:44px}
+ .battle-setup-grid select{min-height:44px}
+ .battle-setup-grid label:has(>#battle-play-bots),#battle-panel .battle-dialog #battle-bot-fill-status{min-height:44px}
+ #battle-play-bots{width:22px;height:22px}
+ .battle-class-cards button{min-height:48px}
+ .battle-howto summary,.battle-advanced summary,.battle-tech summary{display:flex;align-items:center;min-height:44px;padding-top:0;padding-bottom:0}
+ #battle-panel .battle-advanced .battle-drain-label{display:flex;align-items:center;gap:10px;min-height:44px;margin:0}
+ #battle-panel .battle-advanced .battle-drain-label input{width:22px;height:22px;margin:0}
+ /* Phones: the 8px Silkscreen captions become 12px bold Pixelify (as the HUD does) so field names, stat captions and table heads stay readable. */
+ #battle-panel .battle-eyebrow,#battle-result .battle-eyebrow,.battle-setup-grid label,.battle-result-you small,.battle-result-teams caption,.battle-result-teams th,.battle-mvp{font:700 12px/1.3 var(--ui-body);letter-spacing:.04em}
+ .battle-result-teams th{padding:4px 3px}
+}
+@media (prefers-reduced-motion:reduce){#battle-evacuation[data-final=true] b{animation:none}#battle-load-progress i{transition:none}}
+/* Seamless menus (Battlefield 1 style, with game-shell.css and main.js's camera director): the live aerie stays the backdrop.
+   On wide screens the setup dialog sits at the left like the title sheet, so the camera vantage over the arena ring shows beside
+   it; the setup has no backdrop blur (the world keeps animating behind it). The setup and results dialogs slide in with staggered
+   children and leave as inert ghosts (.shell-out, already [hidden]). Reduced motion: instant. */
+#battle-panel{backdrop-filter:none}
+@media (min-width:1100px) and (min-height:600px){#battle-panel{justify-items:start;padding-left:max(clamp(24px,5vw,72px),env(safe-area-inset-left));background:linear-gradient(90deg,#120d1ceb 0,#1b2442b8 44%,#1b244240 70%,#1b244200 86%)}}
+@keyframes flow-fade-in{from{opacity:0}}
+@keyframes flow-fade-out{to{opacity:0}}
+@keyframes flow-sheet-pop{from{opacity:0;translate:0 18px;scale:.98}}
+@keyframes flow-pop-out{to{opacity:0;translate:0 12px;scale:.985}}
+@keyframes flow-sheet-in{from{opacity:0;translate:-56px 0}}
+@keyframes flow-sheet-out{to{opacity:0;translate:-64px 0}}
+@keyframes flow-item-in{from{opacity:0;translate:-16px 0}}
+@media (prefers-reduced-motion:no-preference){
+ #battle-panel:not([hidden]),#battle-result:not([hidden]){animation:flow-fade-in .4s ease-out both}
+ #battle-panel:not([hidden]) .battle-dialog,#battle-result:not([hidden]) .battle-dialog{animation:flow-sheet-pop .5s cubic-bezier(.2,.8,.2,1) both}
+ #battle-panel:not([hidden]) .battle-dialog>*,#battle-result:not([hidden]) .battle-dialog>*{animation:flow-item-in .45s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--i,0)*40ms + 110ms)}
+ :is(#battle-panel,#battle-result) .battle-dialog>:nth-child(2){--i:1}:is(#battle-panel,#battle-result) .battle-dialog>:nth-child(3){--i:2}:is(#battle-panel,#battle-result) .battle-dialog>:nth-child(4){--i:3}:is(#battle-panel,#battle-result) .battle-dialog>:nth-child(5){--i:4}:is(#battle-panel,#battle-result) .battle-dialog>:nth-child(6){--i:5}:is(#battle-panel,#battle-result) .battle-dialog>:nth-child(n+7){--i:6}
+ #battle-panel.shell-out,#battle-result.shell-out{animation:flow-fade-out .32s ease-in both}
+ #battle-panel.shell-out .battle-dialog,#battle-result.shell-out .battle-dialog{animation:flow-pop-out .32s ease-in both}
+ @media (min-width:1100px) and (min-height:600px){#battle-panel:not([hidden]) .battle-dialog{animation-name:flow-sheet-in}#battle-panel.shell-out .battle-dialog{animation-name:flow-sheet-out}}
+}

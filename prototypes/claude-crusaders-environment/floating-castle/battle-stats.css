@@ -1,0 +1,120 @@
+/* Session stats sheet (battle-stats.js): a full-screen modal <dialog id="stats-sheet"> in the game's pixel frame.
+   theme.css tokens and bundled fonts only; Silkscreen at 16px for short labels, Pixelify Sans >= 12px everywhere else.
+   Phones (<= 559px wide) get an edge-to-edge sheet, short landscape screens (<= 500px tall) a compact header. */
+#stats-sheet{box-sizing:border-box;position:fixed;inset:0;z-index:98;width:100%;height:100%;max-width:none;max-height:none;margin:0;
+ padding:max(12px,env(safe-area-inset-top)) max(12px,env(safe-area-inset-right)) max(12px,env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left));
+ border:0;overflow:hidden;color:var(--ui-parchment);font-family:var(--ui-body);background:radial-gradient(ellipse at 50% 40%,#1b244299,#120d1ce0);backdrop-filter:blur(2px)}
+#stats-sheet:not([open]){display:none}
+#stats-sheet[open]{display:grid;place-items:center;animation:stats-fade .18s ease-out}
+#stats-sheet::backdrop{background:transparent}
+#stats-sheet *,#stats-sheet *::before,#stats-sheet *::after{box-sizing:border-box}
+#stats-sheet .stats-frame{display:flex;flex-direction:column;width:min(880px,100%);max-height:100%;min-height:0;padding:10px 16px 0;border:12px solid transparent;border-image:var(--ui-frame) 6 fill/12px/0 stretch;box-shadow:var(--ui-drop)}
+#stats-sheet[open] .stats-frame{animation:stats-in .24s cubic-bezier(.2,.8,.2,1)}
+@keyframes stats-fade{from{opacity:0}to{opacity:1}}
+@keyframes stats-in{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){#stats-sheet[open],#stats-sheet[open] .stats-frame{animation:none}}
+
+/* Header and footer stay put; the body scrolls. */
+.stats-head{flex:none;display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:0 0 8px;border-bottom:2px solid #f4c67b40}
+.stats-heading{min-width:0}
+.stats-eyebrow{display:block;font:16px/1 var(--ui-label);letter-spacing:.14em;text-transform:uppercase;color:var(--ui-gold);text-shadow:1px 1px 0 var(--ui-ink)}
+#stats-title{margin:4px 0 0;font:400 48px/1 var(--ui-display);letter-spacing:.02em;text-transform:none;color:var(--ui-gold-hi);text-shadow:3px 3px 0 var(--ui-ink)}
+.stats-body{flex:1 1 auto;min-height:0;overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain;padding:12px 2px 6px;scrollbar-width:thin;scrollbar-color:var(--ui-shade) transparent}
+.stats-foot{flex:none;display:flex;justify-content:space-between;align-items:center;gap:8px;margin:0 -16px;padding:10px 16px 12px;border-top:2px solid #f4c67b40;background:linear-gradient(#1d2a4b00,var(--ui-panel-solid) 35%)}
+
+/* Buttons: the shell's raised pixel buttons (game-shell.css), gold for the primary action. */
+#stats-sheet .stats-btn,#stats-sheet .stats-x{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:44px;padding:9px 16px;font:400 16px/1.15 var(--ui-body);color:var(--ui-parchment);text-align:center;text-decoration:none;text-shadow:1px 1px 0 var(--ui-ink);border:2px solid var(--ui-ink);border-radius:0;background:linear-gradient(var(--ui-raise) 0 50%,var(--ui-raise-lo) 50%);box-shadow:inset 0 2px 0 #ffffff1f,inset 0 -2px 0 #0000002e,2px 2px 0 var(--ui-ink);cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+#stats-sheet .stats-x{flex:none;min-width:44px;padding:4px 10px;font-size:24px;line-height:1}
+#stats-sheet .stats-btn:hover:not(:disabled),#stats-sheet .stats-x:hover{border-color:var(--ui-gold);color:var(--ui-gold-hi);background:linear-gradient(#34497a 0 50%,#2a3b63 50%)}
+#stats-sheet .stats-btn:focus-visible,#stats-sheet .stats-x:focus-visible{outline:3px solid var(--ui-gold-hi);outline-offset:2px;box-shadow:0 0 0 5px var(--ui-ink)}
+#stats-sheet .stats-btn:active:not(:disabled),#stats-sheet .stats-x:active{transform:translate(1px,1px);box-shadow:inset 0 2px 0 #0000002e,1px 1px 0 var(--ui-ink)}
+#stats-sheet .stats-btn:disabled{opacity:.5;cursor:default}
+#stats-sheet .stats-primary{font-weight:700;color:var(--ui-ink);text-shadow:1px 1px 0 #fff3cd80;background:linear-gradient(var(--ui-gold-hi) 0 3px,var(--ui-gold) 3px 60%,#e3b066 60% calc(100% - 3px),var(--ui-gold-lo) calc(100% - 3px))}
+#stats-sheet .stats-primary:hover:not(:disabled){color:var(--ui-ink);border-color:var(--ui-parchment);background:linear-gradient(#fff3cd 0 3px,var(--ui-gold-hi) 3px 60%,var(--ui-gold) 60% calc(100% - 3px),var(--ui-gold-lo) calc(100% - 3px))}
+#stats-sheet .stats-soon{color:var(--ui-parchment-dim);border-style:dashed;border-color:var(--ui-shade);background:#231a2e99;box-shadow:2px 2px 0 var(--ui-ink);cursor:help}
+#stats-sheet .stats-soon:hover{color:var(--ui-parchment);border-color:var(--ui-gold-lo);background:#231a2ecc}
+#stats-sheet .stats-soon small{font-size:12px;letter-spacing:.04em;color:var(--ui-stone)}
+#stats-clear[data-armed]{color:var(--ui-ink);text-shadow:none;border-color:var(--ui-ink);background:var(--ui-bad)}
+
+/* The account notice. */
+.stats-notice{margin:0 0 16px;padding:12px 14px;background:linear-gradient(#f4c67b24,#f4c67b0a);border:2px solid var(--ui-gold);box-shadow:inset 0 0 0 2px var(--ui-ink),3px 3px 0 var(--ui-ink)}
+.stats-notice-title{margin:0 0 4px;font:700 18px/1.3 var(--ui-body);color:var(--ui-gold-hi);text-shadow:1px 1px 0 var(--ui-ink)}
+.stats-notice-sub{margin:0 0 10px;font-size:13px;line-height:1.45;color:var(--ui-parchment-dim)}
+.stats-notice-actions{display:flex;flex-wrap:wrap;gap:8px}
+.stats-status{min-height:18px;margin:8px 0 0;font-size:13px;line-height:1.4;color:var(--ui-dawn)}
+.stats-status:empty{min-height:0;margin:0}
+.stats-status[data-tone=warn]{color:var(--ui-gold-hi)}
+.stats-status[data-tone=good]{color:var(--ui-good)}
+
+/* Sections, tiles and tables (the results screen's tile look). */
+.stats-section{margin:0 0 16px}
+.stats-section[hidden]{display:none}
+.stats-section h3{margin:0 0 8px;font:16px/1 var(--ui-label);letter-spacing:.12em;text-transform:uppercase;color:var(--ui-gold);text-shadow:1px 1px 0 var(--ui-ink)}
+.stats-headline{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:0 0 8px}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(124px,1fr));gap:6px}
+.stats-tile{display:grid;justify-items:center;align-content:center;gap:4px;min-width:0;padding:8px 4px;text-align:center;background:var(--ui-ink);border:1px solid var(--ui-shade);box-shadow:inset 0 2px 0 #f4c67b33}
+.stats-tile b{font:700 20px/1 var(--ui-body);color:var(--ui-parchment);overflow-wrap:anywhere}
+.stats-tile small{font:12px/1.2 var(--ui-body);letter-spacing:.06em;text-transform:uppercase;color:var(--ui-gold)}
+.stats-headline .stats-tile{padding:10px 4px}
+.stats-headline .stats-tile b{font-size:30px;color:var(--ui-you)}
+.stats-tile.is-win b{color:var(--ui-good)}
+.stats-tile.is-loss b{color:var(--ui-dusk)}
+.stats-empty{display:grid;gap:6px;padding:18px 14px;text-align:center;background:var(--ui-ink);border:1px dashed var(--ui-shade)}
+.stats-empty b{font:700 18px/1.3 var(--ui-body);color:var(--ui-gold-hi)}
+.stats-empty p{margin:0;font-size:13px;line-height:1.45;color:var(--ui-parchment-dim)}
+.stats-table{width:100%;border-collapse:collapse;table-layout:fixed;font-size:13px;background:#1b244299;border:1px solid var(--ui-shade)}
+.stats-table th{padding:6px;font:12px/1.3 var(--ui-body);letter-spacing:.06em;text-transform:uppercase;text-align:right;color:var(--ui-gold);background:#231a2e99}
+.stats-table td{padding:5px 6px;text-align:right;color:var(--ui-parchment);border-top:1px solid #5966a155;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.stats-table th:first-child,.stats-table td:first-child{text-align:left}
+#stats-classes th:not(:first-child){width:64px}
+#stats-recent th:nth-child(2){width:118px}#stats-recent th:nth-child(3),#stats-recent th:nth-child(4){width:76px}
+.stats-table tr.is-unplayed td{color:#c9c3e680}
+.stats-table tr[data-fav] td.stats-name{color:var(--ui-you)}
+.stats-badge{display:inline-block;margin-left:6px;padding:1px 4px;font:700 12px/1.2 var(--ui-body);letter-spacing:.04em;color:var(--ui-ink);text-shadow:none;background:var(--ui-gold);vertical-align:1px}
+.stats-table td.stats-match{white-space:normal;line-height:1.3}
+.stats-match b{display:block;font-weight:400;color:var(--ui-parchment)}
+.stats-match small{display:block;font-size:12px;color:var(--ui-parchment-dim);overflow-wrap:anywhere}
+.stats-table td.stats-result{white-space:normal;font-weight:700}
+#stats-recent tr.is-victory .stats-result{color:var(--ui-good)}
+#stats-recent tr.is-defeat .stats-result{color:var(--ui-dusk)}
+#stats-recent tr.is-stalemate .stats-result{color:var(--ui-stone)}
+
+/* Phones: an edge-to-edge sheet. */
+@media (max-width:559px){
+ #stats-sheet{padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
+ #stats-sheet .stats-frame{width:100%;height:100%;max-height:none;padding:8px 10px 0}
+ #stats-title{font-size:36px}
+ .stats-notice{padding:10px}
+ .stats-notice-title{font-size:16px}
+ .stats-notice-actions>*{flex:1 1 40%}
+ .stats-notice-actions #stats-account{flex-basis:100%}
+ #stats-sheet .stats-btn{padding:8px 10px}
+ #stats-sheet .stats-soon{flex-direction:column;gap:0}
+ .stats-headline{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+ .stats-headline .stats-tile b{font-size:26px}
+ .stats-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+ .stats-tile b{font-size:18px}
+ .stats-table{font-size:12px}
+ .stats-table th,.stats-table td{padding:5px 4px}
+ .stats-table .stats-wide{display:none}
+ #stats-classes th:not(:first-child){width:50px}
+ #stats-recent th:nth-child(2){width:84px}#stats-recent th:nth-child(3),#stats-recent th:nth-child(4){width:56px}
+ .stats-foot{margin:0 -10px;padding:8px 10px 10px}
+ .stats-foot .stats-btn{flex:1 1 0}
+}
+@media (max-width:359px){.stats-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+/* Short landscape phones: a compact header and notice so the stats get the height. */
+@media (max-height:500px){
+ #stats-sheet{padding:max(4px,env(safe-area-inset-top)) max(8px,env(safe-area-inset-right)) max(4px,env(safe-area-inset-bottom)) max(8px,env(safe-area-inset-left))}
+ #stats-sheet .stats-frame{height:100%;padding:4px 14px 0}
+ .stats-head{align-items:center;padding:0 0 4px}
+ .stats-heading{display:flex;align-items:baseline;gap:12px}
+ #stats-title{order:-1;margin:0;font-size:32px}
+ .stats-body{padding-top:8px}
+ .stats-notice{margin-bottom:12px;padding:8px 10px}
+ .stats-notice-title{font-size:16px}
+ .stats-notice-sub{display:none}
+ .stats-headline .stats-tile{padding:6px 4px}
+ .stats-headline .stats-tile b{font-size:22px}
+ .stats-foot{margin:0 -14px;padding:6px 14px 8px}
+}

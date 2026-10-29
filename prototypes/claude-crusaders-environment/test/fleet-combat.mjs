@@ -1,0 +1,14 @@
+import * as T from '../vendor/three.module.js';import assert from 'node:assert/strict';import fs from 'node:fs';
+import {BATTLE_RULES as R,createBattleCombat} from '../floating-castle/battle-combat.js';
+const checks=[],actors=Array.from({length:16},(_,i)=>({id:i,team:i<8?0:1,state:{x:1000+i*10,y:0,z:1000,grounded:true},weapon:0}));
+const hull=new T.Mesh(new T.BoxGeometry(5,5,5),new T.MeshBasicMaterial());hull.position.set(15,2,0);hull.userData.vehicleId='ship';hull.updateMatrixWorld(true);
+const ship={id:'ship',team:1,hp:100,maxHp:100},gun={id:'gun',team:0,hp:100,alive:true,state:{x:0,y:1,z:0},mountWeapon:{damage:24,interval:.85,speed:85,life:3.6,spread:[0],radius:.5},ignore:new Set()};
+const objectives=[{id:0,x:0,y:0,z:50,radius:14,damage:90},{id:4,x:0,y:0,z:-50,radius:15,damage:360}];
+const combat=createBattleCombat({actors,objectives,solids:[hull],dynamicSolids:[hull],mounts:[gun],vehicles:[ship]});combat.start();
+assert(!combat.fire({...gun,id:'foreign'},{x:15,y:2,z:0}));assert(combat.fire(gun,{x:15,y:2,z:0}));assert(!combat.fire(gun,{x:15,y:2,z:0}));for(let i=0;i<30;i++)combat.step(1/60);assert.equal(ship.hp,76);checks.push('Registered mount, cooldown and swept real-hull damage');
+ship.team=0;gun.nextShot=0;combat.fire(gun,{x:15,y:2,z:0});for(let i=0;i<30;i++)combat.step(1/60);assert.equal(ship.hp,76);checks.push('Friendly hull blocks without taking damage');
+hull.visible=false;assert.equal(combat.collision.distance({x:0,y:2,z:0},{x:20,y:2,z:0}),Infinity);checks.push('Destroyed hidden hull is absent from projectile collision');
+Object.assign(actors[0].state,{x:0,y:0,z:50,grounded:true});actors[0].mount={ship:'fixture',seat:0};for(let i=0;i<400;i++)combat.step(1/60);assert.equal(objectives[0].progress,0);actors[0].mount=null;for(let i=0;i<361;i++)combat.step(1/60);assert.equal(objectives[0].owner,0);checks.push('Riding cannot capture; supported disembarked actor can');
+combat.start();Object.assign(actors[0].state,{x:1000,y:0,z:1000});Object.assign(objectives[0],{owner:0,progress:1,charge:.9999});combat.step(1/60);for(let i=0;i<85;i++)combat.step(1/60);assert.equal(combat.state.shields[1],R.shieldHp-90);
+Object.assign(objectives[1],{owner:0,progress:1,charge:.9999});combat.step(1/60);for(let i=0;i<85;i++)combat.step(1/60);assert.equal(combat.state.shields[1],R.shieldHp-450);assert.equal(combat.state.cores[1],R.coreHp);checks.push('Actual charged strikes deal 90 outer / 360 Crown through shields first');
+fs.writeFileSync('review/fleet-combat.json',JSON.stringify({scope:'Explicit isolated combat fixtures with real triangle hull collider.',checks,passed:true},null,2));console.log(checks);

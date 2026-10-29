@@ -1,0 +1,17 @@
+.titlebar.visible-title-study{position:fixed;left:8px;right:60px;top:4px;height:96px;padding:0;display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-start;gap:4px;pointer-events:none}
+.visible-title-study .logo-s{font-size:24px}
+.visible-title-study .special{display:none}
+.visible-title-study>span{display:flex;flex-wrap:nowrap;gap:4px;width:100%}
+.visible-title-study .chipbtn{min-height:44px;font-size:13px;padding:6px 8px;pointer-events:auto;box-sizing:border-box;white-space:nowrap}
+.visible-title-study .expanded-entry{position:static;margin-left:auto}
+.visible-title-study .end{font-size:13px}
+.phone-title-menu .bubble.her.conversation-landscape{left:12px;top:56px;max-height:40px}
+@media(orientation:portrait){body.phone-title-menu .bubble.her{position:fixed;top:108px;left:12px;right:12px;width:auto;max-height:100px;overflow-y:auto;font-size:14px;transform:none!important}body.phone-title-menu .bubble.her b{font-size:11px}}
+@media(orientation:landscape) and (max-height:299px) and (min-width:560px){
+ .visible-title-study{height:44px;justify-content:center}
+ .visible-title-study>div{display:none}
+ .titling~.panel.conversation-landscape{top:52px;height:calc(100dvh - 52px)}
+ body.phone-title-menu .panel.conversation-landscape{top:52px;height:calc(100dvh - 52px)}
+ .phone-title-menu .bubble.her.conversation-landscape{left:8px;top:56px;width:156px;max-height:calc(100dvh - 152px)}
+ .phone-title-menu .panel.conversation-landscape .guy{display:none}
+}

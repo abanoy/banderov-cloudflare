@@ -1,0 +1,9 @@
+# Under400 open-spacing candidate — 2026-10-12
+
+Separate under400-open-spacing-* candidate, product/runtime/root unchanged. Retains only3JS splitthreshold400→360 and1CSS min400→360, plus360–399 spacingoverride:96sidebar/80question, panelpadding4/gridgap6, buttonhorizontalpadding2, keyleft2, firstlineindent8. Font14/tag10/original44minimumtargets/art/timers unchanged bycandidate. Candidate frozen afterfinalrun; parentdecidesnativevalidation/integration. Allpreviousdrafts including correctedcompactfailedresults preserved.
+
+Owned66531 actualterminal0/allownedcontextsandbrowserclosed. Final fullcatalog at360/390/400x240:576weekdaychoices/144quartets,40sharedDATEchoices/10quartets,64persona-finalchoices/16quartets,2016Expandedchoices/504quartets each. Actual1–4 keylabels set perchoice. DOMRange firstline-to-key intersection, minimumhorizontalgap,texttop/buttonleft-right/tagbottom,44target/viewportbounds andoverflow measured. All0failures. Minimumfirstline textleft-keyright1.078125px360/390 and9.078125400. This corrects earliercompacttemplatekey omission; no reuse ofinvalidzeroresult.
+
+SavedDay2/historicalwinner titlefixture: Continue/Endings/unlockedExpanded all44pxhigh/inviewport/centerhittrue; questionpaneloverlapfalse atall3widths. Exactfixture screenshots under400-open-spacing-title-{width}.png. Catalogscreenshots showfinalAndroidDay28thirdquartet becausefailurelistempty; theyarenotindividualscreenshots ofeverymeasuredcase. SourcecatalogsyntheticDOM, nativebrowsergeometry, notnativechoice/month/fullweek/humanreading/device/Safari/audioacceptance.
+
+Report/results sentparentandtouchagent; nativecheckallowedonlyafterparentconfirmation. No productfix/supportclaim fromcatalog alone. Largecatalog counts are repeatedtonechoices acrosscharacters, not thatmanyindependentlyauthoredstories. No newcontent/scoring/timer/artpolicyintroduced.

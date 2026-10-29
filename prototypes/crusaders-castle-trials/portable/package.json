@@ -1,0 +1,1 @@
+{"name":"crusaders-castle-trials","private":true,"type":"module","scripts":{"dev":"node server.cjs","test":"node test/loop.mjs && node test/camps.mjs && node test/design-export.mjs && node test/parent-physics.mjs && node test/wave-compatibility.mjs && node test/armory-biomes.mjs"}}

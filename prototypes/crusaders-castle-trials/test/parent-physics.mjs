@@ -1,0 +1,10 @@
+import assert from 'node:assert/strict';
+import * as T from '../vendor/three.module.js';
+import {flightWorld} from '../game/flight.js';
+const mat=new T.MeshBasicMaterial({side:T.DoubleSide}),g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute([-10,0,-10,0,10,10,10,0,-10],3));g.computeVertexNormals();const root=new T.Group(),mesh=new T.Mesh(g,mat);root.rotation.z=.2;root.scale.set(1.4,.5,1);root.add(mesh);root.updateMatrixWorld(true);
+const a=new T.Vector3().fromBufferAttribute(g.attributes.position,0).applyMatrix4(mesh.matrixWorld),b=new T.Vector3().fromBufferAttribute(g.attributes.position,1).applyMatrix4(mesh.matrixWorld),c=new T.Vector3().fromBufferAttribute(g.attributes.position,2).applyMatrix4(mesh.matrixWorld),centre=a.clone().add(b).add(c).multiplyScalar(1/3),expected=b.clone().sub(a).cross(c.clone().sub(a)).normalize();
+const sim=flightWorld([mesh],[{x:centre.x,y:centre.y,z:centre.z,r:2}]),hit=sim.floor(centre.x,centre.y+2,centre.z,4);assert(hit);assert(hit.normal.distanceTo(expected)<1e-8);assert(Math.abs(hit.y-centre.y)<1e-6);
+const oldNormal=new T.Vector3().fromBufferAttribute(g.attributes.normal,0).transformDirection(mesh.matrixWorld);assert(oldNormal.distanceTo(expected)>.1);
+const floor=new T.Mesh(new T.BoxGeometry(100,1,100),mat);floor.position.y=-.5;const group=new T.Group();group.add(floor);group.updateMatrixWorld(true);const solids=[floor],p=flightWorld(solids,[{x:0,y:0,z:0,r:2}]);assert(p.floor(0,1,0,2));group.visible=false;assert.equal(p.floor(0,1,0,2),null);group.visible=true;assert(p.floor(0,1,0,2));
+for(let i=0;i<120;i++)p.step(1/120,{x:.5,z:0});assert(p.state.grounded);assert.equal(p.state.falls,0);group.visible=false;p.step(1/120,{x:.5,z:0});assert(!p.state.grounded);group.visible=true;p.recover();solids.splice(0);assert.equal(p.floor(0,1,0,2),null);solids.push(floor);assert(p.floor(0,1,0,2));floor.position.y=2;group.updateMatrixWorld(true);assert(Math.abs(p.floor(0,4,0,3).y-2.5)<1e-8);
+console.log('PASS transformed triangle geometric normal (old formula differs); ancestor hide/show, fresh step/list/matrix changes, moving support/no falls');

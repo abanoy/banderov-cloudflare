@@ -1,0 +1,211 @@
+:root{color-scheme:dark;font-family:Consolas,'Courier New',monospace;color:#f0ecd8;background:#233b60;--ink:#12273ce8;--line:#9cbcc0;--glow:#91e2d9;--gold:#f4c67b}*{box-sizing:border-box}body{margin:0;overflow:hidden}button,select,a,input{font:inherit}button,select{color:inherit;background:linear-gradient(#304b61,#1b3047);border:1px solid #9bb0b9;border-bottom-color:#0b1a29;box-shadow:inset 1px 1px #ffffff24,2px 2px #11233470;border-radius:2px;padding:9px 12px;cursor:pointer;touch-action:manipulation}button:hover,button[aria-pressed=true]{color:#e7fff6;border-color:var(--glow);background:#315969}button:focus-visible,select:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid var(--gold);outline-offset:3px}button:disabled{opacity:.55;cursor:default}a{color:#bdd5d6;text-decoration:none}a:hover{text-decoration:underline}#world{position:fixed;inset:0;width:100%;height:100%;image-rendering:pixelated;touch-action:none}header{position:fixed;top:24px;left:28px;right:28px;display:flex;align-items:flex-start;justify-content:space-between;gap:20px;pointer-events:none}.brand{text-shadow:2px 2px #254155}.brand small{font-size:11px;letter-spacing:.2em;color:#cef0e2}h1{font-size:clamp(18px,2.5vw,32px);letter-spacing:.075em;font-weight:400;margin:7px 0 9px}.tag{font-size:10px;letter-spacing:.14em;background:#182d448a;border-left:3px solid var(--gold);padding:4px 8px}nav{display:flex;gap:7px;pointer-events:auto}.telemetry{position:fixed;top:165px;left:29px;text-shadow:1px 2px #253d50;pointer-events:none}.telemetry>span{font-size:10px;letter-spacing:.14em;color:#bde3e0}.telemetry>div{display:flex;align-items:baseline;gap:7px}.telemetry strong{font-size:39px;font-weight:400;font-variant-numeric:tabular-nums}.telemetry small{font-size:10px}.telemetry p{font-size:11px;color:#d7ece7}.flight-track{width:110px;height:4px;background:#d7edee35;margin-top:4px}.flight-track i{height:4px;width:5px;background:var(--gold);display:block;transform:translateX(0)}.compass{position:fixed;left:28px;top:116px;transform:none;display:flex;align-items:center;gap:9px;background:var(--ink);padding:3px;border:1px solid #a0b8bd55}.compass button{padding:6px;border:0;background:transparent;box-shadow:none}.compass span{font-size:11px;min-width:58px;text-align:center}footer{position:fixed;bottom:25px;left:28px;right:28px;display:flex;justify-content:space-between;align-items:flex-end;gap:20px;pointer-events:none}.move-zone{display:flex;align-items:center;gap:16px}#pad{width:100px;height:100px;position:relative;border:1px solid #badad28c;background:radial-gradient(circle,#203b5270 0 20%,transparent 21% 48%,#19324770 49%);border-radius:50%;touch-action:none;pointer-events:auto;box-shadow:inset 0 0 0 5px #cfeee51a}#pad:before,#pad:after{content:'';position:absolute;background:#a1d6cc4d;left:49px;top:12px;width:1px;height:76px}#pad:after{transform:rotate(90deg)}#pad i{position:absolute;left:34px;top:34px;width:30px;height:30px;border:1px solid #cfefe1;background:#38596dd9;transform:translate(0,0);border-radius:50%;z-index:1}#pad span{position:absolute;bottom:7px;width:100%;text-align:center;font-size:8px;letter-spacing:.15em}.keys{font-size:10px;text-shadow:1px 2px #1f3449;display:flex;flex-direction:column;gap:7px}.keys b{font-size:15px;letter-spacing:.2em}.keys span{color:#d1e4e2}.travel{width:290px;padding:12px;background:var(--ink);border:1px solid #aac8c175;border-top:3px solid var(--gold);pointer-events:auto;box-shadow:4px 5px #15283a40}.travel>label{font-size:9px;letter-spacing:.18em;color:#bad5d4;display:block;margin-bottom:7px}.travel select{width:100%;font-size:12px;padding:7px}#launch{width:100%;margin-top:8px;font-size:16px;letter-spacing:.06em;background:linear-gradient(#e7c683,#b69862);color:#263846;border-color:#ffebaf}#launch span{display:block;font-size:9px;letter-spacing:.15em;margin-top:5px}.secondary{display:flex;justify-content:space-between;align-items:center;gap:4px;margin-top:10px;font-size:9px}.secondary button{padding:5px;font-size:9px}.secondary a{max-width:115px}#message{position:fixed;bottom:34px;left:50%;transform:translateX(-50%);width:min(370px,30vw);font-size:11px;line-height:1.7;text-align:center;text-shadow:1px 2px #193148;color:#ebedda;pointer-events:none}#look-panel{position:fixed;right:28px;top:82px;width:320px;max-height:calc(100dvh - 110px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px));overflow:auto;padding:16px;background:#13283df5;border:1px solid #b3cbd1;box-shadow:5px 6px #14223470;z-index:3}.panel-title{display:flex;justify-content:space-between;align-items:center;font-size:12px;letter-spacing:.14em;border-bottom:1px solid #a7c1ba55;padding-bottom:8px}.panel-title button{padding:2px 7px;font-size:20px}#look-panel p{font-size:10px;color:#a9c7cc;line-height:1.6}#look-panel label{display:block;margin-top:13px;font-size:11px}output{float:right;color:var(--gold)}input[type=range]{width:100%;display:block;margin:7px 0;accent-color:var(--glow);height:17px}.presets{display:flex;gap:5px;flex-wrap:wrap}.presets button{font-size:9px;padding:6px}.fine{border-top:1px solid #a7c1ba55;padding-top:8px}#pause-panel{position:fixed;inset:0;background:#102037a8;display:grid;place-items:center;z-index:5;backdrop-filter:blur(3px)}#pause-panel section{background:var(--ink);border:1px solid #acc7c6;box-shadow:6px 6px #11213880;padding:30px;text-align:center}#pause-panel h2{font-size:38px;font-weight:400;letter-spacing:.18em}#pause-panel p{font-size:12px}#pause-panel small{font-size:10px;color:var(--glow)}[hidden]:not(.shell-out){display:none!important}@media(max-width:760px){header{top:15px;left:16px;right:16px;display:block}.brand small{font-size:8px}.brand h1{font-size:19px;margin-bottom:8px}.tag{font-size:8px}nav{margin-top:17px}nav button{padding:7px 10px;font-size:10px}.compass{top:auto;right:auto;left:16px;bottom:calc(env(safe-area-inset-bottom,0px) + 132px);transform:none}.telemetry{left:16px;top:155px}.telemetry strong{font-size:30px}.telemetry>span{font-size:8px}.telemetry p{font-size:9px}footer{left:15px;right:15px;bottom:16px;gap:10px}.keys{display:none}.travel{width:202px;padding:9px}.travel select{font-size:10px;padding:6px}.travel>label{font-size:8px}#launch{font-size:13px;padding:8px}.secondary{flex-wrap:wrap;gap:7px;font-size:8px}.secondary a{max-width:none}#pad{width:90px;height:90px}#pad:before,#pad:after{left:44px;top:9px;height:72px}#pad i{left:29px;top:29px}#message{bottom:190px;width:calc(100% - 38px);max-width:330px;font-size:10px;background:#1e354d95;padding:6px 10px}#look-panel{top:125px;right:15px;width:min(320px,calc(100% - 30px));max-height:calc(100dvh - 145px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px))}}@media(max-height:570px) and (min-width:761px){.telemetry{top:115px}footer{bottom:12px}.travel{padding:8px}#look-panel{max-height:calc(100dvh - 95px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px))}}
+#target-cue{position:fixed;transform:translate(-50%,-50%);pointer-events:none;text-align:center;color:#b9fff3;text-shadow:1px 2px #193047}#target-cue span{display:block;font-size:28px}#target-cue b{display:block;background:#183147bb;padding:4px 7px;font-size:9px;font-weight:400;border-bottom:1px solid #96d7d4;white-space:nowrap}
+#target-cue{transform:translate(-50%,-14px)}#target-cue span{width:28px;height:28px;line-height:28px;margin:auto}
+@media(max-width:760px) and (min-height:571px){body:not(.shell-title):not(.in-battle) #look-panel{max-height:calc(100dvh - 300px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px))}}
+@media(max-height:570px){
+ header{top:12px;left:16px;right:16px;display:flex;align-items:center;gap:10px}
+ .brand small,.tag{display:none}.brand h1{font-size:16px;margin:0;letter-spacing:.045em}
+ nav{margin:0;gap:5px}nav button{padding:6px 8px;font-size:10px}
+ .compass{top:54px;bottom:auto;left:auto;right:16px;transform:none}.telemetry{top:54px;left:16px}
+ .telemetry strong{font-size:26px}.telemetry p{margin:6px 0;font-size:9px}.telemetry>span{font-size:8px}
+ footer{left:16px;right:16px;bottom:12px}.keys{display:none}.travel{width:220px;padding:8px}
+ .travel select{font-size:10px;padding:6px}.travel>label{font-size:8px}#launch{font-size:13px;padding:8px}
+ .secondary{font-size:8px;gap:5px;flex-wrap:wrap}.secondary a{max-width:none}
+ #pad{width:80px;height:80px}#pad:before,#pad:after{left:39px;top:8px;height:64px}#pad i{left:24px;top:24px}
+ #message{left:116px;right:252px;bottom:22px;width:auto;max-width:none;transform:none;font-size:10px;background:#1e354d95;padding:6px 8px}
+ #look-panel{top:96px;right:16px;max-height:calc(100dvh - 108px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px));width:min(300px,calc(100% - 32px))}
+}
+#defense-panel{border-top:1px solid #77989b88;margin-top:10px;padding-top:9px;color:#b8d3d0}#defense-panel summary{font-size:9px;letter-spacing:.06em;cursor:pointer;list-style:none;display:flex;justify-content:space-between;gap:8px;min-height:22px;align-items:center}#defense-state{font-size:8px;color:#efd3a0}#defense-panel p{font-size:10px;line-height:1.5;margin:8px 0}#defense-panel #defense-toggle{width:100%;font-size:10px;padding:8px;background:#345461;border-color:#86b3af;color:#e8ebc4}#defense-panel .defense-note{font-size:8px;color:#9ebdbf;margin-bottom:2px}
+
+@media(max-width:760px) and (min-height:571px){#message{bottom:calc(var(--travel-height,176px) + 27px)}}
+@media(max-height:570px){.travel{max-height:calc(100dvh - 103px);overflow:auto;overscroll-behavior:contain}}
+
+/* Keep the exit reachable while lighting/pod settings scroll. */
+#look-panel .panel-title{position:sticky;top:-16px;margin:-16px -16px 12px;padding:12px 16px;background:#13283d;z-index:1}
+
+#look-panel{z-index:5}
+
+#target-cue small{display:block;background:#183147dd;color:#ffe3a0;padding:3px 7px;font-size:9px;white-space:nowrap}
+
+@media(max-width:760px){#target-cue b,#target-cue small{font-size:11px}#target-cue small{font-weight:600}}
+
+@media(max-width:460px) and (max-height:570px){
+ header{display:block}.brand h1{white-space:nowrap}
+ header nav{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px;margin-top:8px}
+ header nav button{min-width:0;padding:6px 4px}
+ .compass,.telemetry{top:90px}
+}
+
+#travel-message{display:none}
+@media(max-width:460px) and (max-height:570px){
+ body:not(.in-battle) #message{display:none}
+ body:not(.in-battle) #travel-message{display:block;margin:0 0 10px;padding:0 0 8px;border-bottom:1px solid #77989b88;color:#ebedda;font-size:11px;line-height:1.5;text-align:left}
+}
+
+@media(max-width:460px) and (max-height:570px){
+ body:not(.in-battle)>footer{z-index:5}
+ body:not(.in-battle) #look-panel{z-index:96}
+ body:not(.in-battle) #pause-panel{z-index:95}
+}
+
+.silo-marker:after{top:100%;bottom:auto;height:var(--silo-line-length,11px);transform-origin:top center;transform:rotate(var(--silo-line-angle,0rad));z-index:-1}
+.silo-marker{width:max-content;max-width:calc(100vw - 8px)}
+/* ---- Illuminated Aerie restyle of the sandbox UI (theme.css tokens and fonts). ----
+   Scoped to body:not(.in-battle) so battle.css keeps sole control of the in-match layout. */
+.dev-only{display:none}
+html.dev .dev-only,body.dev .dev-only{display:revert}
+body:not(.in-battle) header,body:not(.in-battle) .telemetry,body:not(.in-battle) .compass,body:not(.in-battle) footer,body:not(.in-battle) #message,body #target-cue{font-family:var(--ui-body)}
+body:not(.in-battle) .brand{text-shadow:2px 2px 0 var(--ui-ink)}
+body:not(.in-battle) .brand small{font-family:var(--ui-label);font-size:8px;letter-spacing:.2em;color:var(--ui-gold)}
+body:not(.in-battle) .brand h1{font-weight:700;font-size:clamp(20px,2.3vw,30px);letter-spacing:.08em;line-height:1.1;color:var(--ui-parchment);margin:6px 0 8px}
+body:not(.in-battle) .tag{display:inline-block;font-family:var(--ui-label);font-size:8px;letter-spacing:.16em;color:var(--ui-parchment);background:#231a2ecc;border-left:4px solid var(--ui-gold);padding:5px 9px;text-shadow:none;box-shadow:2px 2px 0 #231a2e80}
+body:not(.in-battle) header nav{gap:6px}
+body:not(.in-battle) header nav button,body:not(.in-battle) .travel button,body:not(.in-battle) .travel select,body:not(.in-battle) .compass{font-family:var(--ui-body);color:var(--ui-parchment);border:2px solid var(--ui-ink);border-radius:0;background:linear-gradient(var(--ui-raise) 0 50%,var(--ui-raise-lo) 50%);box-shadow:inset 0 2px 0 #ffffff1f,inset 0 -2px 0 #0000002e,2px 2px 0 var(--ui-ink);text-shadow:1px 1px 0 var(--ui-ink)}
+body:not(.in-battle) header nav button{font-size:13px;min-height:40px;padding:8px 12px}
+body:not(.in-battle) header nav button:hover,body:not(.in-battle) .travel button:hover:not(:disabled),body:not(.in-battle) .travel select:hover,body:not(.in-battle) header nav button[aria-expanded=true]{border-color:var(--ui-gold);color:var(--ui-gold-hi);background:linear-gradient(#34497a 0 50%,#2a3b63 50%)}
+body:not(.in-battle) header nav button[aria-pressed=true]{color:var(--ui-parchment);border-color:var(--ui-ink);background:linear-gradient(var(--ui-raise) 0 50%,var(--ui-raise-lo) 50%);box-shadow:inset 0 -3px 0 var(--ui-dawn),2px 2px 0 var(--ui-ink)}
+body:not(.in-battle) header nav button[aria-pressed=true]:hover{border-color:var(--ui-gold)}
+body:not(.in-battle) .telemetry{text-shadow:2px 2px 0 var(--ui-ink)}
+body:not(.in-battle) .telemetry>span{font-family:var(--ui-label);font-size:8px;letter-spacing:.18em;color:var(--ui-dawn)}
+body:not(.in-battle) .telemetry strong{font-weight:700;font-size:36px;color:var(--ui-parchment)}
+body:not(.in-battle) .telemetry small{font-family:var(--ui-label);font-size:8px;letter-spacing:.1em;color:var(--ui-parchment-dim)}
+body:not(.in-battle) .telemetry p{font-size:12px;color:var(--ui-parchment)}
+body:not(.in-battle) .flight-track{height:4px;background:#fff3cd38;box-shadow:2px 2px 0 #231a2e80}
+body:not(.in-battle) .compass{padding:2px;gap:2px}
+body:not(.in-battle) .compass button{min-width:40px;min-height:32px;padding:4px 8px;font-size:13px;color:var(--ui-parchment);text-shadow:1px 1px 0 var(--ui-ink)}
+body:not(.in-battle) .compass button:hover{color:var(--ui-gold-hi);background:#34497a}
+body:not(.in-battle) .compass span{min-width:52px;font-size:13px;color:var(--ui-gold)}
+body:not(.in-battle) #pad{border:2px solid #80eee28c;background:radial-gradient(circle,#1d2a4b99 0 20%,transparent 21% 48%,#1d2a4b99 49%);box-shadow:inset 0 0 0 5px #80eee21a,2px 2px 0 #231a2e66}
+body:not(.in-battle) #pad i{border:2px solid var(--ui-parchment);background:#2a3b63e6}
+body:not(.in-battle) #pad span{font-family:var(--ui-label);font-size:8px;letter-spacing:.12em}
+body:not(.in-battle) .keys{font-family:var(--ui-label);font-size:8px;letter-spacing:.1em;gap:6px;text-shadow:1px 1px 0 var(--ui-ink)}
+body:not(.in-battle) .keys b{font-family:var(--ui-body);font-size:16px;font-weight:700;letter-spacing:.2em;color:var(--ui-gold)}
+body:not(.in-battle) .keys span{color:var(--ui-parchment)}
+body:not(.in-battle) .travel{border:12px solid transparent;border-image:var(--ui-frame) 6/12px/0 stretch;background:#1d2a4bf0;background-clip:padding-box;box-shadow:var(--ui-drop);padding:4px 6px 6px;color:var(--ui-parchment)}
+body:not(.in-battle) .travel>label{font-family:var(--ui-label);font-size:8px;letter-spacing:.16em;color:var(--ui-gold)}
+body:not(.in-battle) .travel select{font-size:13px;padding:7px 8px}
+body:not(.in-battle) #launch{min-height:52px;font-size:16px;font-weight:700;letter-spacing:.06em;color:var(--ui-ink);text-shadow:1px 1px 0 #fff3cd80;background:linear-gradient(var(--ui-gold-hi) 0 3px,var(--ui-gold) 3px 60%,#e3b066 60% calc(100% - 3px),var(--ui-gold-lo) calc(100% - 3px))}
+body:not(.in-battle) #launch:hover:not(:disabled){color:var(--ui-ink);border-color:var(--ui-parchment);background:linear-gradient(#fff3cd 0 3px,var(--ui-gold-hi) 3px 60%,var(--ui-gold) 60% calc(100% - 3px),var(--ui-gold-lo) calc(100% - 3px))}
+body:not(.in-battle) #launch:disabled{opacity:1;filter:saturate(.3) brightness(.78)}
+body:not(.in-battle) #launch span{font-family:var(--ui-label);font-size:8px;font-weight:400;letter-spacing:.14em}
+body:not(.in-battle) .secondary{font-size:12px}
+body:not(.in-battle) .secondary button{font-size:12px;min-height:32px;padding:5px 9px}
+body:not(.in-battle) #defense-panel{border-top:2px solid #f4c67b40;color:var(--ui-parchment-dim)}
+body:not(.in-battle) #defense-panel summary{font-family:var(--ui-label);font-size:8px;letter-spacing:.12em;color:var(--ui-parchment);min-height:28px}
+body:not(.in-battle) #defense-state{font-family:var(--ui-label);font-size:8px;color:var(--ui-gold)}
+body:not(.in-battle) #defense-panel p,body:not(.in-battle) #defense-panel .defense-note{font-size:12px;line-height:1.4}
+body:not(.in-battle) #defense-panel #defense-toggle{width:100%;font-size:13px;min-height:36px}
+body:not(.in-battle) #message{font-size:13px;line-height:1.5;color:var(--ui-parchment);text-shadow:1px 1px 0 var(--ui-ink)}
+body:not(.in-battle) #travel-message{font-family:var(--ui-body);font-size:12px;color:var(--ui-parchment)}
+body #target-cue{color:var(--ui-dawn);text-shadow:1px 1px 0 var(--ui-ink)}
+body #target-cue b,body #target-cue small{font-size:12px;font-weight:400;border:0;box-shadow:2px 2px 0 #231a2e80}
+body #target-cue b{background:#1d2a4be6;color:var(--ui-parchment);border-bottom:2px solid var(--ui-dawn)}
+body #target-cue small{background:#231a2ee6;color:var(--ui-gold)}
+@media(max-width:760px){body:not(.in-battle) .brand h1{font-size:18px;margin:4px 0 6px}
+body:not(.in-battle) header nav{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px}
+body:not(.in-battle) header nav button{min-width:0;font-size:12px;line-height:1.1;min-height:40px;padding:4px 3px}
+body:not(.in-battle) .travel{border-width:6px;border-image:var(--ui-frame) 6/6px/0 stretch;padding:4px 5px 5px}
+body:not(.in-battle) .travel select{font-size:12px;padding:6px}
+body:not(.in-battle) #launch{min-height:44px;font-size:13px}
+body:not(.in-battle) #message{font-size:12px;background:#1d2a4bd9;border:2px solid var(--ui-ink);box-shadow:2px 2px 0 #231a2e80}
+body:not(.in-battle) .telemetry strong{font-size:28px}
+body:not(.in-battle) .compass button{min-width:32px;padding:4px 6px}
+body:not(.in-battle) .compass span{min-width:44px}
+}
+@media(min-width:761px) and (max-width:1100px){body:not(.in-battle) .brand small{display:none}
+body:not(.in-battle) .brand h1{font-size:18px;letter-spacing:.04em;white-space:nowrap}
+body:not(.in-battle) header nav button{font-size:12px;padding:8px 9px}
+}
+@media(max-height:570px){body:not(.in-battle) .brand h1{font-size:16px;margin:0}
+body:not(.in-battle) header nav button{font-size:12px;min-height:32px;padding:5px 8px}
+body:not(.in-battle) .telemetry strong{font-size:24px}
+body:not(.in-battle) .travel{border-width:6px;border-image:var(--ui-frame) 6/6px/0 stretch;padding:3px 5px 5px}
+body:not(.in-battle) #launch{min-height:40px;font-size:13px}
+}
+@media(max-width:460px) and (max-height:570px){body:not(.in-battle) header nav{display:grid;flex-wrap:nowrap}
+body:not(.in-battle) header nav button{padding:5px 3px;font-size:12px}
+}
+/* Settings panel (also used in battle and over the title). */
+#look-panel{border:12px solid transparent;border-image:var(--ui-frame) 6/12px/0 stretch;background:var(--ui-panel-solid);background-clip:padding-box;box-shadow:var(--ui-drop);padding:0 14px 14px;font-family:var(--ui-body);color:var(--ui-parchment);scrollbar-width:thin}
+#look-panel .panel-title{position:sticky;top:0;margin:0 -14px 8px;padding:10px 14px 8px;background:#1d2a4b;border-bottom:2px solid #f4c67b55;font-family:var(--ui-label);font-size:16px;letter-spacing:.12em;color:var(--ui-gold);text-shadow:1px 1px 0 var(--ui-ink)}
+#look-panel .panel-title button,#look-panel .presets button,#look-panel #player-cue,#look-panel select{font-family:var(--ui-body);color:var(--ui-parchment);border:2px solid var(--ui-ink);border-radius:0;background:linear-gradient(var(--ui-raise) 0 50%,var(--ui-raise-lo) 50%);box-shadow:inset 0 2px 0 #ffffff1f,2px 2px 0 var(--ui-ink);text-shadow:1px 1px 0 var(--ui-ink)}
+#look-panel .panel-title button{min-width:40px;min-height:36px;padding:0 8px;font-size:22px;line-height:1}
+#look-panel .panel-title button:hover,#look-panel .presets button:hover,#look-panel #player-cue:hover,#look-panel .presets button[aria-pressed=true]{border-color:var(--ui-gold);color:var(--ui-gold-hi)}
+#look-panel .presets button[aria-pressed=true]{box-shadow:inset 0 -3px 0 var(--ui-gold),2px 2px 0 var(--ui-ink)}
+#look-panel h3{margin:4px 0 0;font-family:var(--ui-label);font-size:8px;font-weight:400;letter-spacing:.2em;color:var(--ui-gold)}
+#look-panel label{margin-top:12px;font-size:13px}
+#look-panel label.check{display:flex;align-items:center;gap:10px;min-height:32px;margin-top:8px;cursor:pointer}
+#look-panel input[type=checkbox]{width:20px;height:20px;margin:0;accent-color:var(--ui-gold)}
+#look-panel label.select{display:grid;gap:6px}
+#look-panel select{width:100%;font-size:13px;padding:7px 8px}
+#look-panel input[type=range]{accent-color:var(--ui-gold)}
+#look-panel output{color:var(--ui-gold)}
+#look-panel p{font-size:12px;line-height:1.45;color:var(--ui-parchment-dim)}
+#look-panel .fine{border-top:0;padding-top:0}
+#look-panel .presets{gap:6px}
+#look-panel .presets button{font-size:12px;padding:6px 8px}
+#look-panel #player-cue{margin-top:14px;font-size:12px;padding:7px 10px}
+#look-panel details{margin-top:14px;padding-top:8px;border-top:2px solid #f4c67b40}
+#look-panel summary{display:flex;align-items:center;gap:8px;min-height:32px;cursor:pointer;list-style:none;font-family:var(--ui-label);font-size:8px;letter-spacing:.16em;text-transform:uppercase;color:var(--ui-gold)}
+#look-panel summary::-webkit-details-marker{display:none}
+#look-panel summary:before{content:'';width:0;height:0;border:5px solid transparent;border-left:6px solid currentColor;border-right:0}
+#look-panel details[open]>summary:before{border:5px solid transparent;border-top:6px solid currentColor;border-bottom:0}
+#look-panel summary:hover{color:var(--ui-gold-hi)}
+@media (pointer:coarse){#look-panel .panel-title button{min-width:44px;min-height:44px}#look-panel select,#look-panel summary,#look-panel label.check,#look-panel .presets button,#look-panel #player-cue{min-height:44px}#look-panel input[type=checkbox]{width:24px;height:24px}}
+/* Explore key hints sit on bright clouds: give them an ink plate. */
+body:not(.in-battle) .keys{padding:6px 10px 7px;border:6px solid transparent;border-image:var(--ui-frame) 6/6px/0 stretch;background:#1d2a4be6;background-clip:padding-box;box-shadow:2px 2px 0 #231a2e88}
+/* Touch: the camera buttons are icon-only (no Q/E key letters). */
+@media (pointer:coarse){.compass .key-hint,.keys{display:none}}
+/* Explore toast: an ink plate on every screen size (bright clouds behind it); hidden when empty. */
+body:not(.in-battle) #message{padding:4px 10px;background:#1d2a4bd9;border:2px solid var(--ui-ink);box-shadow:2px 2px 0 #231a2e80}
+body:not(.in-battle) #message:empty{display:none}
+@media(min-width:761px) and (min-height:571px){body:not(.in-battle) #message{width:max-content;max-width:min(440px,32vw)}}
+/* Settings: music and tips rows. Controls of a missing optional module stay visible but dimmed. */
+#look-panel .setting-tips{display:flex;align-items:center;justify-content:space-between;gap:10px}
+#look-panel #setting-replay-tips{margin-top:8px;padding:6px 10px;font-family:var(--ui-body);font-size:12px;color:var(--ui-parchment);border:2px solid var(--ui-ink);border-radius:0;background:linear-gradient(var(--ui-raise) 0 50%,var(--ui-raise-lo) 50%);box-shadow:inset 0 2px 0 #ffffff1f,2px 2px 0 var(--ui-ink);text-shadow:1px 1px 0 var(--ui-ink)}
+#look-panel #setting-replay-tips:hover:not(:disabled){border-color:var(--ui-gold);color:var(--ui-gold-hi)}#look-panel #setting-replay-tips:disabled{opacity:.5}
+#look-panel label:has(input:disabled){opacity:.5;cursor:default}
+/* A shadow along the bottom edge while more settings are below; it scrolls away with the last row. */
+#look-panel{background:linear-gradient(#1d2a4b00,var(--ui-panel-solid) 50%) 0 100%/100% 48px no-repeat local,linear-gradient(#0b122400,#0b1224d9) 0 100%/100% 24px no-repeat scroll,var(--ui-panel-solid);background-clip:padding-box}
+/* Touch: every explore control is at least 44px; settings sliders get a 44px grab area and a big pixel thumb;
+   the 8px Silkscreen section labels and explore captions (header, altitude, pad, pod panel) become 12px bold body text. */
+@media (pointer:coarse){
+body:not(.in-battle) header nav button,body:not(.in-battle) .travel select,body:not(.in-battle) .travel button,body:not(.in-battle) #defense-panel summary{min-height:44px}
+body:not(.in-battle) .compass button{min-width:44px;min-height:44px;font-size:18px}
+body:not(.in-battle) #defense-panel #defense-toggle{min-height:44px}
+#look-panel #setting-replay-tips{min-height:44px}
+#look-panel input[type=range]{-webkit-appearance:none;appearance:none;height:44px;margin:0;background:transparent;cursor:pointer}
+#look-panel input[type=range]::-webkit-slider-runnable-track{height:10px;background:#14203a;border:2px solid var(--ui-ink);box-shadow:inset 0 2px 0 #0000004d}
+#look-panel input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:24px;height:32px;margin-top:-13px;border:2px solid var(--ui-ink);border-radius:0;background:linear-gradient(var(--ui-gold-hi) 0 4px,var(--ui-gold) 4px 70%,var(--ui-gold-lo) 70%);box-shadow:2px 2px 0 var(--ui-ink)}
+#look-panel input[type=range]::-moz-range-track{height:10px;background:#14203a;border:2px solid var(--ui-ink)}
+#look-panel input[type=range]::-moz-range-thumb{width:24px;height:32px;border:2px solid var(--ui-ink);border-radius:0;background:var(--ui-gold)}
+#look-panel h3,#look-panel summary{font-family:var(--ui-body);font-size:12px;font-weight:700;letter-spacing:.06em}
+body:not(.in-battle) .brand small,body:not(.in-battle) .tag,body:not(.in-battle) .telemetry>span,body:not(.in-battle) .telemetry small,body:not(.in-battle) #pad span,body:not(.in-battle) .travel>label,body:not(.in-battle) #launch span,body:not(.in-battle) #defense-panel summary,body:not(.in-battle) #defense-state{font-family:var(--ui-body);font-size:12px;font-weight:700;letter-spacing:.06em}
+}
+/* Narrow portrait phones: drop the explore bearing readout so the 44px camera buttons clear the pod panel; the two
+   buttons then stand alone (raised, no empty frame between them). */
+@media (pointer:coarse) and (max-width:380px){body:not(.in-battle) .compass span{display:none}body:not(.in-battle) .compass{gap:8px;padding:0;background:none;border:0;box-shadow:none}body:not(.in-battle) .compass button{border:2px solid var(--ui-ink);background:linear-gradient(var(--ui-raise) 0 50%,var(--ui-raise-lo) 50%);box-shadow:inset 0 2px 0 #ffffff1f,2px 2px 0 var(--ui-ink)}}
+/* Short landscape: the 44px nav ends near y=56, so the compass moves below it and the pod panel stops above it. */
+@media (pointer:coarse) and (max-height:570px) and (min-width:461px){body:not(.in-battle) .compass{top:64px}body:not(.in-battle) .travel{max-height:calc(100dvh - 128px)}}
+@media (pointer:coarse) and (max-width:460px) and (max-height:570px){body:not(.in-battle) .compass,body:not(.in-battle) .telemetry{top:112px}}
+/* Short landscape: Settings over the title or a match (no header nav there) starts near the top and uses the full height. */
+@media (max-height:500px){body.shell-title #look-panel,body.in-battle #look-panel{top:12px;max-height:calc(100dvh - 24px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px))}}
+/* Notched phones: Settings sits that far in from the notch and the landscape side inset in every layout (each max-height above
+   gives the top and bottom insets back). */
+#look-panel{margin:env(safe-area-inset-top,0px) env(safe-area-inset-right,0px) 0 0}
+/* Notched phones (viewport-fit=cover): the explore header, readouts, footer and toast keep clear of the notch, the home indicator
+   and landscape side insets. Margins add to each breakpoint's own top/bottom/left/right offsets (fixed boxes). */
+body:not(.in-battle)>header,body:not(.in-battle)>footer,body:not(.in-battle) .telemetry,body:not(.in-battle) #message{margin:env(safe-area-inset-top,0px) env(safe-area-inset-right,0px) env(safe-area-inset-bottom,0px) env(safe-area-inset-left,0px)}
+body:not(.in-battle) .compass{margin:env(safe-area-inset-top,0px) env(safe-area-inset-right,0px) 0 env(safe-area-inset-left,0px)}
+/* Explore with a mouse: WASD and the key card steer, so the touch MOVE pad only shows for touch (as in battle). */
+@media (hover:hover) and (pointer:fine){body:not(.in-battle) #pad{display:none}}
+/* The brand sits over bright masonry and clouds: an ink plate like the toast and key card. */
+body:not(.in-battle) .brand{width:max-content;max-width:100%;padding:3px 10px 4px;background:#1d2a4bd9;border:2px solid var(--ui-ink);box-shadow:2px 2px 0 #231a2e80}
+body:not(.in-battle) .brand h1{margin:4px 0 3px}
+@media(max-height:570px){body:not(.in-battle) .brand{padding:3px 8px}body:not(.in-battle) .brand h1{margin:0}}
+/* Short screens: the readouts clear the brand plate, and the travel card's height leaves room for the insets it is moved by (so it
+   does not climb over the compass above it). */
+@media(max-height:570px){body:not(.in-battle) .telemetry{margin-top:calc(env(safe-area-inset-top,0px) + 6px)}body:not(.in-battle) .travel{max-height:calc(100dvh - 103px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px))}}
+@media (pointer:coarse) and (max-height:570px) and (min-width:461px){body:not(.in-battle) .travel{max-height:calc(100dvh - 128px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px))}}
+/* Touch: no square browser tap highlight over buttons (they keep their own :active look). */
+button,a,summary,select,label,[role=button]{-webkit-tap-highlight-color:transparent}

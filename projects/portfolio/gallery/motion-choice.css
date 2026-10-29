@@ -1,0 +1,6 @@
+/* Native personal control; existing reduced-motion/forced-colour rules remain effective. */
+.background-choice{display:inline-flex;align-items:center;gap:9px;min-height:44px;font:14px/1.5 Terminal,monospace;cursor:pointer}
+.background-choice input{width:18px;height:18px;margin:0;accent-color:#c7b3f1}
+.background-choice input:focus-visible{outline:3px solid #bdf8ef;outline-offset:4px}
+body:has(#gallery-still:checked)::before{animation-play-state:paused}
+@media(forced-colors:active){.background-choice input{accent-color:auto}.background-choice input:focus-visible{outline-color:Highlight}}

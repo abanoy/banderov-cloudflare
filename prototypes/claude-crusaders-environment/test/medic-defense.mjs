@@ -1,0 +1,37 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import * as T from '../vendor/three.module.js';
+import {flightWorld} from '../floating-castle/flight.js';
+import {createBattleBots} from '../floating-castle/battle-bots.js';
+import {createBattleCombat} from '../floating-castle/battle-combat.js';
+import {medicLoadout,medicRescue} from '../floating-castle/battle-medic.js';
+const checks=[];
+const policy={weapon:5,observedEnemies:[{distance:30}],charge:1,reviving:{id:1}};
+assert(medicLoadout(policy,null,0));assert.equal(policy.weapon,0);assert.equal(policy.charge,0);assert.equal(policy.reviving,null);
+policy.observedEnemies=[];assert(!medicLoadout(policy,null,1));assert(medicLoadout(policy,null,1.5));assert.equal(policy.weapon,5);
+policy.observedEnemies=[{distance:30}];medicLoadout(policy,null,2);assert(medicLoadout(policy,{id:1},2.1));assert.equal(policy.weapon,5);
+checks.push('Visible threat enables lance; quiet interval prevents flicker; timely rescue restores scepter and clears old channel/aim');
+const rejectedMedic={medic:true,weapon:0,hp:100,team:0,state:{x:0,y:0,z:0,grounded:true},rescueRejected:{id:1,position:{x:22,y:0,z:0},until:2}},rejectedAlly={id:1,alive:false,team:0,state:{x:22,y:0,z:0,grounded:true},respawnAt:6};assert.equal(medicRescue(rejectedMedic,[rejectedAlly],0),null);assert.equal(medicRescue(rejectedMedic,[rejectedAlly],2),rejectedAlly);assert(medicRescue(rejectedMedic,[{...rejectedAlly,state:{...rejectedAlly.state,x:24}}],0));checks.push('Blocked casualty becomes eligible after retry interval or after its position changes');
+const floor=new T.Mesh(new T.BoxGeometry(240,2,100),new T.MeshBasicMaterial());floor.position.y=-1;floor.updateMatrixWorld(true);
+const pads=[{x:0,y:0,z:0,r:6,name:'Dawn'},{x:1000,y:0,z:0,r:6,name:'Dusk'},{x:90,y:0,z:0,r:6,name:'Arena'}];
+let clear=true;
+const navigation={ready:true,stats:{},lineOfSight:()=>clear,nearby:()=>[floor],safeStep:()=>true,invalidateSegment(){},nearest:p=>({...p}),path:async(start,goal)=>({reachable:true,points:[{...start},{...goal}],reason:'reachable'})};
+let combat;const bots=createBattleBots({world:{pads,solids:[floor]},navigation,playerPhysics:flightWorld([floor],pads),fire:(a,p)=>combat.fire(a,p)});
+combat=createBattleCombat({actors:bots.actors,objectives:[],solids:[floor],respawn:a=>bots.respawn(a)});bots.reset({launchHuman:false});combat.start();
+const medic=bots.actors.find(a=>a.id===7),enemy=bots.actors.find(a=>a.id===8),casualty=bots.actors.find(a=>a.id===1);
+for(const a of bots.actors){Object.assign(a.state,{x:400+a.id*10,y:0,z:0,grounded:true,flight:false});if(!a.human){a.spawnPending=false;a.decisionAt=Infinity;}if(a!==medic&&a!==enemy){a.alive=false;a.hp=0;a.respawnAt=Infinity;}}
+Object.assign(medic.state,{x:0,y:0,z:0});Object.assign(enemy.state,{x:30,y:0,z:0});enemy.hp=enemy.maxHp=1000;enemy.mount={fixture:true};
+medic.magazines={lance:{ammo:2,until:0},reviver:{ammo:3,until:0}};
+const shotTimes=[];let previous=0;
+async function tick(n){for(let i=0;i<n;i++){bots.update(1/60,combat.state.time,{shields:[8000,8000]});await Promise.resolve();combat.step(1/60);if(medic.shots>previous){shotTimes.push(combat.state.time);previous=medic.shots;}}}
+await tick(110);assert.equal(medic.weapon,0);assert.equal(medic.shots,2);assert(enemy.hp<1000,'Real projectiles damage visible enemy');assert.equal(medic.magazines.lance.ammo,0);assert(medic.magazines.lance.until>combat.state.time,'Empty lance starts ordinary reload');assert(shotTimes[1]-shotTimes[0]>=.28-1e-8);assert.equal(medic.magazines.reviver.ammo,3);
+checks.push('Actual bot senses opponent, switches, fires damaging combat projectiles with ordinary shot interval and empty-magazine reload; scepter ammo retained');
+Object.assign(casualty.state,{x:8,y:0,z:0});casualty.respawnAt=combat.state.time+4;await tick(115);
+assert(casualty.alive&&casualty.hp===65);assert.equal(medic.magazines.reviver.ammo,2);assert.equal(medic.score,50);assert(combat.events.some(e=>e.type==='revive'&&e.source===7));
+checks.push('Actual bot prioritizes a timely nearby casualty even while enemy remains visible, switches back and completes real65HP/+50 revival');
+enemy.alive=false;enemy.hp=0;enemy.respawnAt=Infinity;await tick(110);assert.equal(medic.weapon,5);bots.respawn(medic);assert.equal(medic.weapon,5);assert.equal(medic.defendUntil,0);
+checks.push('Quiet support state and respawn restore scepter without creating a new magazine');
+clear=false;enemy.alive=true;enemy.hp=1000;await tick(120);assert.equal(medic.weapon,5,'Hidden enemy cannot trigger defensive switch');
+checks.push('Blocked line of sight prevents defensive weapon selection');
+clear=true;navigation.path=async()=>({reachable:false,points:[],reason:'Blocked castle route'});Object.assign(casualty,{alive:false,hp:0,respawnAt:combat.state.time+4});Object.assign(casualty.state,{x:22,y:0,z:0});const before=medic.shots;await tick(110);assert(medic.shots>before);assert.equal(medic.weapon,0);assert(!casualty.alive);checks.push('A rejected rescue route releases the task temporarily so the medic can fight instead of repeatedly equipping a useless scepter');
+bots.dispose();const report={passed:true,checks,scope:'Controlled casualty/visibility/navigation; real bot update, real floor physics, ordinary combat projectile/ammo/revival. No native encounter or arbitrary castle-path claim.'};fs.writeFileSync('review/medic-defense-test.json',JSON.stringify(report,null,2));console.log(JSON.stringify(report));

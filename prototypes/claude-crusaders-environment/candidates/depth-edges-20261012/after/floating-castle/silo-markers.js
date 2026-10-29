@@ -1,0 +1,7 @@
+import * as T from '../vendor/three.module.js';
+export function createSiloMarkers(world,camera){
+ const layer=document.createElement('div');layer.id='silo-markers';layer.setAttribute('aria-label','Silo locations');document.body.append(layer);
+ const names=['T1 · NORTHWEST','T2 · NORTHEAST','T3 · SOUTHEAST','T4 · SOUTHWEST','CROWN · CENTRAL'];
+ const labels=world.orbTowers.map((orb,i)=>{const el=document.createElement('div');el.className='silo-marker';el.innerHTML='<b></b><span></span>';el.querySelector('b').textContent=names[i];layer.append(el);return el;});
+ return {update(objectives=[],active=false){const rect=document.getElementById('world').getBoundingClientRect(),obstacles=['battle-hud'].map(id=>document.getElementById(id)).filter(el=>el&&!el.hidden).map(el=>el.getBoundingClientRect());world.orbTowers.forEach((orb,i)=>{const el=labels[i],p=orb.core.getWorldPosition(new T.Vector3());p.y+=9;p.project(camera);el.hidden=p.z<-1||p.z>1||Math.abs(p.x)>1.1||Math.abs(p.y)>1.1;el.style.left=rect.left+(p.x+1)*rect.width/2+'px';el.style.top=rect.top+(1-p.y)*rect.height/2+'px';const owner=active?objectives[i]?.owner:-1;el.dataset.owner=owner??-1;const box=el.getBoundingClientRect();for(const b of obstacles)if(box.left<b.right&&box.right>b.left&&box.top<b.bottom&&box.bottom>b.top){const x=(box.left+box.right)/2<(b.left+b.right)/2?b.left-box.width/2-8:b.right+box.width/2+8;el.style.left=Math.max(box.width/2+4,Math.min(innerWidth-box.width/2-4,x))+'px';}el.querySelector('span').textContent=owner===0?'DAWN · ALLIED':owner===1?'DUSK · HOSTILE':'NEUTRAL';});}};
+}
