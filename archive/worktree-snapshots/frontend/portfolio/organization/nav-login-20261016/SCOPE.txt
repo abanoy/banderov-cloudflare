@@ -1,0 +1,1 @@
+Local-only homepage login link and CSS. All current account/backend/game assets preserved. No deployment authorization inferred. Canonical source retains pending owner changes; isolated stage edits exact published homepage only.

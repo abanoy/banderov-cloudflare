@@ -1,0 +1,11 @@
+const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto'),assert=require('node:assert/strict');
+const root='portfolio/review/20261018-gallery-history-main',sha=b=>crypto.createHash('sha256').update(b).digest('hex');
+const indexBytes=fs.readFileSync('portfolio/review/current-preview-index.json');
+assert(indexBytes.equals(fs.readFileSync(root+'/preview-index.before.json')));
+const index=JSON.parse(indexBytes),m=JSON.parse(fs.readFileSync(root+'/canonical-route-manifest.json'));
+const old=JSON.parse(fs.readFileSync(path.dirname(index.reviewDesk.server)+'/canonical-route-manifest.json'));
+assert(fs.readFileSync(path.dirname(index.reviewDesk.server)+'/canonical-route-manifest.json').equals(fs.readFileSync(root+'/manifest.before.json')));
+for(const file of [...m.files,...m.inputs])assert.equal(sha(fs.readFileSync(file.path)),file.sha256,file.path);
+assert.deepEqual(m.files.filter((f,i)=>f.sha256!==old.files[i].sha256).map(f=>f.route),['/gallery/gallery.js']);
+assert.deepEqual(m.inputs,old.inputs);
+console.log(JSON.stringify({revalidated:true,routes:m.files.length,inputs:m.inputs.length,changed:['/gallery/gallery.js'],indexUnchanged:true}));

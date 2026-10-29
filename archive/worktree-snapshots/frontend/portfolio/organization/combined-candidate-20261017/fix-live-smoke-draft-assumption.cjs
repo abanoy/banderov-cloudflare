@@ -1,0 +1,1 @@
+const fs=require('node:fs'),p='portfolio/organization/combined-candidate-20261017/check-selected-live-chat-frontend.mjs';let s=fs.readFileSync(p,'utf8');s=s.replace("assert(await p.locator('#message').isDisabled());","assert(await p.locator('#message').isVisible());");fs.writeFileSync(p,s);

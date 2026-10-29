@@ -1,0 +1,12 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import {decodeServerFrame} from './public/protocol.js';
+import {createMessageSubmission} from './public/composer.js';
+const frame={type:'error',code:'muted',requestId:'send1',retryAfterSeconds:900};
+assert.deepEqual(decodeServerFrame(JSON.stringify(frame)),frame);
+for(const retryAfterSeconds of [0,-1,1.5,'900'])assert.throws(()=>decodeServerFrame(JSON.stringify({...frame,retryAfterSeconds})));
+let draft='Keep this draft',result;
+const controller=createMessageSubmission({readDraft:()=>draft,readRevision:()=>0,clearDraft:()=>{draft=''},send:async()=>{throw Object.assign(new Error('muted'),frame)},onBusy:()=>{},onResult:value=>{result=value}});
+await controller.submit();assert.equal(draft,'Keep this draft');assert.equal(result.kind,'failed');assert.equal(result.code,undefined);
+const report={date:new Date().toISOString(),passed:true,decoderAcceptsMuted:true,invalidRetryRejected:true,draftPreserved:true,composerCurrentlyGeneric:true,scope:'Focused pure current-source probe; no socket, backend behavior or new moderation UI acceptance.'};
+fs.writeFileSync(new URL('./muted-contract-probe.json',import.meta.url),JSON.stringify(report,null,2));console.log(report);

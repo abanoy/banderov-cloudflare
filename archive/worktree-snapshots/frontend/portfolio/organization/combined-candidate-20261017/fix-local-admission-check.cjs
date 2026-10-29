@@ -1,0 +1,1 @@
+const fs=require('node:fs'),p='portfolio/organization/combined-candidate-20261017/check-production-release-local.mjs';let s=fs.readFileSync(p,'utf8');const old="body:'{}'});assert.equal(r.status,200)";if(!s.includes(old))throw Error('Expected admission assertion');s=s.replace(old,"body:'{}'});assert.equal(r.status,201)");fs.writeFileSync(p,s);

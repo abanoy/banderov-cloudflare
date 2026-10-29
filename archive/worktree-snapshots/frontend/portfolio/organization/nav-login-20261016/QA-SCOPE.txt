@@ -1,0 +1,1 @@
+live/checks.json uses the inherited Local scope label, but check-live.cjs actually targets https://banderov.com and its seven browser cases passed. No user email was requested. Local-only account unavailable qualification applies only to checks.json outside live/. The full221-asset read-only audit passed;219 previous files unchanged and homepage intentionally modified.

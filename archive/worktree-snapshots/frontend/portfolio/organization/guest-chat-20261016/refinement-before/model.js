@@ -1,0 +1,9 @@
+// Frontend display model, not an authentication or server enforcement boundary.
+export const UI_LIMITS=Object.freeze({nickname:24,message:280,history:100});
+const controls=/[\u0000-\u001f\u007f-\u009f\u200b-\u200f\u202a-\u202e\u2060-\u206f\ufeff]/gu;
+export function cleanText(value,max){if(typeof value!=='string')return '';return value.normalize('NFKC').replace(controls,' ').replace(/\s+/gu,' ').trim().slice(0,max)}
+export function nickname(value){const name=cleanText(value,UI_LIMITS.nickname+1);if(name.toLocaleLowerCase('en-US')==='alexander banderov')return null;if(!name||name.length>UI_LIMITS.nickname||! /^[\p{L}\p{N} _.-]+$/u.test(name))return null;return name}
+export function normalizeMessage(event){if(!event||event.type!=='message'||!/^\d{5}$/.test(event.guestId)||!Number.isSafeInteger(event.seq)||event.seq<1)return null;const name=nickname(event.nickname),text=cleanText(event.text,UI_LIMITS.message+1);if(!name||!text||text.length>UI_LIMITS.message)return null;return Object.freeze({type:'message',seq:event.seq,guestId:event.guestId,nickname:name,text})}
+export function formatMessage(event){return 'guest@'+event.guestId+' | '+event.nickname+': '+event.text}
+// No WebSocket URL is configured. Real transport remains OFF until Backend contract review.
+export function createDemoTransport(receive){let joined=false,seq=0,name='Visitor';return{join(){joined=true;receive({type:'joined',guestId:'12345',nickname:name,mode:'local_demo'})},leave(){joined=false;receive({type:'closed'})},rename(value){if(!joined)throw Error('disconnected');name=value;receive({type:'renamed',nickname:name})},send(text){if(!joined)throw Error('disconnected');receive({type:'message',seq:++seq,guestId:'12345',nickname:name,text})},sample(text='This is a sample message from the second preview guest.'){if(!joined)throw Error('disconnected');receive({type:'message',seq:++seq,guestId:'23456',nickname:'PreviewGuest',text})}}}

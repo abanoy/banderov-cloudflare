@@ -1,0 +1,1 @@
+const fs=require('node:fs'),p='portfolio/organization/combined-candidate-20261017/check-reading-study.mjs';let s=fs.readFileSync(p,'utf8');s=s.replace(".replace('<link rel=\"stylesheet\" href=\"desk.css\">','');",".replace('<link rel=\"stylesheet\" href=\"desk.css\">','').replaceAll('href=\"https://127.0.0.1:4205/#stories\"','href=\"/#stories\"');");fs.writeFileSync(p,s);

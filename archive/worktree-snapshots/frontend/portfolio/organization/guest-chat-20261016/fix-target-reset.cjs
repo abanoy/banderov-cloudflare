@@ -1,0 +1,1 @@
+const fs=require('node:fs'),p='portfolio/organization/guest-chat-20261016/public/worker-ui.js';fs.writeFileSync(p,fs.readFileSync(p,'utf8').replaceAll('nicknamePending=deletePending=olderPending=slowPending=false','nicknamePending=deletePending=olderPending=slowPending=targetPending=false'));

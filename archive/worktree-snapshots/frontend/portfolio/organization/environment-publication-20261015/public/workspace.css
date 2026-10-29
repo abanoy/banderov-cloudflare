@@ -1,0 +1,100 @@
+/* Review-only desktop arrangement. All images and document order are preserved. */
+/* Give the complete portrait more room in the compact phone gallery. */
+@media(max-width:620px){#art .maria-gallery .art-link{height:560px}#art .art-grid>figure:nth-child(2) img{object-fit:cover;object-position:center bottom}}
+@media(min-width:1100px){
+  #main{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:28px;max-width:1380px;margin-inline:auto;padding:0 28px}
+  #main>.hero,#main>.discipline-bar,#games,#stories{grid-column:1/-1;width:100%;min-width:0}
+  #main>.hero{min-height:0;padding-block:36px;gap:36px}
+  #main>.hero .hero-art{width:100%;max-width:420px;justify-self:center}
+  #main>.hero .hero-art img{height:340px}
+  #games .section-heading{margin-bottom:24px}
+  #games .section-heading h2{font-size:38px}
+  #games .featured-game{grid-template-columns:repeat(auto-fit,minmax(min(100%,24em),1fr))}
+  #games .game-visual{margin:16px}
+  #games .game-description{padding:24px 24px 24px 12px}
+  #games .game-description h3{font-size:36px}
+  #games .crusaders-feature .game-visual>img{border:1px solid #8e7da7;border-radius:5px 5px 0 0}
+  #games .crusaders-feature .study-caption{margin-top:0;padding:10px 12px;border:1px solid #8e7da7;border-top:0;border-radius:0 0 5px 5px;background:linear-gradient(130deg,#f6edff,#ded2ef 55%,#eacde5);color:#482154;box-shadow:inset 0 1px 0 #ffffff66;line-height:1.6}
+  [data-palette=night] #games .crusaders-feature .game-visual>img{border-color:#957da9}
+  [data-palette=night] #games .crusaders-feature .study-caption{border-color:#957da9;background:linear-gradient(130deg,#493654,#29263d 55%,#392844);color:#f4deff;box-shadow:inset 0 1px 0 #ffffff1a}
+  #games .project-grid{margin-top:24px;gap:22px}
+  #games.section{padding-block:36px}
+  #art{min-width:0;align-self:start;border:1px solid #8a97b8;border-radius:8px}
+  #art>.wrap{padding:26px}
+  #art .section-heading{display:block;margin-bottom:24px}
+  #art .section-heading .eyebrow{margin:-26px -26px 22px;padding:12px 16px;min-height:44px;border-bottom:1px solid #8a97b8;border-radius:7px 7px 0 0;background:linear-gradient(180deg,#60587c,#37304f 48%,#29243f 52%,#42304f);box-shadow:inset 0 1px 0 #ffffff26,inset 0 -1px 0 #070c1c66;color:#ffdcf0;font-family:"Share Tech Mono",Consolas,monospace;font-size:13px;font-weight:400;line-height:1.6;letter-spacing:.5px;text-transform:none;overflow-wrap:anywhere}
+  #art .section-heading h2{margin-top:0}
+  #art .section-heading>p{margin-top:12px}
+  #art .section-heading h2,#music h2{font-size:36px}
+  #art .art-grid{grid-template-columns:repeat(auto-fit,minmax(min(100%,max(12em,45%)),1fr));gap:22px}
+  #art .art-grid>figure{grid-column:auto;grid-row:auto}
+  #art .art-grid>.maria-gallery{grid-row:auto}
+  #art .maria-gallery .art-link{height:436px}
+  #art .maria-gallery .art-link img{height:400px;object-fit:contain}
+  #art .art-grid>figure:nth-child(2){align-self:start}
+  #art .art-grid>figure:nth-child(2) img{height:280px;max-width:420px;object-fit:cover;object-position:center bottom}
+  #art .art-grid>figure:nth-child(3){grid-column:1/-1}
+  #art .art-grid>figure:nth-child(3) img{height:180px;object-fit:contain}
+  #music{display:block;min-width:0;width:100%;margin:0;padding:0;align-self:start}
+  #music>div:first-child{margin-bottom:22px;padding:26px;background:linear-gradient(140deg,#edf1ff,#d4e2f5 60%,#e2cde8)}
+  [data-palette=night] #music>div:first-child{background:linear-gradient(140deg,#293e50,#342b48 60%,#432c4b)}
+  #music>div:first-child>.eyebrow{margin:-26px -26px 22px;font-family:"Share Tech Mono",Consolas,monospace;font-size:13px;font-weight:400;line-height:1.6;letter-spacing:.5px;text-transform:none}
+  #stories>.wrap{padding:32px 26px}
+}
+@media(forced-colors:active){#art{border-color:CanvasText}}
+
+@media(min-width:1100px) and (forced-colors:active){#art .section-heading .eyebrow{background:Canvas;color:CanvasText;border-color:CanvasText;box-shadow:none}}
+@media(min-width:1100px) and (forced-colors:active){#music>div:first-child,[data-palette=night] #music>div:first-child{background:Canvas;color:CanvasText}}
+@media(min-width:1100px) and (forced-colors:active){#games .crusaders-feature .game-visual>img,[data-palette=night] #games .crusaders-feature .game-visual>img{border-color:CanvasText}#games .crusaders-feature .study-caption,[data-palette=night] #games .crusaders-feature .study-caption{background:Canvas;color:CanvasText;border-color:CanvasText;box-shadow:none}}
+
+/* The novel and distinct project connections become neighboring desktop windows. */
+@media(min-width:1100px){
+  #stories>.wrap{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,26em),1fr));gap:28px;align-items:start}
+  #stories .story-main{display:block;min-width:0}
+  #stories .story-title h2{font-size:clamp(40px,3.5vw,48px)}
+  #stories .story-copy{margin-top:26px}
+  #stories .connections{min-width:0;margin-top:0;padding-top:0;border-top:0}
+  #stories .connection-grid{grid-template-columns:minmax(0,1fr);gap:18px;margin-top:20px}
+  #stories .connection-grid p{font-size:14px;line-height:1.6}
+}
+/* A compact closing command bar, with native links and room to reflow. */
+/* The working title and introduction share one writing window on desktop. */
+@media(min-width:1100px){
+  #stories .story-main{padding:26px;border-left:3px solid #f4bed9}
+  #stories .story-title{padding:0;border:0;border-radius:0;background:none;box-shadow:none}
+  #stories .story-title>.eyebrow{margin:-26px -26px 24px;border-radius:10px 10px 0 0}
+}
+@media(min-width:1100px) and (forced-colors:active){
+  #stories .story-main{background:Canvas;color:CanvasText;border-color:CanvasText;box-shadow:none}
+}
+@media(min-width:1100px){
+  .footer{flex-wrap:wrap;align-items:center;gap:20px;padding-block:22px}
+  .footer>div:first-child{flex:0 1 18em}
+  .footer .footer-links{flex:1 1 20em;flex-direction:row;flex-wrap:wrap;justify-content:center;gap:10px}
+  .footer .footer-links a{font-size:14px;min-height:44px;display:inline-flex;align-items:center;overflow-wrap:anywhere;max-width:100%}
+  .footer .footer-note{flex:0 1 16em;margin-top:0}
+}
+
+/* The desktop introduction and native players share one listening window. */
+@media(min-width:1100px){
+  #music{border:1px solid #8a97b8;border-radius:8px;box-shadow:0 8px 22px #090e2526}
+  #music>div:first-child{margin-bottom:0;border:0;border-radius:7px 7px 0 0;box-shadow:none}
+  #music>div:first-child>.eyebrow{border-radius:7px 7px 0 0}
+  #music>.track-list{border:0;border-top:1px solid #8a97b8;border-radius:0 0 7px 7px;box-shadow:none}
+  #music .deck-heading{border-radius:0;position:relative;z-index:0}
+  #music:has(.track.is-playing){border-color:#a9f0ff}
+  #music:focus-within{outline:2px solid var(--window-focus);outline-offset:3px}
+  #music>.track-list:focus-within{outline:none}
+  #music:focus-within>div:first-child>.eyebrow{border-bottom-color:var(--window-focus)}
+  #art:focus-within{outline:2px solid var(--window-focus);outline-offset:3px}
+  #art:focus-within .section-heading .eyebrow{border-bottom-color:var(--window-focus)}
+}
+@media(min-width:1100px) and (forced-colors:active){
+  #music,#music>.track-list{border-color:CanvasText;box-shadow:none}
+  #music:has(.track.is-playing){border-color:Highlight}
+  #music:focus-within{outline-color:Highlight}
+}
+
+
+/* In the wide review workspace, give the portrait capture enough room to read. */
+@media(min-width:1100px){#games .seven-sips-card .project-capture img{height:360px}}

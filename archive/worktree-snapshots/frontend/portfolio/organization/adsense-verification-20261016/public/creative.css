@@ -1,0 +1,192 @@
+/* Creative pass 02: character collage + game-menu selection.
+   Original source images and the first editorial pass remain preserved. */
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible{outline:3px solid var(--red);outline-offset:5px}
+[hidden]{display:none!important}
+.header-tools{display:flex;align-items:center;gap:23px}
+.palette-toggle{display:flex;align-items:center;justify-content:center;gap:8px;border:1px solid var(--line);border-radius:30px;background:transparent;padding:6px 12px;font-size:12px;min-height:40px}
+.palette-toggle:hover{border-color:var(--red)}
+.palette-icon{font-size:20px;line-height:1}.palette-label{min-width:30px}
+.button,.art-link::after{color:var(--button-ink,#fff)}
+.hero{position:relative;gap:55px;min-height:650px;overflow:clip}
+.hero-lettering{position:absolute;right:65px;top:45px;font-family:var(--serif);font-size:370px;font-weight:bold;line-height:1;letter-spacing:-40px;color:#e9e4d6;z-index:-1;pointer-events:none}
+.hero-art{box-shadow:12px 12px 0 #e3ded1;transform:rotate(3deg);border-color:#282524;padding:20px 23px 16px}
+.hero-art img{height:430px;object-fit:cover;object-position:center top;border-bottom:0;margin-block:15px;position:relative;z-index:1}
+.hero-art .art-heading,.hero-art figcaption{position:relative;z-index:2;background:white}
+.hero-orbit{position:absolute;width:115%;height:67%;border:2px solid var(--red);border-radius:50%;left:-7%;top:14%;transform:rotate(-28deg);pointer-events:none;z-index:0}
+.hero-stamp{position:absolute;right:-12px;top:75px;width:96px;height:96px;border-radius:50%;background:var(--red);color:var(--paper);display:grid;place-content:center;text-align:center;line-height:1.1;font-family:var(--serif);font-style:italic;font-size:18px;z-index:3;transform:rotate(9deg);box-shadow:0 0 0 5px var(--paper)}
+.hero-line{font-family:var(--serif);font-size:27px;line-height:1.2}
+.intro .button{box-shadow:5px 5px 0 var(--ink);transition:transform 150ms,box-shadow 150ms}
+.intro .button:hover{transform:translate(2px,2px);box-shadow:3px 3px 0 var(--ink)}
+.discipline-bar{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.discipline-bar span:nth-child(even){color:#ecb2a3}
+.section-heading h2{font-size:52px}
+.feature-tabs{display:flex;gap:0;border-bottom:2px solid var(--ink);margin-bottom:0;max-width:100%}
+.feature-tabs button{background:transparent;border:0;padding:17px 23px;text-align:left;font-size:14px;font-weight:bold;min-height:54px;border-radius:0}
+.feature-tabs button span{font-family:var(--serif);font-style:italic;font-size:18px;margin-right:12px;opacity:.65}
+.feature-tabs button[aria-selected=true]{background:var(--ink);color:var(--paper)}
+.feature-tabs button:hover{box-shadow:inset 0 -3px var(--red)}
+.feature-tabs button:focus-visible{outline-offset:-5px;outline-color:#c86662}
+.featured-game{min-height:440px;border:0;background:#ebe6db;outline:1px solid var(--line)}
+.featured-game[role=tabpanel]:focus-visible{outline:3px solid var(--red);outline-offset:5px}
+.crusaders-feature{background:#e8e6f0}
+.crusaders-feature .game-visual>img{object-fit:contain;background:#fff;aspect-ratio:16/9;padding:16px}
+.visual-controls{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.visual-controls button{font-size:11px;background:transparent;padding:7px 12px;border:1px solid #aaa49a;min-height:34px}
+.visual-controls button[aria-pressed=true]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.game-visual:has(.visual-controls:not([hidden])) .screenshot-link{font-size:10px;padding-top:8px}
+.game-description h3{font-size:39px}
+.project-card{position:relative;padding:22px 22px 20px;border:1px solid var(--line);background:var(--paper);box-shadow:5px 5px 0 #e3ded1;transition:transform 150ms,box-shadow 150ms}
+.project-card:hover{transform:translateY(-4px);box-shadow:5px 9px 0 #e3ded1}
+.card-number{margin-bottom:20px}.card-number span{font-size:31px}
+.project-card h3{font-size:27px}
+.art-section{background:#e8e4d8;position:relative}
+.art-grid{grid-template-columns:1fr 1fr 1.35fr;gap:25px;align-items:start}
+.art-grid>figure:nth-child(2){padding-top:35px}
+.art-grid>figure:nth-child(3){padding-top:15px}
+.art-link{position:relative;padding:14px;min-height:280px;border:1px solid #bfb8a7;box-shadow:6px 7px 0 #d1cbbb}
+.art-link img{height:260px}
+.maria-gallery .art-link img{object-fit:cover;object-position:top}
+.art-link::after{content:'↗';position:absolute;right:12px;bottom:12px;color:white;background:var(--red);width:32px;height:32px;text-align:center;line-height:32px;font-size:18px;pointer-events:none}
+.art-grid figcaption{display:block}.art-grid figcaption span{display:block}.art-grid figcaption span+span{margin-top:2px}
+.art-link:hover{outline:2px solid var(--red);outline-offset:3px}
+.music-section{position:relative}.music-section h2{font-size:53px}
+.track{padding:24px 0}.track-index{display:grid;place-content:center;width:42px;height:42px;border:1px solid var(--line);border-radius:50%;flex-shrink:0}
+.track-symbol{width:48px;height:48px;display:grid;place-content:center;position:relative}
+.track-symbol::before{content:'';position:absolute;inset:0;border:1px solid var(--red);border-radius:50%}
+.track.is-playing .track-symbol::before{border-style:dashed;animation:record-turn 8s linear infinite}
+@keyframes record-turn{to{transform:rotate(360deg)}}
+.stories-section{position:relative;background:#26232b;overflow:hidden}
+.story-lettering{position:absolute;top:15px;left:50%;font-family:var(--serif);font-size:370px;line-height:1;letter-spacing:-22px;color:#33303a;pointer-events:none}
+.stories-section>.wrap{position:relative}
+.story-title h2{font-size:64px}.story-title .book-rule{width:120px}
+.connection-grid article{border-top:1px solid #605868;padding-top:18px}
+.art-dialog{border:0;width:min(1060px,calc(100% - 40px));max-height:calc(100dvh - 40px);background:var(--paper);color:var(--ink);padding:20px 24px 24px;box-shadow:12px 12px 0 rgb(0 0 0 / .2)}
+.art-dialog::backdrop{background:rgb(27 24 29 / .88)}
+.dialog-bar{display:flex;justify-content:space-between;align-items:center;gap:15px;border-bottom:1px solid var(--line);padding-bottom:12px;margin-bottom:18px}
+.dialog-bar h2{font-size:26px;margin:0;letter-spacing:-.5px}
+.dialog-close{border:1px solid var(--ink);background:transparent;min-height:44px;padding:7px 14px;font-size:13px;display:flex;align-items:center;gap:14px}
+.dialog-close:hover{background:var(--ink);color:white}
+.dialog-close span{font-size:22px;line-height:1}
+.dialog-image{max-height:calc(100dvh - 215px);width:100%;object-fit:contain;background:#fff;min-height:120px}
+.dialog-caption{font-size:12px;color:var(--muted);margin-top:13px}.dialog-original{display:inline-block;font-size:11px;margin-top:10px}
+body.dialog-open{overflow:hidden}
+@media(max-width:1000px){.hero-art img{height:380px}.hero-stamp{width:80px;height:80px;font-size:16px;right:-10px}.hero-lettering{font-size:280px;letter-spacing:-30px}.art-grid{grid-template-columns:1fr 1fr}.art-grid>figure:nth-child(3){grid-column:1/-1;padding-top:0}.art-grid>figure:nth-child(2){padding-top:0}.art-grid>figure:nth-child(3) .art-link{min-height:230px}.art-grid>figure:nth-child(3) img{height:220px}.story-title h2{font-size:52px}}
+@media(max-width:620px){.hero{min-height:0;gap:42px}.hero-lettering{font-size:210px;right:25px;top:auto;bottom:50px;letter-spacing:-20px}.hero-art{width:calc(100% - 14px);transform:rotate(2deg);padding:15px;box-shadow:7px 8px 0 #e3ded1}.hero-art img{height:335px}.hero-stamp{right:-6px;top:65px;width:75px;height:75px;font-size:14px}.hero-orbit{width:108%;left:-4%;border-width:1px}.section-heading h2,.music-section h2{font-size:38px}.feature-tabs button{flex:1;font-size:12px;padding:13px 10px;line-height:1.25}.feature-tabs button span{display:block;font-size:15px;margin:0 0 4px}.featured-game{min-height:0}.game-description h3{font-size:34px}.visual-controls button{min-height:42px}.project-grid{gap:24px}.project-card{padding:20px}.art-grid{grid-template-columns:1fr;gap:28px}.art-grid>figure:nth-child(3){grid-column:auto}.art-link{min-height:275px}.art-link img{height:260px}.maria-gallery .art-link img{height:335px}.art-dialog{width:calc(100% - 20px);padding:16px;max-height:calc(100dvh - 20px)}.dialog-image{max-height:calc(100dvh - 200px)}.story-title h2{font-size:44px}.story-lettering{font-size:210px;left:25%;top:12px;letter-spacing:-10px}.connection-grid article{border-top:0;padding-top:0}}
+@media(prefers-reduced-motion:reduce){.track.is-playing .track-symbol::before{animation:none}.project-card,.intro .button{transition:none}.project-card:hover,.intro .button:hover{transform:none}}
+/* Two art-directed palettes. White image mounts preserve the original artwork. */
+:root[data-palette=night]{--paper:#211d2a;--ink:#f3ecde;--muted:#c2b8cd;--red:#f4b296;--line:#605568;--button-ink:#211d2a;color-scheme:dark}
+[data-palette=night] .hero-lettering{color:#352c44}
+[data-palette=night] .hero-art{box-shadow:12px 12px 0 #120e1a;border-color:#665871}
+[data-palette=night] .hero-art .art-heading,[data-palette=night] .hero-art figcaption,[data-palette=night] .hero-art figcaption span:first-child{color:#242322}
+[data-palette=night] .hero-art .art-heading,[data-palette=night] .hero-art figcaption{border-color:#d9d5cd}
+[data-palette=night] .discipline-bar{background:#17131e;color:var(--ink);border-color:var(--line)}
+[data-palette=night] .discipline-bar span:nth-child(even){color:var(--red)}
+[data-palette=night] .featured-game{background:#302a3c}
+[data-palette=night] .crusaders-feature{background:#343047}
+[data-palette=night] .project-card{box-shadow:5px 5px 0 #120e1a}
+[data-palette=night] .project-card:hover{box-shadow:5px 9px 0 #120e1a}
+[data-palette=night] .art-section{background:#2a2435}
+[data-palette=night] .art-link{border-color:#665871;box-shadow:6px 7px 0 #17131e}
+[data-palette=night] .button:hover{background:#ffd0b4;color:var(--button-ink)}
+[data-palette=night] .dialog-close:hover{color:var(--paper)}
+[data-palette=night] .stories-section{border-top:1px solid var(--line)}
+[data-palette=night] .audio-error{color:var(--red)}
+@media(max-width:800px){.header{gap:15px}.header nav{gap:20px}.header-tools{gap:12px}}
+@media(max-width:620px){.header-tools{margin-left:auto}.header-tools .header-link{display:none}.palette-toggle{min-height:44px;padding-inline:11px}.hero-art .hero-stamp{font-size:14px}}
+[data-palette=night] .art-link::after{color:var(--button-ink)}
+/* Pass 03: a scrollable original-resolution inspection surface. */
+.dialog-tools{display:flex;align-items:center;gap:18px;margin-bottom:14px}
+.detail-toggle{background:var(--ink);color:var(--paper);border:1px solid var(--ink);min-height:44px;padding:8px 14px;font-size:12px;flex-shrink:0}
+.dialog-tools p{font-size:11px;color:var(--muted);line-height:1.5}
+.dialog-stage{height:min(580px,calc(100dvh - 300px));min-height:160px;overflow:auto;background:white;overscroll-behavior:contain;border:1px solid var(--line)}
+.dialog-stage:focus-visible{outline:3px solid var(--red);outline-offset:4px}
+.dialog-stage .dialog-image{height:100%;min-height:0;max-height:none;width:100%;object-fit:contain}
+.dialog-stage.is-detailed .dialog-image{height:auto;width:auto;max-width:none;object-fit:initial}
+@media(max-width:620px){.dialog-tools{align-items:start;gap:12px}.dialog-stage{height:calc(100dvh - 305px)}.dialog-tools p{font-size:10px}}
+/* Pass 04: persistent orientation without extra floating controls. */
+html{scroll-padding-top:var(--nav-offset,110px)}
+.header{position:sticky;top:0;z-index:5;background:var(--paper);box-shadow:0 4px 12px rgb(0 0 0 / .03)}
+.header nav a[aria-current=location]{color:var(--red);text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:8px}
+.stories-section .text-link{color:#e8ab9f}
+.skip-link{position:fixed;z-index:6;color:var(--paper)}
+@media(max-width:620px){html{scroll-padding-top:var(--nav-offset,140px)}}
+@media(max-height:450px){.header{position:static}html{scroll-padding-top:24px}}
+.dialog-surface{position:relative}
+.image-status{position:absolute;inset:0;margin:0;padding:24px;display:grid;place-content:center;text-align:center;color:#66635f;font-size:14px;line-height:1.6}
+.detail-toggle:disabled{opacity:.5;cursor:default}
+/* Pass 06: four distinct games, with a quieter pair of supporting summaries. */
+.project-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:28px;margin-top:34px}
+.project-card{padding:26px 28px 24px;border-top:3px solid var(--red);transition:none}
+.project-card:hover{transform:none;box-shadow:5px 5px 0 #e3ded1}
+[data-palette=night] .project-card:hover{box-shadow:5px 5px 0 #120e1a}
+.card-meta{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:24px}
+.card-meta .card-number{font-family:var(--serif);font-style:italic;font-size:32px;line-height:1;margin:0;color:var(--muted)}
+.project-kind{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);text-align:right}
+.project-card h3{font-size:34px;margin-top:15px}
+.project-card>p:not(.availability){max-width:420px;min-height:48px}
+.project-card .availability{margin-top:24px}
+@media(max-width:620px){.project-grid{grid-template-columns:1fr;gap:22px}.project-card{padding:23px 22px}.project-card h3{font-size:31px}.project-card>p:not(.availability){min-height:0}.card-meta{margin-bottom:18px}}
+/* Allow text enlargement to reflow instead of widening a grid or navigation row. */
+.header,.header nav{flex-wrap:wrap}
+.discipline-bar .wrap{flex-wrap:wrap;row-gap:10px}
+.hero{grid-template-columns:minmax(0,1.2fr) minmax(0,1fr)}
+.hero>*{min-width:0}
+h1,h2,h3,h4{overflow-wrap:anywhere}
+.project-card,.project-kind{min-width:0}
+.project-kind{overflow-wrap:anywhere}
+.header.is-tall{position:static}
+@media(max-width:620px){.hero,.project-grid{grid-template-columns:minmax(0,1fr)}}
+/* Respect system colors for navigation; retain white only behind original art. */
+@media(forced-colors:active){
+  .feature-tabs button[aria-selected=true]{border-bottom:4px solid Highlight}
+  .visual-controls button[aria-pressed=true]{border-bottom:3px solid Highlight}
+  .hero-art img,.art-link,.dialog-stage,.dialog-image{forced-color-adjust:none;background:#fff;color:#242322}
+  .image-status{forced-color-adjust:none;color:#242322}
+  .dialog-stage:focus-visible{outline-color:#242322}
+  .hero-lettering,.story-lettering,.hero-orbit,.hero-stamp{display:none}
+}
+/* Give the complete character illustration its own tall gallery mount. */
+.art-grid{grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:28px 36px}
+.art-grid>figure{min-width:0}
+.art-grid>.maria-gallery{grid-row:1/span 2}
+.art-grid>figure:nth-child(2),.art-grid>figure:nth-child(3){padding-top:0;grid-column:auto}
+.art-grid .art-link{min-height:0}
+.maria-gallery .art-link{padding:18px;height:580px}
+.maria-gallery .art-link img{height:100%;object-fit:contain;object-position:center}
+.art-grid>figure:nth-child(2) img{height:220px}
+.art-grid>figure:nth-child(3) .art-link{min-height:0}
+.art-grid>figure:nth-child(3) img{height:190px}
+@media(max-width:900px){.art-grid{gap:24px}.maria-gallery .art-link{height:540px}.art-grid>figure:nth-child(2) img{height:200px}.art-grid>figure:nth-child(3) img{height:170px}}
+@media(max-width:620px){.art-grid{grid-template-columns:minmax(0,1fr);gap:28px}.art-grid>.maria-gallery{grid-row:auto}.maria-gallery .art-link{height:460px}.maria-gallery .art-link img{height:100%}.art-grid>figure:nth-child(3) img{height:auto;min-height:110px}}
+/* These quiet silhouettes are derived from each original track's amplitude. */
+.track-info{flex-wrap:wrap;gap:14px}
+.track-duration{margin-left:auto;font-family:monospace;font-size:12px;color:var(--muted);white-space:nowrap}
+.track-symbol{margin-left:0;width:38px;height:38px;font-size:23px}
+.track-waveform{height:52px;margin:20px 0 3px;background:var(--red);opacity:.65;mask-position:center;mask-size:100% 100%;mask-repeat:no-repeat}
+.title-waveform{mask-image:url('assets/title-waveform.svg')}
+.cognition-waveform{mask-image:url('assets/cognition-waveform.svg')}
+.track audio{margin-top:10px}
+@media(max-width:620px){.track-info{gap:12px}.track-symbol{display:none}.track-info>div{min-width:0;flex:1}.track-waveform{height:42px;margin-top:18px}}
+@media(forced-colors:active){.track-waveform{display:none}}
+/* The menu screenshot has a different ratio from the cover. Preserve its edges. */
+#idols-visual{object-fit:contain;background:#121015}
+.game-image-status{min-height:18px;margin-top:8px;font-size:11px;line-height:1.6;color:var(--muted)}
+@media(forced-colors:active){#idols-visual{forced-color-adjust:none}}
+/* Short landscape screens need a compact opening, with all introduction text retained. */
+@media(min-width:621px) and (max-height:450px){
+  .hero{min-height:0;padding-block:30px;gap:35px}
+  .hero h1{font-size:52px;margin-block:16px}
+  .hero-line{font-size:21px}
+  .intro-copy{font-size:13px;margin-top:16px;line-height:1.5}
+  .intro .button{margin-top:18px}
+  .hero-art img{height:260px}
+  .hero-stamp{width:70px;height:70px;font-size:14px;top:58px;right:-7px}
+}
+/* Standalone file/navigation links have room for both focus and fingertips. */
+.screenshot-link,.audio-fallback,.text-link,.footer-links a,.dialog-original{display:inline-flex;align-items:center;gap:6px;min-height:28px}
+@media(max-width:620px){
+  .screenshot-link,.audio-fallback,.text-link,.footer-links a,.dialog-original{min-height:44px;padding-block:8px;line-height:1.5}
+  .audio-fallback,.game-visual:has(.visual-controls:not([hidden])) .screenshot-link{font-size:11px}
+  .visual-controls button{min-height:44px}
+}

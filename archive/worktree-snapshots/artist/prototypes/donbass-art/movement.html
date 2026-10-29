@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Don Bass Crusaders · Movement courtyard</title>
+<link rel="stylesheet" href="movement.css">
+<header><div><small>DON BASS CRUSADERS / LOCAL MOVEMENT STUDY</small><h1>Maria in motion</h1></div><a href="index.html">Drawing workshop ↗</a></header>
+<main>
+<section class="toolbar" aria-label="Movement settings">
+<label>Character<select id="character"><option value="mariaBrown">Maria · brown chibi</option><option value="mariaTeal">Maria · teal study</option></select></label>
+<label>Eye opening study <select id="eyeOpeningStudy"><option value="current">Current sleepy eyes</option><option value="narrow">Narrower experiment</option><option value="deep">Deeper beneath heavy lids</option></select></label><label>Expression<select id="expression"><option value="neutral">Neutral</option><option value="happy">Happy</option><option value="stare">Stare</option><option value="shocked">Shocked</option><option value="confused">Confused</option><option value="delusional">Delusional</option></select></label>
+<label>Outfit<select id="outfit"><option value="sailor">Sailor top</option><option value="whiteBlouse">White blouse</option><option value="sketch">Earlier scarf/skirt study</option></select></label>
+<label>Body construction<select id="bodyConstruction"><option value="current">Current</option><option value="compact">Broader compact</option><option value="taller">Broader taller</option></select></label><label>Body width<input id="bodyWidth" aria-label="Body width" type="range" min="0.8" max="1" step="0.01" value="1"><output id="bodyWidthValue">100%</output></label>
+<label>Pose<select id="pose"><option value="relaxed">Relaxed</option><option value="crossed">Crossed arms</option><option value="explain">Speaking gesture</option><option value="alarmed">Alarmed · Teaser study</option></select></label>
+<label>Facing<select id="facing"><option value="8">Eight directions</option><option value="16">Sixteen-angle comparison</option></select></label>
+<label title="Zooms the whole scene; this is the padded sprite texture height, not visible figure height.">Scene zoom · sprite height<input id="size" type="range" min="32" max="160" step="8" value="96"><output id="sizeValue">96 px</output></label>
+<label>Courtyard background<select id="sceneBackground"><option value="courtyard">Original courtyard</option><option value="paper">Light paper</option><option value="night">Dark night</option></select></label><label>Camera orbit<input id="orbit" type="range" min="-180" max="180" step="15" value="0"><output id="orbitValue">0°</output></label>
+<label><input type="checkbox" id="follow">Follow Maria</label>
+<label><input type="checkbox" id="walk" checked>Paper steps</label>
+<label>Step preview<select id="stepPreview"><option value="live">Live movement</option><option value="0">Resting</option><option value="1">First foot lifted</option><option value="2">Feet down · middle</option><option value="3">Second foot lifted</option></select></label>
+<small>Choose a step to inspect the feet while standing still.</small>
+<label><input type="checkbox" id="bob">Motion bounce</label>
+<label>Overlap study<select id="placement"><option value="">Place Maria…</option><option value="behind">Behind left pillar</option><option value="front">In front of left pillar</option></select></label>
+</section>
+<section aria-label="Saved drawing study"><label>Try a saved workshop study <input id="studyFile" type="file" accept=".json,application/json"></label><button id="clearStudy" disabled>Use current character again</button><p id="studyStatus" role="status">Current renderer settings. Save a study in the drawing workshop, then open it here. The file stays local.</p></section><div class="layout"><section class="stageWrap">
+<div id="stage" tabindex="0" role="application" aria-label="Movement courtyard. Use WASD or arrow keys to walk, Shift to run."></div>
+<div class="stageOverlay"><span id="ready" role="status">Preparing editable character…</span><span id="movementStatus">Front · 0° · idle</span></div>
+<div class="stageActions"><button id="demo">Walk all eight directions</button><button id="reset">Return to centre</button><button id="capture" disabled>Capture scene PNG</button><span>WASD / arrows · Shift to run</span></div>
+<details id="sceneCapture" hidden><summary>Captured scene</summary><p id="captureCaption"></p><a id="captureSave">Save this PNG</a><img id="captureImage" alt="Captured movement courtyard" style="display:block;max-width:100%;height:auto"></details>
+</section><aside>
+<h2>Try the turns</h2><p>Hold a direction below or use your keyboard. The last facing remains when you stop.</p>
+<div id="pad" aria-label="Walk direction controls"></div>
+<h2>Current facing</h2><div id="facingPreview"></div>
+<details><summary>Compare your original</summary><img id="outfitReference" src="references/NewCanvas3.png" alt="Your original outfit reference"></details>
+<p class="note">Flat character colours in a Three.js courtyard. Floor marks and props help judge scale and overlap. Paper steps adds a subtle alternating foot lift. Switch it off to compare resting views; the full walking rig remains a draft. Motion bounce is a separate optional experiment.</p>
+</aside></div>
+<section><h2 id="directionsTitle">All eight views</h2><div id="directions"></div></section>
+<footer>Local prototype · editable chibi8.js geometry · aesthetic approval pending · no live-game changes.</footer>
+</main>
+<script src="src/chibi8.js"></script><script src="src/body-construction-study.js"></script><script src="src/eye-study.js"></script><script type="module" src="movement.js"></script>
+</html>

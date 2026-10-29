@@ -1,0 +1,13 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import {createMessageSubmission} from './public/composer.js';
+let draft='  hello 😀  ',revision=0,clear=0,calls=0,busy=[],results=[],resolve,reject;
+const c=createMessageSubmission({readDraft:()=>draft,readRevision:()=>revision,clearDraft:()=>{draft='';clear++},send:text=>{calls++;assert(text.length);return new Promise((a,b)=>{resolve=a;reject=b})},onBusy:x=>busy.push(x),onResult:x=>results.push(x)});
+const first=c.submit();assert.equal(draft,'  hello 😀  ');assert.equal(calls,1);assert.equal((await c.submit()).kind,'busy');resolve({messageId:'saved1'});assert.equal((await first).kind,'confirmed');assert.equal(clear,1);
+draft='first';revision++;const second=c.submit();draft='new draft';revision++;resolve({messageId:'saved2'});assert.equal((await second).cleared,false);assert.equal(draft,'new draft');
+draft='same';revision++;const edited=c.submit();draft='different';revision++;draft='same';revision++;resolve({messageId:'saved3'});assert.equal((await edited).cleared,false);
+const failed=c.submit();reject({uncertain:true,secret:'never surfaced'});assert.deepEqual(await failed,{kind:'failed',uncertain:true});assert.equal(draft,'same');
+const stale=c.submit();const oldResolve=resolve;c.invalidate();draft='after reconnect';revision++;const next=c.submit();oldResolve({messageId:'late'});assert.equal((await stale).kind,'stale');assert(c.isBusy());assert.equal(draft,'after reconnect');resolve({messageId:'new'});await next;assert(!c.isBusy());
+draft='one\ntwo';assert.equal((await c.submit()).kind,'invalid');assert.equal(draft,'one\ntwo');
+fs.writeFileSync('portfolio/organization/guest-chat-20261016/composer-check.json',JSON.stringify({passed:true,cases:['retain until ack','one in flight','preserve newer draft','edit away and back retained','uncertain failure no automatic retry','old-generation acknowledgement cannot clear new draft or busy state','invalid draft retained'],realNetwork:false},null,2));
+console.log('7 composer lifecycle cases passed; no network.');

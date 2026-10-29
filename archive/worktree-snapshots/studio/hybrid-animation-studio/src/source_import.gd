@@ -1,0 +1,218 @@
+extends Node
+const DEFAULT_GMOD := "C:/Program Files (x86)/Steam/steamapps/common/GarrysMod"
+const DEFAULT_WORKSHOP := "C:/Program Files (x86)/Steam/steamapps/workshop/content/4000"
+var paths_file := "res://output/source-paths.cfg"
+var gmod_root := DEFAULT_GMOD
+var workshop_root := DEFAULT_WORKSHOP
+var extra_roots: Array = []
+var mount_overrides := {}
+var app
+var pid := -1
+var folder := ""
+var result_path := ""
+var cancel_path := ""
+var actor := false
+var progress: Window
+var progress_label: Label
+var cancel_button: Button
+var cancelled := false
+
+func _ready() -> void:
+	load_paths()
+
+func load_paths() -> void:
+	var config := ConfigFile.new()
+	config.load(paths_file)
+	gmod_root = str(config.get_value("source", "gmod", DEFAULT_GMOD))
+	workshop_root = str(config.get_value("source", "workshop", DEFAULT_WORKSHOP))
+	var extra = config.get_value("source", "extra_roots", [])
+	extra_roots = extra if extra is Array else []
+	var overrides = config.get_value("source", "mount_overrides", {})
+	mount_overrides = overrides if overrides is Dictionary else {}
+	if not OS.get_environment("HYBRID_GMOD").is_empty(): gmod_root = OS.get_environment("HYBRID_GMOD")
+	if not OS.get_environment("HYBRID_GMOD_WORKSHOP").is_empty(): workshop_root = OS.get_environment("HYBRID_GMOD_WORKSHOP")
+
+func save_paths() -> Error:
+	var config := ConfigFile.new()
+	config.set_value("source", "gmod", gmod_root)
+	config.set_value("source", "workshop", workshop_root)
+	config.set_value("source", "extra_roots", extra_roots)
+	config.set_value("source", "mount_overrides", mount_overrides)
+	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(paths_file).get_base_dir())
+	return config.save(paths_file)
+
+func default_browse_dir() -> String:
+	if DirAccess.dir_exists_absolute(workshop_root): return workshop_root
+	if DirAccess.dir_exists_absolute(gmod_root.path_join("garrysmod")): return gmod_root.path_join("garrysmod")
+	return gmod_root if DirAccess.dir_exists_absolute(gmod_root) else ""
+
+func path_field(box: Node, dialog: Window, title: String, value: String) -> LineEdit:
+	app.label(box, title)
+	var row := HBoxContainer.new()
+	box.add_child(row)
+	var field := LineEdit.new()
+	field.text = value
+	field.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	row.add_child(field)
+	app.button(row, "Browse…", func():
+		var picker := FileDialog.new()
+		picker.title = title
+		picker.access = FileDialog.ACCESS_FILESYSTEM
+		picker.file_mode = FileDialog.FILE_MODE_OPEN_DIR
+		dialog.add_child(picker)
+		if DirAccess.dir_exists_absolute(field.text): picker.current_dir = field.text
+		picker.dir_selected.connect(func(path): field.text = path; picker.queue_free())
+		picker.canceled.connect(picker.queue_free)
+		picker.popup_centered(Vector2i(720, 440)))
+	return field
+
+func python() -> String:
+	var override := OS.get_environment("HYBRID_PYTHON")
+	return override if not override.is_empty() else "python"
+
+func start(path: String, as_model: bool) -> void:
+	if pid > 0 or app.exporting: return
+	app.stop()
+	var catalog: Array = []
+	var script := ProjectSettings.globalize_path("res://tools/prepare_source.py")
+	var code := OS.execute(python(), [script, path, "--catalog"], catalog, true, false)
+	var data = JSON.parse_string("".join(catalog))
+	if code != 0 or not data is Dictionary:
+		app.message("Cannot inspect Source file. Python is required. " + "".join(catalog).left(400))
+		return
+	var choices: Array = data.get("models" if as_model else "maps", [])
+	if choices.is_empty():
+		app.message("This archive has no " + ("MDL models. Use Add scene for BSP maps." if as_model else "BSP maps. Use Add model for MDL models."))
+		return
+	var dialog := ConfirmationDialog.new()
+	dialog.title = "Import Source model" if as_model else "Import Source map"
+	dialog.ok_button_text = "Prepare and import"
+	var scroll := ScrollContainer.new()
+	scroll.custom_minimum_size = Vector2(720, minf(480, maxf(240, app.get_viewport_rect().size.y - 180)))
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	dialog.add_child(scroll)
+	var box := VBoxContainer.new()
+	box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	scroll.add_child(box)
+	app.label(box, path.get_file())
+	var members := OptionButton.new()
+	members.custom_minimum_size.x = 580
+	for member in choices: members.add_item(str(member))
+	box.add_child(members)
+	var text: Label = app.label(box, "Converts locally with Blender / SourceIO into the same standard GLB used by MMD.\nTextures are approximate. No game scripts run. Your current scene changes only after success.\nNative copies, parameters, editable Blender file and warnings stay in output/compatibility.")
+	text.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	app.label(box, "Garry's Mod must already be installed. Studio does not supply the game or Workshop add-ons.").autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	var game_field := path_field(box, dialog, "Garry's Mod installation", gmod_root)
+	var workshop_field := path_field(box, dialog, "Installed Workshop content (4000)", workshop_root)
+	app.button(box, "Browse installed models and maps…", func():
+		gmod_root = game_field.text.strip_edges()
+		workshop_root = workshop_field.text.strip_edges()
+		if save_paths() != OK: app.message("Cannot save Source folder preferences."); return
+		dialog.hide(); dialog.queue_free()
+		app.source_browser.open(as_model))
+	var scale: SpinBox = app.spin(box, "Source unit scale", 0.0001, 1, 0.01905)
+	scale.step = 0.00001; scale.value = 0.01905
+	var content := LineEdit.new()
+	content.placeholder_text = "Optional additional content directory or _dir.vpk"
+	content.tooltip_text = "Installed Garry's Mod content mounts automatically. Add one missing game/content mount here. CLI supports more."
+	box.add_child(content)
+	app.add_child(dialog)
+	dialog.confirmed.connect(func():
+		gmod_root = game_field.text.strip_edges()
+		workshop_root = workshop_field.text.strip_edges()
+		if save_paths() != OK: app.message("Cannot save Source folder preferences."); dialog.queue_free(); return
+		dialog.hide()
+		launch(path, str(choices[members.selected]), as_model, scale.value, content.text.strip_edges())
+		dialog.queue_free())
+	dialog.canceled.connect(dialog.queue_free)
+	dialog.popup_centered(Vector2i(760, 560))
+
+func launch(path: String, member: String, as_model: bool, scale: float, content := "", dependency_mounts = null) -> void:
+	if pid > 0: return
+	actor = as_model
+	cancelled = false
+	app.stop(); app.finish_stroke(); app.pose_editor.finish_drag(); app.release_mouse()
+	folder = ProjectSettings.globalize_path("res://output/compatibility/source-" + str(Time.get_unix_time_from_system()).replace(".", "-") + "-" + str(Time.get_ticks_usec()))
+	DirAccess.make_dir_recursive_absolute(folder.get_base_dir())
+	result_path = folder + "-result.json"
+	cancel_path = folder + "-cancel"
+	var args := PackedStringArray([ProjectSettings.globalize_path("res://tools/prepare_source.py"), path, "--output", folder, "--scale", str(scale), "--status-file", result_path, "--cancel-file", cancel_path])
+	args.append_array(["--gmod", gmod_root, "--workshop", workshop_root])
+	if path.get_extension().to_lower() in ["gma", "bin", "vpk"]: args.append_array(["--member", member])
+	if dependency_mounts != null:
+		var plan := FileAccess.open(folder + "-mounts.json", FileAccess.WRITE)
+		if plan == null: app.message("Cannot write dependency mount plan."); return
+		plan.store_string(JSON.stringify(Array(dependency_mounts))); plan.close()
+		args.append_array(["--mount-plan", folder + "-mounts.json"])
+	elif not extra_roots.is_empty() or not mount_overrides.is_empty():
+		var settings := FileAccess.open(folder + "-mount-settings.json", FileAccess.WRITE)
+		if settings == null: app.message("Cannot write dependency settings."); return
+		settings.store_string(JSON.stringify({"extra": extra_roots, "overrides": mount_overrides})); settings.close()
+		args.append_array(["--mount-settings", folder + "-mount-settings.json"])
+	if not content.is_empty(): args.append_array(["--content", content])
+	pid = OS.create_process(python(), args, false)
+	if pid < 0: app.message("Cannot start Python for Source preparation."); return
+	progress = Window.new()
+	progress.title = "Preparing Source asset"
+	progress.transient = true
+	progress.exclusive = true
+	progress.close_requested.connect(cancel)
+	var background := Panel.new()
+	background.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	background.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	background.add_theme_stylebox_override("panel", preload("res://src/studio_theme.gd").surface("f4f7fb", "dce5ee"))
+	progress.add_child(background)
+	var box := VBoxContainer.new()
+	box.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	progress.add_child(box)
+	progress_label = app.label(box, "Converting locally… The editor will stay responsive.\n" + path.get_file() + "\nLarger maps can take several minutes.\n" + folder)
+	progress_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	cancel_button = app.button(box, "Cancel preparation", cancel)
+	app.add_child(progress)
+	progress.popup_centered(Vector2i(660, 200))
+
+func cancel() -> void:
+	if pid <= 0: return
+	cancelled = true
+	var file := FileAccess.open(cancel_path, FileAccess.WRITE)
+	if file: file.store_string("cancel"); file.close()
+	progress_label.text = "Cancelling Blender preparation… Partial bundle retained."
+	cancel_button.disabled = true
+
+func _process(_delta: float) -> void:
+	if pid <= 0 or OS.is_process_running(pid): return
+	pid = -1
+	if is_instance_valid(progress): progress.queue_free()
+	var result = JSON.parse_string(FileAccess.get_file_as_string(result_path)) if FileAccess.file_exists(result_path) else null
+	if cancelled: app.message("Source preparation cancelled. Current project preserved. Partial files: " + folder); return
+	if not result is Dictionary or not result.get("ok", false):
+		app.message(str(result.get("error", "Preparation ended without a result")) if result is Dictionary else "Python preparation failed. Check Python/Blender/SourceIO paths; see docs/source_import.md.")
+		return
+	var error := ""
+	if actor: error = app.pose_editor.add_model(str(result.glb))
+	else:
+		app.load_scene(str(result.glb))
+		if app.source != str(result.glb): return
+		app.mode.select(1); app.change_mode(1); app.frame_3d_scene()
+	if not error.is_empty(): return
+	var report = JSON.parse_string(FileAccess.get_file_as_string(folder.path_join("parameters.json")))
+	if not actor and report is Dictionary: apply_view(report)
+	var count: int = report.get("warnings", []).size() if report is Dictionary else 0
+	app.message("Source asset imported through standard GLB. %d warnings; keep the preparation bundle: %s" % [count, folder])
+	if count > 0:
+		var dialog := AcceptDialog.new()
+		dialog.title = "Source import warnings"
+		dialog.dialog_text = "%d missing or approximated resources.\n%s\n\nFull details: %s" % [count, "\n".join(report.warnings.slice(0, 6)), folder.path_join("parameters.json")]
+		app.add_child(dialog)
+		dialog.confirmed.connect(dialog.queue_free)
+		dialog.popup_centered(Vector2i(740, 340))
+
+func apply_view(report: Dictionary) -> bool:
+	var view = report.get("suggested_view")
+	if not view is Dictionary: return false
+	var p = view.get("position")
+	var t = view.get("target")
+	if not p is Array or not t is Array or p.size() != 3 or t.size() != 3: return false
+	app.renderer.camera.position = Vector3(p[0], p[1], p[2])
+	app.renderer.camera.look_at(Vector3(t[0], t[1], t[2]), Vector3.UP)
+	return true

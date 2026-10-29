@@ -1,0 +1,19 @@
+/* Native hit area is at least48px; artwork retains16/24/32px dimensions.
+   State visibility follows actual browser interaction, including held Space.
+   Focus adds a ring without making the action look permanently pressed. */
+.native-icon-button{min-width:48px;min-height:48px;padding:8px 12px;gap:10px;display:inline-flex;align-items:center;justify-content:center;background:var(--normal-paper);color:var(--normal-ink);border:1px solid currentColor;border-radius:9px;cursor:pointer;font:inherit;touch-action:manipulation}
+.native-button-icon{position:relative;display:block;flex:none;width:var(--native-size);height:var(--native-size)}
+.native-art{position:absolute;inset:0;display:none}
+.native-art[data-state=normal]{display:block}
+.native-icon-button:not(:disabled):hover{background:var(--hover-paper);color:var(--hover-ink)}
+.native-icon-button:not(:disabled):hover .native-art{display:none}
+.native-icon-button:not(:disabled):hover .native-art[data-state=hover]{display:block}
+.native-icon-button:not(:disabled):active{background:var(--pressed-paper);color:var(--pressed-ink);transform:translateY(1px)}
+.native-icon-button:not(:disabled):active .native-art{display:none}
+.native-icon-button:not(:disabled):active .native-art[data-state=pressed]{display:block}
+.native-icon-button:focus-visible{outline:3px solid #b96925;outline-offset:3px}
+.native-icon-button[data-paper=dark]:focus-visible{outline-color:#ffc180}
+.native-demo>div{align-items:flex-start}
+.native-icon-button:disabled,.native-icon-button:disabled:hover{background:var(--disabled-paper);color:var(--disabled-ink);border-color:currentColor;cursor:not-allowed;transform:none}
+.native-icon-button:disabled .native-art{display:none}
+.native-icon-button:disabled .native-art[data-state=disabled]{display:block}
